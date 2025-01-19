@@ -32,14 +32,19 @@ class OpenAIService {
       final response = await http.post(
         Uri.parse(_apiUrl),
         headers: {
-          'Content-Type': 'application/json',
+          // Achte drauf, dass hier explizit UTF-8 drinsteht
+          'Content-Type': 'application/json; charset=UTF-8',
+          'Accept': 'application/json; charset=UTF-8',
           'Authorization': 'Bearer $_apiKey',
         },
         body: jsonEncode(requestBody),
       );
 
       if (response.statusCode == 200) {
-        final responseData = jsonDecode(response.body);
+        // Manuelles Dekodieren mit utf8
+        final decodedBody = utf8.decode(response.bodyBytes);
+        final responseData = jsonDecode(decodedBody);
+
         final content = responseData['choices'][0]['message']['content'];
         return content.trim();
       } else {

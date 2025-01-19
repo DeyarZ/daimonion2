@@ -1,8 +1,14 @@
+// lib/pages/habit_tracker.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart'; // AdMob import
 import 'package:uuid/uuid.dart';
+
+// Services
 import '../services/db_service.dart';
+
+// NEU: Notification-Funktionen aus main.dart
+import 'package:daimonion_app/main.dart' show scheduleHabitNotifications, cancelHabitNotifications;
 
 // -------------------------------------------
 // Model-Klasse: Habit
@@ -10,14 +16,20 @@ import '../services/db_service.dart';
 class Habit {
   String id;
   String name;
-  Map<String, bool?> dailyStatus; 
+  Map<String, bool?> dailyStatus;
   List<int> selectedWeekdays;
+
+  // Optional: reminder time
+  int? reminderHour;
+  int? reminderMinute;
 
   Habit({
     required this.id,
     required this.name,
     required this.dailyStatus,
     required this.selectedWeekdays,
+    this.reminderHour,
+    this.reminderMinute,
   });
 }
 
@@ -35,10 +47,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
   final DBService _dbService = DBService();
   final _uuid = const Uuid();
 
-  // Neue Variablen für Ads
-  late BannerAd _bannerAd;
-  bool _isAdLoaded = false;
-
   late List<DateTime> days;
   late DateTime today;
 
@@ -47,34 +55,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
     super.initState();
     today = _truncateToDate(DateTime.now());
     days = _generate7Days(today);
-
-    // AdMob Banner laden
-    _loadBannerAd();
-  }
-
-  @override
-  void dispose() {
-    _bannerAd.dispose(); // Ad-Objekt sauber entfernen
-    super.dispose();
-  }
-
-  void _loadBannerAd() {
-    _bannerAd = BannerAd(
-      adUnitId: 'ca-app-pub-2524075415669673~7860955987', // Deine Anzeigenblock-ID
-      size: AdSize.banner,
-      request: AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          setState(() {
-            _isAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          print('Ad failed to load: $error');
-          ad.dispose();
-        },
-      ),
-    )..load();
   }
 
   List<DateTime> _generate7Days(DateTime center) {
@@ -98,160 +78,150 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
         backgroundColor: Colors.black,
       ),
       backgroundColor: Colors.black,
-      body: Stack(
+      body: Column(
         children: [
-          Column(
-            children: [
-              const SizedBox(height: 8),
-              Center(
-                child: Text(
-                  'Heute: ${_formatDate(today)}',
-                  style: const TextStyle(
-                    color: Colors.redAccent,
-                    fontSize: 16,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
+          const SizedBox(height: 8),
+          Center(
+            child: Text(
+              'Heute: ${_formatDate(today)}',
+              style: const TextStyle(
+                color: Colors.redAccent,
+                fontSize: 16,
+                fontWeight: FontWeight.bold,
               ),
-              const SizedBox(height: 8),
-              Expanded(
-                child: ValueListenableBuilder(
-                  valueListenable: _dbService.listenableHabits(),
-                  builder: (context, Box box, _) {
-                    final habits = _boxToHabitList(box);
+            ),
+          ),
+          const SizedBox(height: 8),
+          Expanded(
+            child: ValueListenableBuilder(
+              valueListenable: _dbService.listenableHabits(),
+              builder: (context, Box box, _) {
+                final habits = _boxToHabitList(box);
 
-                    if (habits.isEmpty) {
-                      return const Center(
-                        child: Text(
-                          'Noch keine Gewohnheiten',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      );
-                    }
+                if (habits.isEmpty) {
+                  return const Center(
+                    child: Text(
+                      'Noch keine Gewohnheiten',
+                      style: TextStyle(color: Colors.white),
+                    ),
+                  );
+                }
 
-                    return SingleChildScrollView(
-                      scrollDirection: Axis.vertical,
-                      child: Table(
-                        border: TableBorder(
-                          horizontalInside: BorderSide(color: Colors.grey.shade800),
-                        ),
-                        columnWidths: const {
-                          0: FixedColumnWidth(160),
-                        },
+                return SingleChildScrollView(
+                  scrollDirection: Axis.vertical,
+                  child: Table(
+                    border: TableBorder(
+                      horizontalInside: BorderSide(color: Colors.grey.shade800),
+                    ),
+                    columnWidths: const {
+                      0: FixedColumnWidth(160),
+                    },
+                    children: [
+                      // Kopfzeile: Habit + 7 Tage
+                      TableRow(
+                        decoration: BoxDecoration(color: Colors.grey[900]),
                         children: [
-                          TableRow(
-                            decoration: BoxDecoration(color: Colors.grey[900]),
-                            children: [
-                              const Padding(
-                                padding: EdgeInsets.all(8),
+                          const Padding(
+                            padding: EdgeInsets.all(8),
+                            child: Text(
+                              'Habit',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
+                            ),
+                          ),
+                          ...days.map((day) {
+                            final isToday = _isSameDay(day, today);
+                            return Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    _dayOfWeekShort(day),
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                  const SizedBox(height: 4),
+                                  Text(
+                                    '${day.day}',
+                                    style: TextStyle(
+                                      color: isToday ? Colors.red : Colors.white,
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            );
+                          }).toList(),
+                        ],
+                      ),
+                      // Rows für jede Habit
+                      ...List.generate(habits.length, (rowIndex) {
+                        final habit = habits[rowIndex];
+                        return TableRow(
+                          decoration: BoxDecoration(color: Colors.grey[850]),
+                          children: [
+                            GestureDetector(
+                              // LongPress => Habit löschen
+                              onLongPress: () => _confirmDeleteHabit(habit),
+                              child: Padding(
+                                padding: const EdgeInsets.all(8.0),
                                 child: Text(
-                                  'Habit',
-                                  style: TextStyle(
+                                  habit.name,
+                                  style: const TextStyle(
                                     color: Colors.white,
-                                    fontWeight: FontWeight.bold,
+                                    fontSize: 15,
                                   ),
                                 ),
                               ),
-                              ...days.map((day) {
-                                final isToday = _isSameDay(day, today);
-                                return Padding(
+                            ),
+                            // 7 Tage => Check ob weekday in habit, dann icon
+                            ...days.map((day) {
+                              if (!habit.selectedWeekdays.contains(day.weekday)) {
+                                return const SizedBox(height: 36);
+                              }
+                              final strDay = _formatDateKey(day);
+                              final status = habit.dailyStatus[strDay];
+
+                              final isPastOrToday =
+                                  day.isBefore(today) || _isSameDay(day, today);
+
+                              IconData icon;
+                              Color color;
+                              if (status == true) {
+                                icon = Icons.check;
+                                color = Colors.green;
+                              } else if (status == false && isPastOrToday) {
+                                icon = Icons.close;
+                                color = Colors.red;
+                              } else {
+                                icon = Icons.circle;
+                                color = Colors.grey;
+                              }
+
+                              return GestureDetector(
+                                onTap: () {
+                                  if (isPastOrToday) {
+                                    _toggleHabitStatus(habit, strDay);
+                                  }
+                                },
+                                child: Padding(
                                   padding: const EdgeInsets.all(8.0),
-                                  child: Column(
-                                    children: [
-                                      Text(
-                                        _dayOfWeekShort(day),
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontWeight: FontWeight.bold,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 4),
-                                      Text(
-                                        '${day.day}',
-                                        style: TextStyle(
-                                          color: isToday ? Colors.red : Colors.white,
-                                        ),
-                                      ),
-                                    ],
-                                  ),
-                                );
-                              }).toList(),
-                            ],
-                          ),
-                          ...List.generate(habits.length, (rowIndex) {
-                            final habit = habits[rowIndex];
-                            return TableRow(
-                              decoration: BoxDecoration(color: Colors.grey[850]),
-                              children: [
-                                GestureDetector(
-                                  onLongPress: () => _confirmDeleteHabit(habit),
-                                  child: Padding(
-                                    padding: const EdgeInsets.all(8.0),
-                                    child: Text(
-                                      habit.name,
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 15,
-                                      ),
-                                    ),
-                                  ),
+                                  child: Icon(icon, color: color),
                                 ),
-                                ...days.map((day) {
-                                  if (!habit.selectedWeekdays.contains(day.weekday)) {
-                                    return const SizedBox(height: 36);
-                                  }
-
-                                  final strDay = _formatDateKey(day);
-                                  final status = habit.dailyStatus[strDay];
-
-                                  final isPastOrToday =
-                                      day.isBefore(today) || _isSameDay(day, today);
-
-                                  IconData icon;
-                                  Color color;
-                                  if (status == true) {
-                                    icon = Icons.check;
-                                    color = Colors.green;
-                                  } else if (status == false && isPastOrToday) {
-                                    icon = Icons.close;
-                                    color = Colors.red;
-                                  } else {
-                                    icon = Icons.circle;
-                                    color = Colors.grey;
-                                  }
-
-                                  return GestureDetector(
-                                    onTap: () {
-                                      if (isPastOrToday) {
-                                        _toggleHabitStatus(habit, strDay);
-                                      }
-                                    },
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Icon(icon, color: color),
-                                    ),
-                                  );
-                                }).toList(),
-                              ],
-                            );
-                          }),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
-          ),
-          if (_isAdLoaded)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                width: _bannerAd.size.width.toDouble(),
-                height: _bannerAd.size.height.toDouble(),
-                child: AdWidget(ad: _bannerAd),
-              ),
+                              );
+                            }).toList(),
+                          ],
+                        );
+                      }),
+                    ],
+                  ),
+                );
+              },
             ),
+          ),
         ],
       ),
       floatingActionButton: FloatingActionButton(
@@ -262,9 +232,9 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
     );
   }
 
-  // --------------------------------------------------------------
-  // Box -> List<Habit>
-  // --------------------------------------------------------------
+  // -------------------------------------------
+  // Parse DB -> Habit model
+  // -------------------------------------------
   List<Habit> _boxToHabitList(Box box) {
     final List<Habit> list = [];
     for (int i = 0; i < box.length; i++) {
@@ -273,6 +243,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
 
       final id = data['id'] as String? ?? 'no-id-$i';
       final name = data['name'] as String? ?? 'Unnamed Habit';
+
       final dsMap = data['dailyStatus'] as Map?;
       final Map<String, bool?> dailyStatus = {};
       if (dsMap != null) {
@@ -282,64 +253,59 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
       }
 
       final sw = data['selectedWeekdays'] as List? ?? [];
-      // cast to List<int>
       final selectedWeekdays = sw.map((x) => x as int).toList();
+
+      final reminderHour = data['reminderHour'] as int?;
+      final reminderMinute = data['reminderMinute'] as int?;
 
       list.add(Habit(
         id: id,
         name: name,
         dailyStatus: dailyStatus,
         selectedWeekdays: selectedWeekdays,
+        reminderHour: reminderHour,
+        reminderMinute: reminderMinute,
       ));
     }
     return list;
   }
 
-  // --------------------------------------------------------------
-  // Toggle => per ID in Box suchen -> dailyStatus updaten
-  // --------------------------------------------------------------
+  // -------------------------------------------
+  // Toggle => dailyStatus
+  // -------------------------------------------
   Future<void> _toggleHabitStatus(Habit habit, String dayKey) async {
     final box = Hive.box<Map>(DBService.habitsBoxName);
 
-    // 1) Finde index via ID
+    // Index finden
     final index = _findIndexOfHabitById(box, habit.id);
     if (index == -1) return;
 
-    // 2) Toggle
     final current = habit.dailyStatus[dayKey];
-    bool? newVal = (current == true) ? false : true;
+    final newVal = (current == true) ? false : true;
     habit.dailyStatus[dayKey] = newVal;
 
-    // 3) Box updaten
+    // Speichern
     final newData = {
       'id': habit.id,
       'name': habit.name,
       'dailyStatus': habit.dailyStatus,
       'selectedWeekdays': habit.selectedWeekdays,
+      'reminderHour': habit.reminderHour,
+      'reminderMinute': habit.reminderMinute,
     };
     await _dbService.updateHabit(index, newData);
 
     setState(() {});
   }
 
-  // --------------------------------------------------------------
-  // Neuer Habit => ID + Name + dailyStatus=null + user wählt Wochentage
-  // --------------------------------------------------------------
+  // -------------------------------------------
+  // Neue Habit anlegen => TimePicker => Notifs
+  // -------------------------------------------
   void _addHabit() {
-    TextEditingController controller = TextEditingController();
-
-    // 1..7 => "Mo","Di",...
-    final weekdaysMap = {
-      1: 'M',
-      2: 'D',
-      3: 'M',
-      4: 'D',
-      5: 'F',
-      6: 'S',
-      7: 'S',
-    };
-
-    final selectedDays = <int>{}; // leer
+    final TextEditingController controller = TextEditingController();
+    final selectedDays = <int>{};
+    int? chosenHour;
+    int? chosenMinute;
 
     showDialog(
       context: context,
@@ -348,40 +314,75 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
           title: const Text('Neue Gewohnheit'),
           content: StatefulBuilder(
             builder: (context, setStateDialog) {
-              return Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  // TextField Name
-                  TextField(
-                    controller: controller,
-                    decoration: const InputDecoration(hintText: 'Name'),
-                  ),
-                  const SizedBox(height: 12),
-                  // Wochentage-Auswahl
-                  Wrap(
-                    spacing: 8,
-                    children: weekdaysMap.entries.map((entry) {
-                      final wday = entry.key;    
-                      final label = entry.value; 
-                      final isSelected = selectedDays.contains(wday);
+              return SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    // Titel
+                    TextField(
+                      controller: controller,
+                      decoration: const InputDecoration(hintText: 'Name'),
+                    ),
+                    const SizedBox(height: 12),
 
-                      return ChoiceChip(
-                        label: Text(label),
-                        selected: isSelected,
-                        selectedColor: Colors.redAccent,
-                        onSelected: (bool value) {
-                          setStateDialog(() {
-                            if (value) {
-                              selectedDays.add(wday);
-                            } else {
-                              selectedDays.remove(wday);
+                    // Wochentage-Auswahl
+                    Wrap(
+                      spacing: 8,
+                      children: List.generate(7, (i) {
+                        final wday = i + 1; // Mo=1..So=7
+                        final label = _weekdayToLetter(wday);
+                        final isSelected = selectedDays.contains(wday);
+
+                        return ChoiceChip(
+                          label: Text(label),
+                          selected: isSelected,
+                          selectedColor: Colors.redAccent,
+                          onSelected: (bool value) {
+                            setStateDialog(() {
+                              if (value) {
+                                selectedDays.add(wday);
+                              } else {
+                                selectedDays.remove(wday);
+                              }
+                            });
+                          },
+                        );
+                      }),
+                    ),
+
+                    const SizedBox(height: 12),
+
+                    // Reminder optional
+                    Row(
+                      children: [
+                        const Text('Reminder (optional):'),
+                        const SizedBox(width: 8),
+                        ElevatedButton(
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.redAccent,
+                          ),
+                          onPressed: () async {
+                            final timeOfDay = await showTimePicker(
+                              context: context,
+                              initialTime: TimeOfDay.now(),
+                            );
+                            if (timeOfDay != null) {
+                              setStateDialog(() {
+                                chosenHour = timeOfDay.hour;
+                                chosenMinute = timeOfDay.minute;
+                              });
                             }
-                          });
-                        },
-                      );
-                    }).toList(),
-                  ),
-                ],
+                          },
+                          child: Text(
+                            (chosenHour == null || chosenMinute == null)
+                                ? 'Keine'
+                                : '${chosenHour!.toString().padLeft(2, '0')}:${chosenMinute!.toString().padLeft(2, '0')}',
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               );
             },
           ),
@@ -394,7 +395,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
               onPressed: () async {
                 final newHabitName = controller.text.trim();
                 if (newHabitName.isNotEmpty && selectedDays.isNotEmpty) {
-                  // dailyMap => nur für days, wo day.weekday in selectedDays
+                  // dailyMap => für alle days, die im 7-Tage-Fenster liegen
                   final dailyMap = <String, bool?>{};
                   for (var d in days) {
                     if (selectedDays.contains(d.weekday)) {
@@ -407,9 +408,23 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
                     'name': newHabitName,
                     'dailyStatus': dailyMap,
                     'selectedWeekdays': selectedDays.toList(),
+                    'reminderHour': chosenHour,
+                    'reminderMinute': chosenMinute,
                   };
 
+                  // In DB speichern
                   await _dbService.addHabit(newData);
+
+                  // Falls eine Zeit gewählt wurde => schedule
+                  if (chosenHour != null && chosenMinute != null) {
+                    scheduleHabitNotifications(
+                      habitId: newData['id'] as String,
+                      habitName: newHabitName,
+                      hour: chosenHour!,
+                      minute: chosenMinute!,
+                      weekdays: selectedDays,
+                    );
+                  }
                 }
                 Navigator.pop(ctx);
               },
@@ -421,9 +436,9 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
     );
   }
 
-  // --------------------------------------------------------------
-  // Delete Habit
-  // --------------------------------------------------------------
+  // -------------------------------------------
+  // Habit löschen => ggf. Notifications canceln
+  // -------------------------------------------
   void _confirmDeleteHabit(Habit habit) async {
     showDialog(
       context: context,
@@ -453,14 +468,18 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
     final box = Hive.box<Map>(DBService.habitsBoxName);
     final index = _findIndexOfHabitById(box, habit.id);
     if (index != -1) {
+      // Falls Zeit gesetzt => Notifications canceln
+      if (habit.reminderHour != null && habit.reminderMinute != null) {
+        cancelHabitNotifications(habit.id, habit.selectedWeekdays.toSet());
+      }
       await _dbService.deleteHabit(index);
       setState(() {});
     }
   }
 
-  // --------------------------------------------------------------
-  // Hilfsfunktionen
-  // --------------------------------------------------------------
+  // -------------------------------------------
+  // Helpers
+  // -------------------------------------------
   int _findIndexOfHabitById(Box box, String habitId) {
     for (int i = 0; i < box.length; i++) {
       final data = box.getAt(i) as Map?;
@@ -496,6 +515,20 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
       case 6: return 'S';
       default:
         return 'S';
+    }
+  }
+
+  String _weekdayToLetter(int wday) {
+    // 1=Mo,...7=So
+    switch (wday) {
+      case 1: return 'Mo';
+      case 2: return 'Di';
+      case 3: return 'Mi';
+      case 4: return 'Do';
+      case 5: return 'Fr';
+      case 6: return 'Sa';
+      case 7: return 'So';
+      default: return '?';
     }
   }
 }

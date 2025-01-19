@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:purchases_flutter/purchases_flutter.dart';
+import 'package:collection/collection.dart'; // Für firstWhereOrNull
 
 import '../haertegrad_enum.dart';
 import 'privacy_and_terms_page.dart';
@@ -17,11 +19,6 @@ class _ProfilePageState extends State<ProfilePage> {
   // -------------------------
   String userName = '';
   Haertegrad currentHaertegrad = Haertegrad.brutalEhrlich;
-
-  // Folgende Flags haben wir im MVP auskommentiert:
-  // bool notificationsEnabled = false;
-  // bool darkModeEnabled = false;
-
   String appVersion = '1.0.0';
 
   // -------------------------
@@ -30,11 +27,11 @@ class _ProfilePageState extends State<ProfilePage> {
   @override
   void initState() {
     super.initState();
+
     // Ensure settings box is open
     if (!Hive.isBoxOpen('settings')) {
       Hive.openBox('settings');
     }
-
     final box = Hive.box('settings');
 
     // User-Name laden
@@ -44,9 +41,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final storedIndex = box.get('haertegrad', defaultValue: 2);
     currentHaertegrad = Haertegrad.values[storedIndex];
 
-    // Benachrichtigungen & Dark Mode — auskommentiert
-    // notificationsEnabled = box.get('notificationsEnabled', defaultValue: false);
-    // darkModeEnabled = box.get('darkModeEnabled', defaultValue: false);
+    // Benachrichtigungen & Dark Mode => auskommentiert
   }
 
   // -------------------------
@@ -144,6 +139,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
             const Divider(color: Colors.grey, height: 1),
+
             // Härtegrad
             ListTile(
               title: const Text('Härtegrad', style: TextStyle(color: Colors.white)),
@@ -232,6 +228,7 @@ class _ProfilePageState extends State<ProfilePage> {
   // ACCOUNT
   // -------------------------
   Widget _buildAccountCard() {
+    final isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
     return Card(
       color: Colors.grey[850],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -251,9 +248,7 @@ class _ProfilePageState extends State<ProfilePage> {
             ),
             const Divider(color: Colors.grey, height: 1),
 
-            // ---------------------------------------------------------
-            // AUSKOMMENTIERT: ABMELDEN, ACCOUNT LÖSCHEN, PREMIUM
-            // ---------------------------------------------------------
+            // ABMELDEN & ACCOUNT LÖSCHEN (auskommentiert):
             /*
             ListTile(
               leading: const Icon(Icons.exit_to_app, color: Colors.white),
@@ -267,15 +262,32 @@ class _ProfilePageState extends State<ProfilePage> {
               onTap: _deleteAccount,
             ),
             const Divider(color: Colors.grey, height: 1),
-            ListTile(
-              leading: const Icon(Icons.star, color: Colors.amber),
-              title: const Text(
-                'Upgrade zu Premium',
-                style: TextStyle(color: Colors.amber),
-              ),
-              onTap: _upgradeToPremium,
-            ),
             */
+
+            // ---------------------------------------------------------
+            // Upgrade zu Premium => nur anzeigen, wenn kein Premium
+            // ---------------------------------------------------------
+            if (!isPremium) ...[
+              ListTile(
+                leading: const Icon(Icons.star, color: Colors.amber),
+                title: const Text(
+                  'Upgrade zu Premium',
+                  style: TextStyle(color: Colors.amber),
+                ),
+                onTap: _upgradeToPremium,
+              ),
+              const Divider(color: Colors.grey, height: 1),
+            ],
+
+            // Optional: Restore Purchases (insb. iOS)
+            ListTile(
+              leading: const Icon(Icons.restart_alt, color: Colors.white),
+              title: const Text(
+                'Restore Purchases',
+                style: TextStyle(color: Colors.white),
+              ),
+              onTap: _restorePurchases,
+            ),
           ],
         ),
       ),
@@ -311,7 +323,7 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // EditProfile => Zeige Dialog
+  // EDIT PROFILE => Name
   void _editProfile() async {
     final newName = await showDialog<String?>(
       context: context,
@@ -321,9 +333,7 @@ class _ProfilePageState extends State<ProfilePage> {
           title: const Text('Name bearbeiten'),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(
-              hintText: 'Dein Name',
-            ),
+            decoration: const InputDecoration(hintText: 'Dein Name'),
           ),
           actions: [
             TextButton(
@@ -357,26 +367,99 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   // ---------------------------------------------------------
-  // Auskommentierte Dummy-Funktionen
+  // NEU: Upgrade zu Premium
   // ---------------------------------------------------------
-  /*
-  void _signOut() {
-    debugPrint('Abmelden geklickt -> No real backend, so dummy');
+  Future<void> _upgradeToPremium() async {
+    try {
+      final offerings = await Purchases.getOfferings();
+      if (offerings.current != null) {
+        // Premium-Paket suchen => z.B. "premium"
+        final premiumPackage = offerings.current!.availablePackages.firstWhereOrNull(
+          (pkg) => pkg.identifier == "premium",
+        );
+
+        // Not found => Fehler
+        if (premiumPackage == null) {
+          _showErrorDialog("Premium-Paket nicht gefunden");
+          return;
+        }
+
+        // Kauf starten
+        final purchaserInfo = await Purchases.purchasePackage(premiumPackage);
+        final isPremium = purchaserInfo.entitlements.all["premium"]?.isActive ?? false;
+        if (isPremium) {
+          Hive.box('settings').put('isPremium', true);
+          _showSuccessDialog("Herzlichen Glückwunsch! Du bist Premium.");
+          setState(() {});
+        }
+      } else {
+        _showErrorDialog("Keine Angebote verfügbar");
+      }
+    } catch (e) {
+      _showErrorDialog("Fehler beim Kauf: $e");
+    }
   }
 
-  void _deleteAccount() {
-    debugPrint('Account löschen geklickt -> No real backend, so dummy');
+  // ---------------------------------------------------------
+  // NEU: Restore Purchases (insb. iOS)
+  // ---------------------------------------------------------
+  Future<void> _restorePurchases() async {
+    try {
+      final customerInfo = await Purchases.restorePurchases();
+      final isPremium = customerInfo.entitlements.all["premium"]?.isActive ?? false;
+      if (isPremium) {
+        Hive.box('settings').put('isPremium', true);
+        _showSuccessDialog("Premium wiederhergestellt!");
+        setState(() {});
+      } else {
+        _showErrorDialog("Keine aktiven Käufe gefunden.");
+      }
+    } catch (e) {
+      _showErrorDialog("Fehler beim Wiederherstellen: $e");
+    }
   }
 
-  void _upgradeToPremium() {
-    debugPrint('Upgrade zu Premium geklickt -> Payment not implemented yet, dummy');
+  // ---------------------------------------------------------
+  // Hilfs-Dialoge
+  // ---------------------------------------------------------
+  void _showErrorDialog(String msg) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Fehler'),
+        content: Text(msg),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK'),
+          )
+        ],
+      ),
+    );
   }
-  */
+
+  void _showSuccessDialog(String msg) {
+    showDialog(
+      context: context,
+      builder: (ctx) => AlertDialog(
+        title: const Text('Erfolg'),
+        content: Text(msg),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(ctx),
+            child: const Text('OK'),
+          )
+        ],
+      ),
+    );
+  }
+
+
+  // ---------------------------------------------------------
+  // SEPARATE PAGE FOR HÄRTEGRAD-AUSWAHL
+  // ---------------------------------------------------------
 }
 
-// ----------------------------------------------
-// SEPARATE PAGE FOR HÄRTEGRAD-AUSWAHL
-// ----------------------------------------------
 class HaertegradPage extends StatefulWidget {
   final Haertegrad selectedHaertegrad;
 

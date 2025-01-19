@@ -3,12 +3,13 @@ import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart'; // AdMob-Import
 
 import '../services/db_service.dart';
 import '../services/flow_timer_service.dart';
 import '../pages/todo_list.dart';
 import '../pages/habit_tracker.dart';
+import 'flow_stats_page.dart'; // Seite für Flow-Statistiken
+import '../widgets/ad_wrapper.dart'; // Import des AdWrapper
 
 class Task {
   final String id;
@@ -49,13 +50,9 @@ class DashboardPageState extends State<DashboardPage> {
   final DBService _dbService = DBService();
   final Uuid _uuid = const Uuid();
 
-  // Neue Variablen für Ads
-  late BannerAd _bannerAd; // AdMob BannerAd
-  bool _isAdLoaded = false;
-
   int _streak = 0; // aus Hive gelesen
-  int _flowSessions = 0; // ephemere Zählung (verschwindet beim Restart)
-  int _lastFlowIndex = 0; // um Flow-Veränderungen zu erkennen
+  int _flowSessions = 0; // zählt hoch, ohne zurückzusetzen
+  int _lastFlowIndex = 0; // trackt flowIndex-Änderungen
 
   final List<DateTime> _weekDates = [];
 
@@ -67,34 +64,24 @@ class DashboardPageState extends State<DashboardPage> {
     // STREAK-Wert aus settings-Box lesen
     final settingsBox = Hive.box('settings');
     _streak = settingsBox.get('streak', defaultValue: 1);
-
-    // AdMob Banner laden
-    _loadBannerAd();
   }
 
   @override
-  void dispose() {
-    _bannerAd.dispose(); // Ad-Objekt sauber entfernen
-    super.dispose();
-  }
+  void didChangeDependencies() {
+    super.didChangeDependencies();
 
-  void _loadBannerAd() {
-    _bannerAd = BannerAd(
-      adUnitId: 'ca-app-pub-2524075415669673~7860955987',
-      size: AdSize.banner,
-      request: AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          setState(() {
-            _isAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          print('Ad failed to load: $error');
-          ad.dispose();
-        },
-      ),
-    )..load();
+    // FlowTimerService beobachten => flowIndex gestiegen => flowSessions++
+    final flowTimer = context.watch<FlowTimerService>();
+    final currentIndex = flowTimer.flowIndex;
+
+    if (currentIndex > _lastFlowIndex) {
+      _flowSessions += (currentIndex - _lastFlowIndex);
+      _lastFlowIndex = currentIndex;
+    }
+
+    if (currentIndex == 0 && _lastFlowIndex != 0) {
+      _lastFlowIndex = 0;
+    }
   }
 
   void _initWeekDates() {
@@ -113,146 +100,174 @@ class DashboardPageState extends State<DashboardPage> {
     final m = (secondsLeft ~/ 60).toString().padLeft(2, '0');
     final s = (secondsLeft % 60).toString().padLeft(2, '0');
 
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Dashboard'),
+    return AdWrapper(
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text('Dashboard'),
+          backgroundColor: Colors.black,
+        ),
         backgroundColor: Colors.black,
-      ),
-      backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          SingleChildScrollView(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              children: [
-                Row(
-                  children: [
-                    Expanded(child: _buildFlowSessionsCard()),
-                    const SizedBox(width: 8),
-                    Expanded(child: _buildStreakCard()),
-                    const SizedBox(width: 8),
-                    Expanded(child: _buildFlowTimerCard(isRunning, '$m:$s')),
-                  ],
-                ),
-                const SizedBox(height: 16),
-                Card(
-                  color: Colors.grey[850],
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                  child: Padding(
-                    padding: const EdgeInsets.all(8),
-                    child: _buildMotivationSection(),
-                  ),
-                ),
-                const SizedBox(height: 16),
-                ValueListenableBuilder(
-                  valueListenable: _dbService.listenableTasks(),
-                  builder: (context, taskBox, _) {
-                    final tasks = _boxToTaskList(taskBox as Box);
-                    final now = DateTime.now();
+        body: SingleChildScrollView(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            children: [
+              // Row mit 3 Cards: Flow-Sessions, Streak, Timer
+              Row(
+                children: [
+                  Expanded(child: _buildFlowSessionsCard()),
+                  const SizedBox(width: 8),
+                  Expanded(child: _buildStreakCard()),
+                  const SizedBox(width: 8),
+                  Expanded(child: _buildFlowTimerCard(isRunning, '$m:$s')),
+                ],
+              ),
+              const SizedBox(height: 16),
 
-                    final todayTasks = tasks.where((t) => _isSameDay(t.deadline, now)).toList();
-                    final totalTasks = todayTasks.length;
-                    final doneTasks = todayTasks.where((t) => t.completed).length;
-                    final tasksPercent =
-                        (totalTasks == 0) ? 0.0 : (doneTasks / totalTasks);
-
-                    final dailyPercents = _calculateWeeklyPercents(tasks);
-
-                    return Column(
-                      children: [
-                        Card(
-                          color: Colors.grey[850],
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          child: Padding(
-                            padding: const EdgeInsets.all(12),
-                            child: _buildTodayAndPieRow(tasksPercent, todayTasks),
-                          ),
-                        ),
-                        const SizedBox(height: 16),
-                        Card(
-                          color: Colors.grey[850],
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                          child: InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(builder: (_) => const ToDoListPage()),
-                              );
-                            },
-                            child: Padding(
-                              padding: const EdgeInsets.all(12.0),
-                              child: _buildWeeklyProgressChart(dailyPercents),
-                            ),
-                          ),
-                        ),
-                      ],
-                    );
-                  },
+              // Motivation
+              Card(
+                color: Colors.grey[850],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                child: Padding(
+                  padding: const EdgeInsets.all(8),
+                  child: _buildMotivationSection(),
                 ),
-                const SizedBox(height: 16),
-                ValueListenableBuilder(
-                  valueListenable: _dbService.listenableHabits(),
-                  builder: (context, habitBox, _) {
-                    final habits = _boxToHabitList(habitBox as Box);
-                    final cheer = _calculateCheerMessage(habits);
-                    if (cheer == null) return const SizedBox();
-                    return Card(
-                      color: Colors.grey[850],
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Text(
-                          cheer,
-                          style: const TextStyle(color: Colors.white),
+              ),
+              const SizedBox(height: 16),
+
+              // Tasks & Weekly Chart
+              ValueListenableBuilder(
+                valueListenable: _dbService.listenableTasks(),
+                builder: (context, taskBox, _) {
+                  final tasks = _boxToTaskList(taskBox as Box);
+                  final now = DateTime.now();
+
+                  final todayTasks = tasks.where((t) => _isSameDay(t.deadline, now)).toList();
+                  final totalTasks = todayTasks.length;
+                  final doneTasks = todayTasks.where((t) => t.completed).length;
+                  final tasksPercent =
+                      (totalTasks == 0) ? 0.0 : (doneTasks / totalTasks);
+
+                  final dailyPercents = _calculateWeeklyPercents(tasks);
+
+                  return Column(
+                    children: [
+                      Card(
+                        color: Colors.grey[850],
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        child: Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: _buildTodayAndPieRow(tasksPercent, todayTasks),
                         ),
                       ),
-                    );
-                  },
-                ),
-              ],
-            ),
-          ),
-          if (_isAdLoaded)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                width: _bannerAd.size.width.toDouble(),
-                height: _bannerAd.size.height.toDouble(),
-                child: AdWidget(ad: _bannerAd),
+                      const SizedBox(height: 16),
+                      Card(
+                        color: Colors.grey[850],
+                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        child: InkWell(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (_) => const ToDoListPage()),
+                            );
+                          },
+                          child: Padding(
+                            padding: const EdgeInsets.all(12.0),
+                            child: _buildWeeklyProgressChart(dailyPercents),
+                          ),
+                        ),
+                      ),
+                    ],
+                  );
+                },
               ),
-            ),
-        ],
+              const SizedBox(height: 16),
+
+              // Habit Cheer Msg
+              ValueListenableBuilder(
+                valueListenable: _dbService.listenableHabits(),
+                builder: (context, habitBox, _) {
+                  final habits = _boxToHabitList(habitBox as Box);
+                  final cheer = _calculateCheerMessage(habits);
+                  if (cheer == null) return const SizedBox();
+                  return Card(
+                    color: Colors.grey[850],
+                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                    child: Padding(
+                      padding: const EdgeInsets.all(12.0),
+                      child: Text(
+                        cheer,
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
+                  );
+                },
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
+
   // ------------------------------------------------
-  // FLOW-SESSIONS CARD (statt wasted time)
+  // Paywall-Dialog
   // ------------------------------------------------
-  Widget _buildFlowSessionsCard() {
-    return Container(
-      height: 90,
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '$_flowSessions',
-              style: const TextStyle(
-                fontFamily: 'Digital',
-                fontSize: 28,
-                color: Colors.redAccent,
-              ),
-            ),
-            const SizedBox(height: 4),
-            const Text(
-              'FLOW-SESSIONS',
-              style: TextStyle(fontSize: 10, color: Colors.white70),
+  void _showPaywallDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Premium benötigt'),
+          content: const Text(
+              'Dieser Bereich ist nur für Premium-Nutzer verfügbar.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK'),
             ),
           ],
+        );
+      },
+    );
+  }
+
+  // ------------------------------------------------
+  // FLOW-SESSIONS CARD
+  // ------------------------------------------------
+  Widget _buildFlowSessionsCard() {
+    return GestureDetector(
+      onTap: () {
+        // NEUE PAGE ÖFFNEN mit Stats
+        Navigator.push(
+          context,
+          MaterialPageRoute(builder: (_) => const FlowStatsPage()),
+        );
+      },
+      child: Container(
+        height: 90,
+        decoration: BoxDecoration(
+          color: Colors.grey[900],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '$_flowSessions',
+                style: const TextStyle(
+                  fontFamily: 'Digital',
+                  fontSize: 28,
+                  color: Colors.redAccent,
+                ),
+              ),
+              const SizedBox(height: 4),
+              const Text(
+                'FLOW-SESSIONS',
+                style: TextStyle(fontSize: 10, color: Colors.white70),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -383,22 +398,14 @@ class DashboardPageState extends State<DashboardPage> {
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         // Heute-Tasks
-        GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(builder: (_) => const ToDoListPage()),
-            );
-          },
-          child: _buildTodaysTaskCard(todayTasks),
-        ),
-
+        _buildTodaysTaskCard(todayTasks),
         const SizedBox(height: 16),
 
         // 2 Circle Charts => Tasks & Habits
         Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Tasks Chart
             Expanded(
               child: GestureDetector(
                 onTap: () {
@@ -415,13 +422,20 @@ class DashboardPageState extends State<DashboardPage> {
               ),
             ),
             const SizedBox(width: 16),
+
+            // Habits Chart - check Premium
             Expanded(
               child: GestureDetector(
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const HabitTrackerPage()),
-                  );
+                  final isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
+                  if (!isPremium) {
+                    _showPaywallDialog();
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => const HabitTrackerPage()),
+                    );
+                  }
                 },
                 child: _buildPieChart(
                   _calculateHabitsPercent(),
@@ -505,6 +519,7 @@ class DashboardPageState extends State<DashboardPage> {
       ),
       padding: const EdgeInsets.all(12),
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           const Text(
             'HEUTIGE TASKS',
@@ -512,30 +527,37 @@ class DashboardPageState extends State<DashboardPage> {
           ),
           const Divider(color: Colors.grey),
           ...tasks.map((task) {
-            return GestureDetector(
-              onTap: () => _toggleTask(task),
-              child: Row(
-                children: [
-                  Icon(
+            return Container(
+              margin: const EdgeInsets.only(bottom: 8),
+              decoration: BoxDecoration(
+                color: Colors.grey[700]?.withOpacity(0.2),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: ListTile(
+                leading: IconButton(
+                  icon: Icon(
                     task.completed
                         ? Icons.check_circle
                         : Icons.radio_button_unchecked,
                     color: task.completed ? Colors.green : Colors.white,
-                    size: 18,
                   ),
-                  const SizedBox(width: 8),
-                  Expanded(
-                    child: Text(
-                      task.title,
-                      style: TextStyle(
-                        color: task.completed ? Colors.green : Colors.white,
-                        decoration: task.completed
-                            ? TextDecoration.lineThrough
-                            : TextDecoration.none,
-                      ),
-                    ),
+                  onPressed: () => _toggleTask(task),
+                ),
+                title: Text(
+                  task.title,
+                  style: TextStyle(
+                    color: task.completed ? Colors.grey[400] : Colors.white,
+                    decoration: task.completed
+                        ? TextDecoration.lineThrough
+                        : TextDecoration.none,
                   ),
-                ],
+                ),
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (_) => const ToDoListPage()),
+                  );
+                },
               ),
             );
           }).toList(),

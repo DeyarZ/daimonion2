@@ -1,172 +1,210 @@
 import 'package:flutter/material.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart'; // AdMob import
-import 'flow_timer.dart'; // Flow Timer Page
-import 'todo_list.dart'; // To-Do-Liste Page
-import 'journal.dart'; // Journal Page (optional)
-import 'habit_tracker.dart'; // Gewohnheitstracker Page (optional)
+import 'package:hive_flutter/hive_flutter.dart';
+import 'flow_timer.dart';
+import 'todo_list.dart';
+import 'journal.dart';
+import 'habit_tracker.dart';
+import '../widgets/ad_wrapper.dart'; // Import des AdWrapper
 
-class ToolsPage extends StatefulWidget {
-  @override
-  _ToolsPageState createState() => _ToolsPageState();
-}
+class ToolsPage extends StatelessWidget {
+  const ToolsPage({Key? key}) : super(key: key);
 
-class _ToolsPageState extends State<ToolsPage> {
-  // Neue Variablen für Ads
-  late BannerAd _bannerAd;
-  bool _isAdLoaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // AdMob Banner laden
-    _loadBannerAd();
-  }
-
-  @override
-  void dispose() {
-    _bannerAd.dispose(); // Ad-Objekt sauber entfernen
-    super.dispose();
-  }
-
-  void _loadBannerAd() {
-    _bannerAd = BannerAd(
-      adUnitId: 'ca-app-pub-2524075415669673~7860955987', // Deine Anzeigenblock-ID
-      size: AdSize.banner,
-      request: AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          setState(() {
-            _isAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          print('Ad failed to load: $error');
-          ad.dispose();
-        },
-      ),
-    )..load();
-  }
+  // Liste der Tools
+  final List<_ToolItem> tools = const [
+    _ToolItem(
+      title: 'Flow Timer',
+      imagePath: 'assets/images/Flow_Timer.png',
+      isPremium: false,
+      pageToNavigate: FlowTimerPage(),
+    ),
+    _ToolItem(
+      title: 'Tasks',
+      imagePath: 'assets/images/To_Do_List.jpg',
+      isPremium: false,
+      pageToNavigate: ToDoListPage(),
+    ),
+    _ToolItem(
+      title: 'Journal',
+      imagePath: 'assets/images/journal.jpg',
+      isPremium: true,
+      pageToNavigate: JournalPage(),
+    ),
+    _ToolItem(
+      title: 'Gewohnheitstracker',
+      imagePath: 'assets/images/habits.jpg',
+      isPremium: true,
+      pageToNavigate: HabitTrackerPage(),
+    ),
+  ];
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: const Text('Deine Werkzeuge zum Sieg'),
-      ),
-      body: Stack(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: ListView(
-              children: [
-                ToolCard(
-                  title: 'Flow Timer',
-                  imagePath: 'assets/images/Flow_Timer.png',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => FlowTimerPage()),
-                    );
-                  },
-                ),
-                ToolCard(
-                  title: 'Tasks',
-                  imagePath: 'assets/images/To_Do_List.jpg',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => ToDoListPage()),
-                    );
-                  },
-                ),
-                ToolCard(
-                  title: 'Journal',
-                  imagePath: 'assets/images/journal.jpg',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => JournalPage()),
-                    );
-                  },
-                ),
-                ToolCard(
-                  title: 'Gewohnheitstracker',
-                  imagePath: 'assets/images/habits.jpg',
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(builder: (context) => HabitTrackerPage()),
-                    );
-                  },
-                ),
-              ],
+    // Check ob Premium
+    final isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
+
+    return AdWrapper(
+      child: Scaffold(
+        backgroundColor: Colors.black,
+        appBar: AppBar(
+          title: const Text('Deine Werkzeuge zum Sieg'),
+          backgroundColor: Colors.black,
+        ),
+        body: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: GridView.builder(
+            itemCount: tools.length,
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,        // 2 Spalten
+              crossAxisSpacing: 12,     // Abstand horizontal
+              mainAxisSpacing: 12,      // Abstand vertikal
+              childAspectRatio: 0.75,   // Verhältnis: Breite/Höhe
             ),
+            itemBuilder: (context, index) {
+              final tool = tools[index];
+              return _ToolCardItem(
+                tool: tool,
+                isUserPremium: isPremium,
+                onTap: () {
+                  if (tool.isPremium && !isPremium) {
+                    _showPaywallDialog(context);
+                  } else {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (_) => tool.pageToNavigate),
+                    );
+                  }
+                },
+              );
+            },
           ),
-          if (_isAdLoaded)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                width: _bannerAd.size.width.toDouble(),
-                height: _bannerAd.size.height.toDouble(),
-                child: AdWidget(ad: _bannerAd),
-              ),
-            ),
-        ],
+        ),
       ),
+    );
+  }
+
+  // Einfacher Dialog: sag "Hol Premium"
+  void _showPaywallDialog(BuildContext context) {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: const Text('Premium benötigt'),
+          content: const Text('Dieses Tool ist nur für Premium-Mitglieder verfügbar.'),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: const Text('OK'),
+            ),
+          ],
+        );
+      },
     );
   }
 }
 
-class ToolCard extends StatelessWidget {
+// -----------------------------------------------------------------
+// DATENKLASSE FÜR EIN TOOL
+// -----------------------------------------------------------------
+class _ToolItem {
   final String title;
   final String imagePath;
+  final bool isPremium;
+  final Widget pageToNavigate;
+
+  const _ToolItem({
+    required this.title,
+    required this.imagePath,
+    required this.isPremium,
+    required this.pageToNavigate,
+  });
+}
+
+// -----------------------------------------------------------------
+// EIN TOOL-CARD-ITEM IM GRID
+// -----------------------------------------------------------------
+class _ToolCardItem extends StatelessWidget {
+  final _ToolItem tool;
+  final bool isUserPremium;
   final VoidCallback onTap;
 
-  ToolCard({required this.title, required this.imagePath, required this.onTap});
+  const _ToolCardItem({
+    Key? key,
+    required this.tool,
+    required this.isUserPremium,
+    required this.onTap,
+  }) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    // Falls Premium => lock overlay
+    final showLock = (tool.isPremium && !isUserPremium);
+
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        margin: EdgeInsets.symmetric(vertical: 10),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(10)),
-        child: Stack(
-          alignment: Alignment.bottomLeft,
-          children: [
-            ClipRRect(
-              borderRadius: BorderRadius.circular(10),
-              child: Image.asset(
-                imagePath,
-                height: 150,
+        elevation: 3,
+        color: Colors.transparent,
+        shadowColor: Colors.black,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: ClipRRect(
+          borderRadius: BorderRadius.circular(12),
+          child: Stack(
+            children: [
+              // Hintergrundbild
+              Image.asset(
+                tool.imagePath,
+                height: double.infinity,
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
-            ),
-            Container(
-              height: 150,
-              decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(10),
-                gradient: LinearGradient(
-                  begin: Alignment.bottomCenter,
-                  end: Alignment.topCenter,
-                  colors: [Colors.black.withOpacity(0.7), Colors.transparent],
+
+              // Leichter schwarzer Gradient
+              Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    begin: Alignment.bottomCenter,
+                    end: Alignment.center,
+                    colors: [
+                      Colors.black.withOpacity(0.6),
+                      Colors.black.withOpacity(0.0),
+                    ],
+                  ),
                 ),
               ),
-            ),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Text(
-                title,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
+
+              // Titel
+              Positioned(
+                left: 12,
+                bottom: 12,
+                child: Text(
+                  tool.title,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 18,
+                    fontWeight: FontWeight.w700,
+                  ),
                 ),
               ),
-            ),
-          ],
+
+              // Lock-Overlay, falls isPremium => lock
+              if (showLock)
+                Positioned(
+                  top: 8,
+                  right: 8,
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.black54,
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    padding: const EdgeInsets.all(4),
+                    child: const Icon(
+                      Icons.lock,
+                      color: Colors.white,
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
       ),
     );

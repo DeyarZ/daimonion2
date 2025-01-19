@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart'; // AdMob import
 import '../services/db_service.dart';
 
 // ------------------------------------
@@ -33,43 +32,6 @@ class JournalPage extends StatefulWidget {
 class _JournalPageState extends State<JournalPage> {
   final DBService _dbService = DBService();
 
-  // Neue Variablen für Ads
-  late BannerAd _bannerAd;
-  bool _isAdLoaded = false;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // AdMob Banner laden
-    _loadBannerAd();
-  }
-
-  @override
-  void dispose() {
-    _bannerAd.dispose(); // Ad-Objekt sauber entfernen
-    super.dispose();
-  }
-
-  void _loadBannerAd() {
-    _bannerAd = BannerAd(
-      adUnitId: 'ca-app-pub-2524075415669673~7860955987', // Deine Anzeigenblock-ID
-      size: AdSize.banner,
-      request: AdRequest(),
-      listener: BannerAdListener(
-        onAdLoaded: (Ad ad) {
-          setState(() {
-            _isAdLoaded = true;
-          });
-        },
-        onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          print('Ad failed to load: $error');
-          ad.dispose();
-        },
-      ),
-    )..load();
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -78,53 +40,40 @@ class _JournalPageState extends State<JournalPage> {
         backgroundColor: Colors.black,
       ),
       backgroundColor: Colors.black,
-      body: Stack(
-        children: [
-          ValueListenableBuilder(
-            valueListenable: _dbService.listenableJournal(),
-            builder: (ctx, Box box, widget) {
-              final entries = _boxToJournalList(box);
+      body: ValueListenableBuilder(
+        valueListenable: _dbService.listenableJournal(),
+        builder: (ctx, Box box, widget) {
+          final entries = _boxToJournalList(box);
 
-              if (entries.isEmpty) {
-                return const Center(
-                  child: Text(
-                    'Noch keine Einträge im Journal',
-                    style: TextStyle(color: Colors.white),
-                  ),
-                );
-              }
+          if (entries.isEmpty) {
+            return const Center(
+              child: Text(
+                'Noch keine Einträge im Journal',
+                style: TextStyle(color: Colors.white),
+              ),
+            );
+          }
 
-              return ListView.builder(
-                itemCount: entries.length,
-                itemBuilder: (context, index) {
-                  final entry = entries[index];
+          return ListView.builder(
+            itemCount: entries.length,
+            itemBuilder: (context, index) {
+              final entry = entries[index];
 
-                  return Dismissible(
-                    key: ValueKey(entry.date.toIso8601String() + entry.title),
-                    direction: DismissDirection.endToStart,
-                    background: Container(
-                      color: Colors.red,
-                      alignment: Alignment.centerRight,
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: const Icon(Icons.delete, color: Colors.white),
-                    ),
-                    onDismissed: (_) => _deleteEntry(index),
-                    child: _buildListTile(entry, index),
-                  );
-                },
+              return Dismissible(
+                key: ValueKey(entry.date.toIso8601String() + entry.title),
+                direction: DismissDirection.endToStart,
+                background: Container(
+                  color: Colors.red,
+                  alignment: Alignment.centerRight,
+                  padding: const EdgeInsets.symmetric(horizontal: 20),
+                  child: const Icon(Icons.delete, color: Colors.white),
+                ),
+                onDismissed: (_) => _deleteEntry(index),
+                child: _buildListTile(entry, index),
               );
             },
-          ),
-          if (_isAdLoaded)
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                width: _bannerAd.size.width.toDouble(),
-                height: _bannerAd.size.height.toDouble(),
-                child: AdWidget(ad: _bannerAd),
-              ),
-            ),
-        ],
+          );
+        },
       ),
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.red,
@@ -419,8 +368,6 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
           ],
         ),
       ),
-
-      // Kein FAB mehr => wir verlassen uns auf den IconButton in der AppBar
     );
   }
 }
