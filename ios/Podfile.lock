@@ -2,22 +2,24 @@ PODS:
   - Flutter (1.0.0)
   - flutter_local_notifications (0.0.1):
     - Flutter
-  - Google-Mobile-Ads-SDK (11.10.0):
+  - Google-Mobile-Ads-SDK (11.13.0):
     - GoogleUserMessagingPlatform (>= 1.1)
-  - google_mobile_ads (5.2.0):
+  - google_mobile_ads (5.3.0):
     - Flutter
-    - Google-Mobile-Ads-SDK (~> 11.10.0)
+    - Google-Mobile-Ads-SDK (~> 11.13.0)
     - webview_flutter_wkwebview
   - GoogleUserMessagingPlatform (2.7.0)
   - path_provider_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
-  - purchases_flutter (4.13.0):
+  - permission_handler_apple (9.1.1):
     - Flutter
-    - PurchasesHybridCommon (= 4.18.0)
-  - PurchasesHybridCommon (4.18.0):
-    - RevenueCat (= 4.21.0)
-  - RevenueCat (4.21.0)
+  - purchases_flutter (8.4.2):
+    - Flutter
+    - PurchasesHybridCommon (= 13.15.2)
+  - PurchasesHybridCommon (13.15.2):
+    - RevenueCat (= 5.14.5)
+  - RevenueCat (5.14.5)
   - shared_preferences_foundation (0.0.1):
     - Flutter
     - FlutterMacOS
@@ -28,9 +30,12 @@ PODS:
 DEPENDENCIES:
   - Flutter (from `Flutter`)
   - flutter_local_notifications (from `.symlinks/plugins/flutter_local_notifications/ios`)
+  - Google-Mobile-Ads-SDK (~> 11.13.0)
   - google_mobile_ads (from `.symlinks/plugins/google_mobile_ads/ios`)
   - path_provider_foundation (from `.symlinks/plugins/path_provider_foundation/darwin`)
+  - permission_handler_apple (from `.symlinks/plugins/permission_handler_apple/ios`)
   - purchases_flutter (from `.symlinks/plugins/purchases_flutter/ios`)
+  - PurchasesHybridCommon (~> 13.15.2)
   - shared_preferences_foundation (from `.symlinks/plugins/shared_preferences_foundation/darwin`)
   - webview_flutter_wkwebview (from `.symlinks/plugins/webview_flutter_wkwebview/darwin`)
 
@@ -50,6 +55,8 @@ EXTERNAL SOURCES:
     :path: ".symlinks/plugins/google_mobile_ads/ios"
   path_provider_foundation:
     :path: ".symlinks/plugins/path_provider_foundation/darwin"
+  permission_handler_apple:
+    :path: ".symlinks/plugins/permission_handler_apple/ios"
   purchases_flutter:
     :path: ".symlinks/plugins/purchases_flutter/ios"
   shared_preferences_foundation:
@@ -59,17 +66,18 @@ EXTERNAL SOURCES:
 
 SPEC CHECKSUMS:
   Flutter: e0871f40cf51350855a761d2e70bf5af5b9b5de7
-  flutter_local_notifications: 0c0b1ae97e741e1521e4c1629a459d04b9aec743
-  Google-Mobile-Ads-SDK: 13e6e98edfd78ad8d8a791edb927658cc260a56f
-  google_mobile_ads: 2a538d8e42b1813809782792e48f8cf4374c2180
+  flutter_local_notifications: df98d66e515e1ca797af436137b4459b160ad8c9
+  Google-Mobile-Ads-SDK: 14f57f2dc33532a24db288897e26494640810407
+  google_mobile_ads: ead754a66993b12841f9cb6b7acd54d42726ef3a
   GoogleUserMessagingPlatform: a8b56893477f67212fbc8411c139e61d463349f5
   path_provider_foundation: 2b6b4c569c0fb62ec74538f866245ac84301af46
-  purchases_flutter: ee7f7c20c021c4a1a482a70ab78d3d36594295bb
-  PurchasesHybridCommon: 6b510d4965166df2137347a414d6a8e2906d5a5e
-  RevenueCat: 465a9dc1fff60b09f29792082e5d5d5aeed01122
+  permission_handler_apple: e76247795d700c14ea09e3a2d8855d41ee80a2e6
+  purchases_flutter: ba79db4c048e48f2d9f6ce36f8c27175cc4aadd6
+  PurchasesHybridCommon: 8af6bb6d85b794dc47ccef1b536ed0e677c789ea
+  RevenueCat: 4c0e809f7c7428cbe8d79cbb9a0dc7551e71e74e
   shared_preferences_foundation: fcdcbc04712aee1108ac7fda236f363274528f78
   webview_flutter_wkwebview: 0982481e3d9c78fd5c6f62a002fcd24fc791f1e4
 
-PODFILE CHECKSUM: 7be2f5f74864d463a8ad433546ed1de7e0f29aef
+PODFILE CHECKSUM: 645b3245291596188cdd217a389bc5ea3778d0fb
 
 COCOAPODS: 1.16.2
