@@ -1,14 +1,8 @@
-import 'package:daimonion_app/main.dart';
 import 'package:flutter/material.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:hive_flutter/hive_flutter.dart';
 
-// Firebase & AuthService fliegt raus:
-// import 'package:firebase_auth/firebase_auth.dart';
-// import '/services/auth_service.dart';
-// import 'login_page.dart';
-// import 'dashboard.dart';
-
-import 'first_time_page.dart';
+import '../main.dart';          // <-- Nur für MainScreen-Import. Pfad anpassen!
+import 'first_time_page.dart'; // <-- Pfad anpassen, falls nötig
 
 class AuthGate extends StatefulWidget {
   const AuthGate({Key? key}) : super(key: key);
@@ -26,45 +20,45 @@ class _AuthGateState extends State<AuthGate> {
     _checkFirstLaunch();
   }
 
-  // Prüfen, ob "firstLaunch" in SharedPrefs noch nicht gesetzt ist
   Future<void> _checkFirstLaunch() async {
-    final prefs = await SharedPreferences.getInstance();
-    final seen = prefs.getBool('hasLaunched') ?? false;
-    if (!seen) {
-      // Erstmals => wir zeigen "FirstTimePage"
-      setState(() {
-        _firstLaunch = true;
-      });
-    } else {
-      setState(() {
-        _firstLaunch = false;
-      });
-    }
+    final settingsBox = Hive.box('settings');
+    // "hasLaunched" könnte bool sein, default: false
+    final hasLaunched = settingsBox.get('hasLaunched', defaultValue: false) as bool;
+
+    setState(() {
+      _firstLaunch = !hasLaunched; 
+      // Wenn hasLaunched = false => _firstLaunch = true => Onboarding
+      // Wenn hasLaunched = true  => _firstLaunch = false => MainScreen
+    });
+  }
+
+  // Wird aufgerufen, wenn User auf "Ich bin bereit" drückt
+  void _finishOnboarding() {
+    final settingsBox = Hive.box('settings');
+    settingsBox.put('hasLaunched', true);
+
+    setState(() {
+      _firstLaunch = false;
+    });
   }
 
   @override
   Widget build(BuildContext context) {
-    // Falls wir firstLaunch noch nicht kennen => Ladebildschirm
+    // Laden wir noch? Dann Circle Progress
     if (_firstLaunch == null) {
       return const Scaffold(
         body: Center(child: CircularProgressIndicator()),
       );
     }
 
-    // Falls firstLaunch => FirstTimePage
+    // Ist es der erste Start => "FirstTimePage" anzeigen
     if (_firstLaunch == true) {
       return FirstTimePage(
-        onFinish: () async {
-          final prefs = await SharedPreferences.getInstance();
-          await prefs.setBool('hasLaunched', true);
-          setState(() {
-            _firstLaunch = false;
-          });
-        },
+        onFinish: _finishOnboarding, // Button-Klick => Onboarding fertig
       );
     }
 
-    // Ansonsten direkt MainScreen
+    // Ansonsten direkt ins MainScreen
     return const MainScreen();
   }
 }

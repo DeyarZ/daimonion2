@@ -2,10 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../services/db_service.dart';
-import '../widgets/ad_wrapper.dart'; // Import des AdWrapper
+import '../widgets/ad_wrapper.dart';
+
+// NEU: Import main.dart, wo scheduleDailyTodoReminder() steht:
+import '../main.dart';
 
 // ------------------------------
-// Model: Task
+// Model: Task (unchanged)
 // ------------------------------
 class Task {
   final String id;
@@ -37,14 +40,28 @@ class _ToDoListPageState extends State<ToDoListPage> {
   final TextEditingController _controller = TextEditingController();
   final _uuid = const Uuid();
   final DBService _dbService = DBService();
-
-  // **NEU**: Toggle zum Ausblenden fertiger Tasks
   bool _hideCompleted = false;
 
   @override
   void dispose() {
     _controller.dispose();
     super.dispose();
+  }
+
+  // NEU: Button-Handler, um daily Noti einzurichten
+  Future<void> _activateDailyReminder() async {
+    await scheduleDailyTodoReminder(); // from main.dart
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Täglicher Reminder um 20:00 aktiviert!")),
+    );
+  }
+
+  Future<void> _cancelDailyReminder() async {
+    const notificationId = 5678;
+    await flutterLocalNotificationsPlugin.cancel(notificationId);
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(content: Text("Täglicher Reminder wurde deaktiviert.")),
+    );
   }
 
   @override
@@ -55,6 +72,16 @@ class _ToDoListPageState extends State<ToDoListPage> {
           title: const Text('To-Do-Liste'),
           backgroundColor: Colors.black,
           actions: [
+            // NEU: Buttons zum Testen
+            IconButton(
+              onPressed: _activateDailyReminder,
+              icon: const Icon(Icons.notifications_active),
+            ),
+            IconButton(
+              onPressed: _cancelDailyReminder,
+              icon: const Icon(Icons.notifications_off),
+            ),
+
             // Switch zum Ausblenden fertiger Tasks
             Row(
               children: [
@@ -71,6 +98,8 @@ class _ToDoListPageState extends State<ToDoListPage> {
                 ),
               ],
             ),
+
+            // Kalender-Icon (unverändert)
             IconButton(
               icon: const Icon(Icons.calendar_today),
               onPressed: () async {
@@ -88,7 +117,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
         backgroundColor: Colors.black,
         body: Column(
           children: [
-            // Eingabefeld (mehrzeilig) + Add-Button
+            // Eingabefeld (mehrzeilig) + Add-Button ...
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
               child: Row(

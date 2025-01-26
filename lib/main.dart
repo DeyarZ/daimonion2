@@ -12,12 +12,16 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-// Services
+// DEIN Haertegrad-Enum (pfad anpassen, wenn woanders)
+import 'package:daimonion_app/haertegrad_enum.dart';
+
+// Services (anpassen an deine Struktur)
 import 'services/flow_timer_service.dart';
 import 'services/db_service.dart';
 import '../services/openai_service.dart';
 
-// Pages
+// Pages (anpassen an deine Struktur)
+import 'pages/auth_gate.dart';
 import 'pages/dashboard.dart';
 import 'pages/chatbot.dart';
 import 'pages/tools.dart';
@@ -27,8 +31,194 @@ import 'pages/profile.dart';
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
+// ----------------------------------------------------------
+// 1) Timezone-Helfer-Funktion (Weekly Habit Reminder)
+// ----------------------------------------------------------
+tz.TZDateTime _nextInstanceOfWeekday(int weekday, int hour, int minute) {
+  final now = tz.TZDateTime.now(tz.local);
+  var scheduled = tz.TZDateTime(
+    tz.local,
+    now.year,
+    now.month,
+    now.day,
+    hour,
+    minute,
+  );
+  // Solange Wochentag nicht passt => +1 Tag
+  while (scheduled.weekday != weekday) {
+    scheduled = scheduled.add(const Duration(days: 1));
+  }
+  // Falls schon vorbei => +7 Tage
+  if (scheduled.isBefore(now)) {
+    scheduled = scheduled.add(const Duration(days: 7));
+  }
+  return scheduled;
+}
+
+// ----------------------------------------------------------
+// 2) Functions: Weekly Habit Reminders
+// ----------------------------------------------------------
+Future<void> scheduleHabitNotifications({
+  required String habitId,
+  required String habitName,
+  required int hour,
+  required int minute,
+  required Set<int> weekdays,
+}) async {
+  for (final wday in weekdays) {
+    final notifId = habitId.hashCode + wday;
+    final scheduleTime = _nextInstanceOfWeekday(wday, hour, minute);
+
+    const androidDetails = AndroidNotificationDetails(
+      'habit_channel_id',
+      'Habit Reminders',
+      channelDescription: 'Erinnert dich an deine Habit',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+
+    const iosDetails = DarwinNotificationDetails();
+
+    final details = NotificationDetails(
+      android: androidDetails,
+      iOS: iosDetails,
+    );
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      notifId,
+      'Habit Reminder',
+      habitName,
+      scheduleTime,
+      details,
+      androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+}
+
+// Cancelt Habit-Notifications (wenn user habit löscht)
+Future<void> cancelHabitNotifications(
+  String habitId,
+  Set<int> weekdays,
+) async {
+  for (final wday in weekdays) {
+    final notifId = habitId.hashCode + wday;
+    await flutterLocalNotificationsPlugin.cancel(notifId);
+  }
+}
+
+// ----------------------------------------------------------
+// 3) NEU: Täglicher Todo-Reminder um 20:00, 
+//    basierend auf Härtegrad
+// ----------------------------------------------------------
+
+// Hilfsfunktion: Liest den Härtegrad aus Hive (default: normal)
+Haertegrad _getCurrentHaertegrad() {
+  final settingsBox = Hive.box('settings');
+  final modeString = settingsBox.get('chatbotMode', defaultValue: 'normal');
+
+  switch (modeString) {
+    case 'hart':
+      return Haertegrad.hart;
+    case 'brutalEhrlich':
+      return Haertegrad.brutalEhrlich;
+    default:
+      return Haertegrad.normal;
+  }
+}
+
+// Returns (title, body) je nach Härtegrad
+Map<String, String> _getTodoReminderText(Haertegrad grad) {
+  switch (grad) {
+    case Haertegrad.hart:
+      return {
+        'title': 'Zeit, deine To-Dos anzugehen!',
+        'body': 'Zeig Disziplin und arbeite an deiner Vision. Kein Platz für Ausreden!',
+      };
+    case Haertegrad.brutalEhrlich:
+      return {
+        'title': 'Was machst du eigentlich?',
+        'body': 'Deine To-Dos warten, Bitch! Zeit zu liefern!',
+      };
+    case Haertegrad.normal:
+    default:
+      return {
+        'title': 'Check deine To-Dos!',
+        'body': 'Kleine Schritte bringen dich ans Ziel. Fang jetzt an!',
+      };
+  }
+}
+
+
+// Geplante tägliche Reminder-Funktion
+Future<void> scheduleDailyTodoReminder() async {
+  // 1) Holen wir den Härtegrad
+  final grad = _getCurrentHaertegrad();
+  final textMap = _getTodoReminderText(grad);
+
+  // 2) NotificationDetails
+  const androidDetails = AndroidNotificationDetails(
+    'daily_todo_channel',
+    'Tägliche ToDo Erinnerung',
+    channelDescription: 'Erinnerung, deine Aufgaben zu checken.',
+    importance: Importance.high,
+    priority: Priority.high,
+  );
+  const iosDetails = DarwinNotificationDetails();
+
+  final details = NotificationDetails(
+    android: androidDetails,
+    iOS: iosDetails,
+  );
+
+  // 3) Zeitpunkt 20:00 (heute oder morgen)
+  final now = tz.TZDateTime.now(tz.local);
+  var scheduledTime = tz.TZDateTime(
+    tz.local,
+    now.year,
+    now.month,
+    now.day,
+    20, // 20:00
+    0,
+  );
+  // wenn 20:00 schon vorbei -> +1 Tag
+  if (scheduledTime.isBefore(now)) {
+    scheduledTime = scheduledTime.add(const Duration(days: 1));
+  }
+
+  // 4) Planen => Täglich wiederholen
+  const notificationId = 5678;
+
+  await flutterLocalNotificationsPlugin.zonedSchedule(
+    notificationId,
+    textMap['title'], // aus dem Härtegrad-Text
+    textMap['body'],
+    scheduledTime,
+    details,
+    androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+    matchDateTimeComponents: DateTimeComponents.time, 
+    // ^ DateTimeComponents.time => täglich wiederholend um dieselbe Uhrzeit
+    uiLocalNotificationDateInterpretation:
+        UILocalNotificationDateInterpretation.absoluteTime,
+    payload: 'dailyTodoPayload',
+  );
+}
+
+// Falls User keinen Bock mehr hat
+Future<void> cancelDailyTodoReminder() async {
+  const notificationId = 5678;
+  await flutterLocalNotificationsPlugin.cancel(notificationId);
+}
+
+// ----------------------------------------------------------
+// 4) Main-Funktion & App-Start
+// ----------------------------------------------------------
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  // Env laden
   await dotenv.load(fileName: ".env");
 
   // AdMob initialisieren
@@ -62,7 +252,7 @@ Future<void> main() async {
   }
 
   // ----------------------------------------------------------
-  // STREAK handling
+  // STREAK handling (Bsp.: tägliche App-Nutzung)
   // ----------------------------------------------------------
   final settingsBox = Hive.box('settings');
   final now = DateTime.now();
@@ -93,25 +283,23 @@ Future<void> main() async {
   tz.setLocalLocation(tz.getLocation('Europe/Berlin'));
 
   const AndroidInitializationSettings androidInit =
-      AndroidInitializationSettings('@mipmap/ic_launcher'); 
-      // Passe das an dein App-Icon an
+      AndroidInitializationSettings('@mipmap/ic_launcher');
   const DarwinInitializationSettings iosInit = DarwinInitializationSettings(
-    requestAlertPermission: true,
-    requestBadgePermission: true,
-    requestSoundPermission: true,
+    requestAlertPermission: false, 
+    requestBadgePermission: false,
+    requestSoundPermission: false,
   );
-
   const InitializationSettings initSettings = InitializationSettings(
     android: androidInit,
     iOS: iosInit,
   );
 
-  // Notification-Klick-Handling (optional)
   await flutterLocalNotificationsPlugin.initialize(
     initSettings,
     onDidReceiveNotificationResponse: (response) {
       debugPrint('Notification tapped: ${response.payload}');
-      // Hier könntest du z.B. auf eine Page navigieren
+      // Hier könntest du z.B. zur Todo-Liste navigieren, 
+      // aber brauchst evtl. nen globalen Navigator
     },
   );
 
@@ -130,7 +318,9 @@ Future<void> main() async {
   );
 }
 
-// Die App-Klasse bleibt wie gehabt
+// ----------------------------------------------------------
+// 5) Deine App-Klassen
+// ----------------------------------------------------------
 class DaimonionApp extends StatelessWidget {
   const DaimonionApp({Key? key}) : super(key: key);
 
@@ -140,14 +330,11 @@ class DaimonionApp extends StatelessWidget {
       title: 'Daimonion',
       theme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
-      home: const MainScreen(),
+      home: const AuthGate(),
     );
   }
 }
 
-// ----------------------------------------------------------
-// MAIN SCREEN MIT BOTTOM NAV
-// ----------------------------------------------------------
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -165,7 +352,7 @@ class MainScreenState extends State<MainScreen> {
     const ProfilePage(),
   ];
 
-  // BannerAd-Instanz (AdMob)
+  // BannerAd (AdMob)
   late BannerAd _bannerAd;
   bool _isAdLoaded = false;
 
@@ -187,21 +374,23 @@ class MainScreenState extends State<MainScreen> {
           });
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
-          print('Ad failed to load: $error');
+          debugPrint('Ad failed to load: $error');
           ad.dispose();
         },
       ),
     )..load();
   }
 
+  void _onTabTapped(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
   @override
   void dispose() {
     _bannerAd.dispose();
     super.dispose();
-  }
-
-  void _onTabTapped(int index) {
-    setState(() => _currentIndex = index);
   }
 
   @override
@@ -244,86 +433,4 @@ class MainScreenState extends State<MainScreen> {
           : null,
     );
   }
-}
-
-// ----------------------------------------------------------
-// Funktionen zum Scheduling und Canceln von Notifications
-// ----------------------------------------------------------
-
-/// Plant für jeden ausgewählten Wochentag eine weekly Notification.
-/// Wird von habit_tracker.dart aufgerufen (wenn user Zeit angegeben hat).
-Future<void> scheduleHabitNotifications({
-  required String habitId,
-  required String habitName,
-  required int hour,
-  required int minute,
-  required Set<int> weekdays,
-}) async {
-  for (final wday in weekdays) {
-    final notifId = habitId.hashCode + wday; 
-    final scheduleTime = _nextInstanceOfWeekday(wday, hour, minute);
-
-    const androidDetails = AndroidNotificationDetails(
-      'habit_channel_id',
-      'Habit Reminders',
-      channelDescription: 'Erinnert dich an deine Habit',
-      importance: Importance.high,
-      priority: Priority.high,
-    );
-    const iosDetails = DarwinNotificationDetails();
-    final details = NotificationDetails(
-      android: androidDetails,
-      iOS: iosDetails,
-    );
-
-    // zonedSchedule => weekly
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      notifId,
-      'Habit Reminder',
-      habitName,
-      scheduleTime,
-      details,
-      androidAllowWhileIdle: true,
-      matchDateTimeComponents: DateTimeComponents.dayOfWeekAndTime,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-    );
-  }
-}
-
-/// Falls der user die Habit löscht, canceln wir die Notifications.
-Future<void> cancelHabitNotifications(String habitId, Set<int> weekdays) async {
-  for (final wday in weekdays) {
-    final notifId = habitId.hashCode + wday;
-    await flutterLocalNotificationsPlugin.cancel(notifId);
-  }
-}
-
-// ----------------------------------------------------------
-// Helper: nächste Instanz eines Wochentags berechnen
-// ----------------------------------------------------------
-tz.TZDateTime _nextInstanceOfWeekday(int weekday, int hour, int minute) {
-  final now = tz.TZDateTime.now(tz.local);
-
-  // Starte bei heute + (hour, minute)
-  var scheduled = tz.TZDateTime(
-    tz.local,
-    now.year,
-    now.month,
-    now.day,
-    hour,
-    minute,
-  );
-
-  // Solange weekday nicht passt => +1 Tag
-  while (scheduled.weekday != weekday) {
-    scheduled = scheduled.add(const Duration(days: 1));
-  }
-
-  // Falls die Zeit heute schon vorbei => +7 Tage
-  if (scheduled.isBefore(now)) {
-    scheduled = scheduled.add(const Duration(days: 7));
-  }
-
-  return scheduled;
 }

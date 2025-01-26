@@ -3,6 +3,18 @@ import 'package:hive_flutter/hive_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';
 
+// ---------------------------------------
+// MODELDATEN
+// ---------------------------------------
+class FlowSession {
+  final DateTime date;
+  final int minutes;
+  FlowSession({required this.date, required this.minutes});
+}
+
+// ---------------------------------------
+// FLOWSTATS-PAGE
+// ---------------------------------------
 class FlowStatsPage extends StatefulWidget {
   const FlowStatsPage({Key? key}) : super(key: key);
 
@@ -11,13 +23,19 @@ class FlowStatsPage extends StatefulWidget {
 }
 
 class _FlowStatsPageState extends State<FlowStatsPage> {
-  String _currentFilter = 'week'; 
+  String _currentFilter = 'week';
   List<double> _barValues = [];
   List<String> _barLabels = [];
 
-  double _averageFlowMinutes = 0.0;
-  int _totalFlowCount = 0;
-  int _totalFlowMinutes = 0;
+  double _averageFlowMinutes = 0.0; // Ø Zeit pro Flow-Einheit
+  int _totalFlowCount = 0;         // Anzahl der Flows
+  int _totalFlowMinutes = 0;       // Summe aller Flow-Minuten
+
+  // NEU: Ø Flow-Minuten pro Woche
+  double _averageWeeklyFlowMinutes = 0.0;
+
+  // Wieviele Tage fallen in den Zeitraum? (z.B. 7, 28, 365)
+  int _rangeDays = 7; // default for "week"
 
   @override
   void initState() {
@@ -31,32 +49,71 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
     final now = DateTime.now();
 
     List<FlowSession> filtered;
+
     if (filter == 'week') {
+      _rangeDays = 7;
       final from = now.subtract(const Duration(days: 6));
       filtered = allSessions.where((fs) => fs.date.isAfter(_startOfDay(from))).toList();
       _setupWeekData(filtered);
     } else if (filter == 'month') {
-      final from = now.subtract(const Duration(days: 27)); 
+      _rangeDays = 28;
+      final from = now.subtract(const Duration(days: 27));
       filtered = allSessions.where((fs) => fs.date.isAfter(_startOfDay(from))).toList();
       _setupMonthData(filtered);
     } else {
+      _rangeDays = 365;
       final from = DateTime(now.year - 1, now.month, now.day);
       filtered = allSessions.where((fs) => fs.date.isAfter(_startOfDay(from))).toList();
       _setupYearData(filtered);
     }
 
     _totalFlowCount = filtered.length;
-    if (_totalFlowCount > 0) {
-      _totalFlowMinutes = filtered.fold<int>(0, (sum, fs) => sum + fs.minutes);
-      _averageFlowMinutes = _totalFlowMinutes / _totalFlowCount;
+    _totalFlowMinutes = filtered.fold<int>(0, (sum, fs) => sum + fs.minutes);
+    _averageFlowMinutes =
+        _totalFlowCount > 0 ? _totalFlowMinutes / _totalFlowCount : 0.0;
+
+    if (_rangeDays > 0) {
+      final weeks = _rangeDays / 7.0;
+      _averageWeeklyFlowMinutes = weeks > 0 ? _totalFlowMinutes / weeks : 0.0;
     } else {
-      _totalFlowMinutes = 0;
-      _averageFlowMinutes = 0;
+      _averageWeeklyFlowMinutes = 0.0;
     }
 
     setState(() {});
   }
 
+  // ------------------------------------------------------
+  // FILTER-BUTTON
+  // ------------------------------------------------------
+  Widget _buildFilterButton(String filterKey, String label) {
+    final isSelected = _currentFilter == filterKey;
+    return GestureDetector(
+      onTap: () {
+        setState(() {
+          _currentFilter = filterKey;
+          _loadDataForFilter(filterKey);
+        });
+      },
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
+        decoration: BoxDecoration(
+          color: isSelected ? Colors.redAccent : Colors.grey[850],
+          borderRadius: BorderRadius.circular(8.0),
+        ),
+        child: Text(
+          label,
+          style: TextStyle(
+            color: isSelected ? Colors.white : Colors.white70,
+            fontWeight: FontWeight.bold,
+          ),
+        ),
+      ),
+    );
+  }
+
+  // ------------------------------------------------------
+  // DATENAUFBEREITUNG
+  // ------------------------------------------------------
   void _setupWeekData(List<FlowSession> sessions) {
     final List<double> dayTotals = List.filled(7, 0.0);
     for (var fs in sessions) {
@@ -73,7 +130,7 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
 
     for (var fs in sessions) {
       final diffDays = fs.date.difference(_startOfDay(firstDay)).inDays;
-      final index = diffDays ~/ 7; 
+      final index = diffDays ~/ 7;
       if (index >= 0 && index < 4) {
         weekTotals[index] += fs.minutes;
       }
@@ -89,7 +146,7 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
     for (var fs in sessions) {
       final monthsDiff = _monthDiff(fs.date, now);
       if (monthsDiff >= 0 && monthsDiff < 12) {
-        final index = 11 - monthsDiff; 
+        final index = 11 - monthsDiff;
         monthTotals[index] += fs.minutes;
       }
     }
@@ -97,6 +154,9 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
     _barLabels = _generateLast12MonthLabels(now);
   }
 
+  // ------------------------------------------------------
+  // BAU DES UI
+  // ------------------------------------------------------
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -108,7 +168,9 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Filter-Buttons
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
@@ -120,57 +182,27 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
               ],
             ),
             const SizedBox(height: 16),
-            Container(
+
+            // BARCHART
+            SizedBox(
               height: 250,
-              child: _buildBarChart(),
+              width: MediaQuery.of(context).size.width, // max chart = screen width
+              child: _buildBarChart(context),
             ),
             const SizedBox(height: 24),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                _statItem(
-                  title: 'Flows', 
-                  value: _totalFlowCount.toString(),
-                ),
-                _statItem(
-                  title: 'Minuten', 
-                  value: _totalFlowMinutes.toString(),
-                ),
-                _statItem(
-                  title: 'Ø Zeit (Min)', 
-                  value: _averageFlowMinutes.toStringAsFixed(1),
-                ),
-              ],
-            ),
+
+            // STATS ALS LISTE (vertical)
+            _buildStatsList(),
           ],
         ),
       ),
     );
   }
 
-  Widget _buildFilterButton(String value, String label) {
-    final isSelected = (value == _currentFilter);
-    return ElevatedButton(
-      style: ElevatedButton.styleFrom(
-        backgroundColor: isSelected ? Colors.redAccent : Colors.grey[800],
-      ),
-      onPressed: () async {
-        setState(() {
-          _currentFilter = value;
-        });
-        await _loadDataForFilter(value);
-      },
-      child: Text(
-        label,
-        style: TextStyle(
-          color: isSelected ? Colors.white : Colors.white70,
-          fontSize: 14,
-        ),
-      ),
-    );
-  }
-
-  Widget _buildBarChart() {
+  // ------------------------------------------------------
+  // BARCHART
+  // ------------------------------------------------------
+  Widget _buildBarChart(BuildContext context) {
     if (_barValues.isEmpty) {
       return Center(
         child: Text(
@@ -183,100 +215,131 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
     final maxVal = _barValues.reduce(max);
     final maxY = (maxVal < 10) ? 10.0 : (maxVal * 1.2);
 
-    return SingleChildScrollView(
-      scrollDirection: Axis.horizontal,
-      child: Container(
-        width: _calculateChartWidth(),
-        child: BarChart(
-          BarChartData(
-            alignment: BarChartAlignment.spaceAround,
-            maxY: maxY,
-            minY: 0,
-            barTouchData: BarTouchData(enabled: true),
-            gridData: FlGridData(
-              show: true,
-              drawHorizontalLine: true,
-              horizontalInterval: maxY / 5,
-              getDrawingHorizontalLine: (value) => FlLine(
-                color: Colors.white24,
-                strokeWidth: 1,
-              ),
-              drawVerticalLine: false,
+    // Dynamische Balkenbreite, je nach Anzahl
+    double barWidth = 30; // default
+    if (_barValues.length >= 12) {
+      // z.B. bei "year" -> 12 bars -> schmaler
+      barWidth = 20;
+    } else if (_barValues.length <= 4) {
+      // z.B. month -> 4 bars -> bisschen breiter
+      barWidth = 40;
+    }
+
+    return BarChart(
+      BarChartData(
+        alignment: BarChartAlignment.spaceEvenly,
+        maxY: maxY,
+        minY: 0,
+        barTouchData: BarTouchData(enabled: true),
+        gridData: FlGridData(
+          show: true,
+          drawHorizontalLine: true,
+          horizontalInterval: maxY / 5,
+          getDrawingHorizontalLine: (value) => FlLine(
+            color: Colors.white24,
+            strokeWidth: 1,
+          ),
+          drawVerticalLine: false,
+        ),
+        borderData: FlBorderData(show: false),
+        titlesData: FlTitlesData(
+          topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+          leftTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              interval: maxY / 5,
+              reservedSize: 32,
+              getTitlesWidget: (value, meta) {
+                return Text(
+                  value.toInt().toString(),
+                  style: const TextStyle(color: Colors.white, fontSize: 10),
+                );
+              },
             ),
-            borderData: FlBorderData(show: false),
-            titlesData: FlTitlesData(
-              topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-              leftTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  interval: maxY / 5,
-                  reservedSize: 32,
-                  getTitlesWidget: (value, meta) {
-                    return Text(
-                      value.toInt().toString(),
-                      style: const TextStyle(color: Colors.white, fontSize: 10),
-                    );
-                  },
-                ),
-              ),
-              bottomTitles: AxisTitles(
-                sideTitles: SideTitles(
-                  showTitles: true,
-                  getTitlesWidget: (value, meta) {
-                    final idx = value.toInt();
-                    if (idx >= 0 && idx < _barLabels.length) {
-                      return Text(
-                        _barLabels[idx],
-                        style: const TextStyle(color: Colors.white, fontSize: 10),
-                      );
-                    }
-                    return const SizedBox();
-                  },
-                ),
-              ),
+          ),
+          bottomTitles: AxisTitles(
+            sideTitles: SideTitles(
+              showTitles: true,
+              getTitlesWidget: (value, meta) {
+                final idx = value.toInt();
+                if (idx >= 0 && idx < _barLabels.length) {
+                  return Text(
+                    _barLabels[idx],
+                    style: const TextStyle(color: Colors.white, fontSize: 10),
+                  );
+                }
+                return const SizedBox();
+              },
             ),
-            barGroups: List.generate(_barValues.length, (index) {
-              final val = _barValues[index];
-              return BarChartGroupData(
-                x: index,
-                barRods: [
-                  BarChartRodData(
-                    toY: val,
-                    color: Colors.redAccent,
-                    width: 16,
-                    borderRadius: BorderRadius.circular(4),
-                  ),
-                ],
-              );
-            }),
           ),
         ),
+        barGroups: List.generate(_barValues.length, (index) {
+          final val = _barValues[index];
+          return BarChartGroupData(
+            x: index,
+            barRods: [
+              BarChartRodData(
+                toY: val,
+                color: Colors.redAccent,
+                width: barWidth,
+                borderRadius: BorderRadius.circular(4),
+              ),
+            ],
+          );
+        }),
       ),
     );
   }
 
-  Widget _statItem({required String title, required String value}) {
+  // ------------------------------------------------------
+  // STATS-LISTE
+  // ------------------------------------------------------
+  Widget _buildStatsList() {
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          title,
-          style: const TextStyle(color: Colors.white70, fontSize: 14),
+        _statItem(title: 'Flows', value: _totalFlowCount.toString()),
+        const SizedBox(height: 8),
+        _statItem(title: 'Minuten gesamt', value: _totalFlowMinutes.toString()),
+        const SizedBox(height: 8),
+        _statItem(
+          title: 'Ø Zeit pro Flow (Min)', 
+          value: _averageFlowMinutes.toStringAsFixed(1),
         ),
-        const SizedBox(height: 4),
-        Text(
-          value,
-          style: const TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+        const SizedBox(height: 8),
+        _statItem(
+          title: 'Ø Zeit pro Woche (Min)',
+          value: _averageWeeklyFlowMinutes.isNaN
+              ? '0.0'
+              : _averageWeeklyFlowMinutes.toStringAsFixed(1),
         ),
       ],
     );
   }
 
-  double _calculateChartWidth() {
-    const barWidth = 40.0;
-    return max(_barValues.length * barWidth, 300); 
+  Widget _statItem({required String title, required String value}) {
+    return Container(
+      padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+      decoration: BoxDecoration(
+        color: Colors.grey[850],
+        borderRadius: BorderRadius.circular(6),
+      ),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          Text(title, style: const TextStyle(color: Colors.white70)),
+          Text(value,
+              style: const TextStyle(
+                  color: Colors.white, fontWeight: FontWeight.bold)),
+        ],
+      ),
+    );
   }
 
+  // ------------------------------------------------------
+  // HELPER
+  // ------------------------------------------------------
   List<FlowSession> _boxToFlowSessions(Box<Map> box) {
     final List<FlowSession> result = [];
     for (int i = 0; i < box.length; i++) {
@@ -326,25 +389,20 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
 
   String _monthToShort(int m) {
     switch (m) {
-      case 1: return 'Jan';
-      case 2: return 'Feb';
-      case 3: return 'Mär';
-      case 4: return 'Apr';
-      case 5: return 'Mai';
-      case 6: return 'Jun';
-      case 7: return 'Jul';
-      case 8: return 'Aug';
-      case 9: return 'Sep';
+      case 1:  return 'Jan';
+      case 2:  return 'Feb';
+      case 3:  return 'Mär';
+      case 4:  return 'Apr';
+      case 5:  return 'Mai';
+      case 6:  return 'Jun';
+      case 7:  return 'Jul';
+      case 8:  return 'Aug';
+      case 9:  return 'Sep';
       case 10: return 'Okt';
       case 11: return 'Nov';
       case 12: return 'Dez';
       default: return '?';
     }
   }
-}
-
-class FlowSession {
-  final DateTime date;
-  final int minutes;
-  FlowSession({required this.date, required this.minutes});
+  
 }

@@ -1,4 +1,4 @@
-package com.example.daimonion
+package com.daimonion.app
 
 import io.flutter.embedding.android.FlutterActivity
 
