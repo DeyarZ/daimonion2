@@ -1,12 +1,9 @@
+// lib/onboarding/onboarding_goals.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-import '../onboarding/onboarding_name.dart'; 
-import '../onboarding/onboarding_age.dart'; 
-import '../onboarding/onboarding_chatbot.dart'; 
-import '../onboarding/onboarding_finish.dart'; 
-import '../onboarding/onboarding_goals.dart'; 
-import '../onboarding/onboarding_todos.dart'; 
+import '../onboarding/onboarding_chatbot.dart';
+import '../l10n/generated/l10n.dart';
 
 class OnboardingGoalsPage extends StatefulWidget {
   const OnboardingGoalsPage({Key? key}) : super(key: key);
@@ -17,14 +14,20 @@ class OnboardingGoalsPage extends StatefulWidget {
 
 class _OnboardingGoalsPageState extends State<OnboardingGoalsPage> {
   List<String> _selectedGoals = [];
-  final List<String> _availableGoals = [
-    "Fitter werden",
-    "Produktiver sein",
-    "Mehr Geld sparen",
-    "Bessere Beziehungen aufbauen",
-    "Mentale Gesundheit stärken",
-    "Karriere vorantreiben",
-  ];
+
+  // Statt einer konstanten Liste, definieren wir die verfügbaren Ziele dynamisch,
+  // damit sie lokalisiert werden können.
+  List<String> _availableGoals(BuildContext context) {
+    final loc = S.of(context);
+    return [
+      loc.goalFit,
+      loc.goalProductivity,
+      loc.goalSaveMoney,
+      loc.goalBetterRelationships,
+      loc.goalMentalHealth,
+      loc.goalCareer,
+    ];
+  }
 
   @override
   void initState() {
@@ -47,7 +50,6 @@ class _OnboardingGoalsPageState extends State<OnboardingGoalsPage> {
   void _goNext() {
     final settingsBox = Hive.box('settings');
     settingsBox.put('userGoals', _selectedGoals);
-
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const OnboardingChatbotPage()),
@@ -56,6 +58,9 @@ class _OnboardingGoalsPageState extends State<OnboardingGoalsPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
+    final availableGoals = _availableGoals(context);
+
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
@@ -63,9 +68,9 @@ class _OnboardingGoalsPageState extends State<OnboardingGoalsPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 40),
-            const Text(
-              "Was sind deine Ziele?",
-              style: TextStyle(
+            Text(
+              loc.onboardingGoalsQuestion,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
@@ -74,9 +79,9 @@ class _OnboardingGoalsPageState extends State<OnboardingGoalsPage> {
             const SizedBox(height: 24),
             Expanded(
               child: ListView.builder(
-                itemCount: _availableGoals.length,
+                itemCount: availableGoals.length,
                 itemBuilder: (context, index) {
-                  final goal = _availableGoals[index];
+                  final goal = availableGoals[index];
                   final isSelected = _selectedGoals.contains(goal);
                   return Card(
                     shape: RoundedRectangleBorder(
@@ -115,9 +120,9 @@ class _OnboardingGoalsPageState extends State<OnboardingGoalsPage> {
                   vertical: 14.0,
                 ),
               ),
-              child: const Text(
-                "Weiter",
-                style: TextStyle(fontSize: 16),
+              child: Text(
+                loc.continueButton,
+                style: const TextStyle(fontSize: 16),
               ),
             ),
             const SizedBox(height: 20),

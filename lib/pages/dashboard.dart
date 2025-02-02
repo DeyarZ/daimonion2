@@ -1,3 +1,5 @@
+// lib/pages/dashboard.dart
+
 import 'dart:math'; // Für den Zufall
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -12,6 +14,9 @@ import '../pages/todo_list.dart';
 import '../pages/habit_tracker.dart';
 import 'flow_stats_page.dart';
 import '../widgets/ad_wrapper.dart';
+
+// Importiere Lokalisierung
+import '../l10n/generated/l10n.dart';
 
 // ------------------------------------------------
 // MODELDATEN für Flow-Sessions
@@ -73,112 +78,9 @@ class DashboardPageState extends State<DashboardPage> {
   /// Hier speichern wir die echten Flow-Sekunden der letzten 7 Tage
   int? _weeklyFlowSeconds;
 
-  /// Beispiel-Liste mit Motivationssprüchen
-final List<String> _motivationQuotes = [
-  // Kurze, prägnante Sprüche
-  "Du bist nicht hier, um Durchschnitt zu sein!",
-  "Keine Ausreden – geh weiter!",
-  "Wenn du aufgibst, hast du es nie ernst gemeint.",
-  "Jeder Tag eine neue Chance, nutze sie!",
-  "Your future self will thank you for your grind today.",
-  "Disziplin schlägt Talent – jeden Tag.",
-  "Was du heute tust, entscheidet über morgen.",
-  "Träume groß, arbeite härter.",
-  "Du bist stärker, als du denkst.",
-  "Kein Wachstum ohne Anstrengung.",
-
-  // Inspirierende längere Sprüche
-  "Die härtesten Kämpfe kommen vor den größten Siegen.",
-  "Du musst die Person werden, die du dir wünschst zu sein – Schritt für Schritt.",
-  "Egal, wie langsam du gehst, du schlägst jeden, der auf der Couch bleibt.",
-  "Fehler sind der Beweis, dass du es versuchst.",
-  "Man wächst nicht in seiner Komfortzone – wage den Schritt hinaus.",
-  "Harte Arbeit wird nicht immer belohnt, aber sie baut Charakter.",
-  "Es sind die kleinen täglichen Siege, die die großen Erfolge formen.",
-  "Du hast 24 Stunden wie jeder andere – nutze sie mit Intention.",
-  "Deine Ziele interessieren sich nicht für deine Ausreden.",
-  "Wenn der Weg einfach ist, bist du auf dem falschen Pfad.",
-
-  // Zitate von Persönlichkeiten
-  "\"Die beste Weg, die Zukunft vorherzusagen, ist sie zu erschaffen.\" - Peter Drucker, Pionier der Managementlehre.",
-  "\"Erfolg ist die Fähigkeit, von einem Misserfolg zum nächsten zu gehen, ohne die Begeisterung zu verlieren.\" - Winston Churchill, ehemaliger britischer Premierminister.",
-  "\"Was immer du tun kannst oder träumst, dass du es kannst, fang damit an.\" - Johann Wolfgang von Goethe.",
-  "\"Nicht die Stärke zählt, sondern die Ausdauer.\" - Konfuzius, chinesischer Philosoph.",
-  "\"Sei du selbst die Veränderung, die du dir für diese Welt wünschst.\" - Mahatma Gandhi.",
-  "\"Ein Ziel ist ein Traum mit einer Deadline.\" - Napoleon Hill, Autor von 'Denke nach und werde reich'.",
-  "\"Erfolg ist nichts Endgültiges, Misserfolg nichts Fatales: Es ist der Mut, der zählt.\" - Winston Churchill.",
-  "\"Wer kämpft, kann verlieren. Wer nicht kämpft, hat schon verloren.\" - Bertolt Brecht, deutscher Dramatiker.",
-  "\"Hindernisse sind die Dinge, die du siehst, wenn du dein Ziel aus den Augen verlierst.\" - Henry Ford, Gründer von Ford Motor Company.",
-  "\"Das Leben schrumpft oder dehnt sich aus in Relation zu deinem Mut.\" - Anaïs Nin, Schriftstellerin.",
-  "\"Schmerz ist schwäche, die den Körper verlässt.\" - US Marines Sprichwort.",
-  "\"Entweder du kontrollierst den Tag, oder der Tag kontrolliert dich.\" - David Goggins, Ultramarathonläufer und Ex-Navy SEAL.",
-
-  // Weitere motivierende Gedanken
-  "Hör auf zu reden, fang an zu machen.",
-  "Jeder Erfolg beginnt mit dem Mut, es zu versuchen.",
-  "Stärke wächst, wo Komfort endet.",
-  "Deine einzige Grenze ist die, die du dir selbst setzt.",
-  "Dein Potenzial wartet auf deinen Einsatz.",
-  "Jedes Nein bringt dich näher an ein Ja.",
-  "Konzentriere dich auf das, was du kontrollieren kannst.",
-  "Das Gestern ist vergangen. Heute ist dein Tag.",
-  "Die besten Entscheidungen sind oft die schwersten.",
-  "Ein kleiner Fortschritt ist immer noch Fortschritt.",
-  
-  // Positive, längere Gedanken
-  "Die schwierigste Entscheidung deines Lebens könnte die sein, die alles verändert.",
-  "Jede großartige Reise beginnt mit dem ersten Schritt.",
-  "Menschen, die dich unterschätzen, geben dir das größte Geschenk: den Ansporn, zu beweisen, dass sie falsch liegen.",
-  "Erfolg ist kein Ziel, sondern eine Reise – bleib dran.",
-  "Du kannst nichts kontrollieren außer deiner Reaktion auf die Welt.",
-  "Die schwierigsten Momente sind oft die, die dich am meisten formen.",
-  "Was du heute pflanzt, wirst du morgen ernten.",
-  "Wenn du versagst, versuche es erneut, aber versage diesmal besser.",
-  "Erfolg bedeutet nicht Perfektion, sondern Fortschritt.",
-  "Das Leben gibt dir, was du bereit bist, dir selbst zu nehmen.",
-
-  // Kurze Power-Sätze
-  "Der Schmerz vergeht, der Stolz bleibt.",
-  "Fokus schlägt Chaos.",
-  "Tu, was getan werden muss.",
-  "Du bist ein Krieger, keine Ausrede zählt.",
-  "Hass treibt dich an, Liebe macht dich unaufhaltsam.",
-  "Ziele hoch – immer.",
-  "Disziplin ist Freiheit.",
-  "Entweder du machst es oder jemand anderes tut es.",
-  "Verliere nie deinen Glauben an dich selbst.",
-  "Angst ist dein Kompass – folge ihr.",
-
-  // Weitere Zitate von Persönlichkeiten
-// Zitate von Männern mit krassem Mindset
-  "\"Jeder Kampf ist der erste Kampf deines Lebens. Also kämpfe, als ob es keinen Morgen gibt.\" - Mike Tyson, Boxlegende.",
-  "\"Wenn du bereit bist, das zu opfern, was du bist, für das, was du werden willst, dann bist du bereit zu gewinnen.\" - Eric Thomas, Motivationsredner.",
-  "\"Wenn ich sterbe, dann auf meinen Beinen, nicht auf meinen Knien.\" - Emiliano Zapata, mexikanischer Revolutionär.",
-  "\"Die Größe eines Mannes wird daran gemessen, wie viel Wahrheit er aushalten kann.\" - Friedrich Nietzsche, Philosoph.",
-  "\"Ich bin nicht der Beste. Aber ich bin bereit, gegen jeden zu kämpfen, der es behauptet.\" - Bruce Lee, Kampfkünstler und Schauspieler."
-  "\"Alles, was wir sind, ist das Ergebnis dessen, was wir gedacht haben.\" - Buddha.",
-  "\"Erfolg besteht darin, dass man genau die Fähigkeiten hat, die im Moment gefragt sind.\" - Henry Ford.",
-  "\"Die Kraft liegt nicht im Wissen, sondern im Tun.\" - Dale Carnegie, Autor von 'Wie man Freunde gewinnt'.",
-  "\"Das Glück begünstigt die Mutigen.\" - Vergil, römischer Dichter.",
-  "\"Lass dich niemals von der Angst leiten.\" - Nelson Mandela.",
-  "\"Es ist nie zu spät, das zu sein, was man hätte sein können.\" - George Eliot, Schriftstellerin.",
-
-  // Weitere motivierende Gedanken
-  "Was heute unmöglich scheint, könnte morgen dein Standard sein.",
-  "Du bist nur so stark wie die Gewohnheiten, die du jeden Tag aufbaust.",
-  "Triff Entscheidungen, die deinem zukünftigen Ich dienen.",
-  "Große Erfolge beginnen oft mit kleinen Schritten.",
-  "Hör auf, perfekt zu sein, und fang an, Fortschritte zu machen.",
-  "Die härtesten Schlachten werden oft allein gekämpft.",
-  "Erfolg bedeutet, Dinge zu tun, die andere nicht tun wollen.",
-  "Du hast nur eine Chance – nutze sie.",
-  "Dein Warum ist größer als jedes Hindernis.",
-  "Schmerz ist vorübergehend, Stolz hält ewig."
-];
-
-  /// Liste mit Bildpfaden
+  /// Motivationsbilder (die Strings bleiben hardgecoded, da Assets nicht lokalisiert werden)
   final List<String> _motivationImages = [
-    'assets/images/arnold.png',
+    'assets/images/arnold.jpg',
     'assets/images/8bit_squat.png',
     'assets/images/chess.png',
     'assets/images/ferrari.png',
@@ -190,22 +92,17 @@ final List<String> _motivationQuotes = [
     'assets/images/wolf.png',
   ];
 
-
-  late String _randomQuote;
+  late String _randomQuote; // Wird aus dem lokalisierten Motivations-String gezogen
   late String _randomImage;
-
 
   @override
   void initState() {
     super.initState();
     _initWeekDates();
 
-    // Streak-Wert aus settings-Box
+    // Streak-Wert aus settings-Box laden
     final settingsBox = Hive.box('settings');
     _streak = settingsBox.get('streak', defaultValue: 1);
-
-    // Zufallsspruch wählen
-    _randomQuote = _motivationQuotes[Random().nextInt(_motivationQuotes.length)];
 
     // Zufälliges Bild wählen
     _randomImage = _motivationImages[Random().nextInt(_motivationImages.length)];
@@ -217,7 +114,10 @@ final List<String> _motivationQuotes = [
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Wenn du hier noch was updaten willst -> go ahead
+    // Motivationssprüche via Lokalisierung laden (String mit "||" als Trenner)
+    final quotes = S.of(context).motivationQuotes.split('||');
+    // Zufällig einen Spruch auswählen
+    _randomQuote = quotes[Random().nextInt(quotes.length)];
   }
 
   // -----------------------------------------
@@ -271,7 +171,7 @@ final List<String> _motivationQuotes = [
     return AdWrapper(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Dashboard'),
+          title: Text(S.of(context).dashboardTitle),
           backgroundColor: Colors.black,
         ),
         backgroundColor: Colors.black,
@@ -393,14 +293,12 @@ final List<String> _motivationQuotes = [
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Premium benötigt'),
-          content: const Text(
-            'Dieser Bereich ist nur für Premium-Nutzer verfügbar.',
-          ),
+          title: Text(S.of(context).premiumRequired),
+          content: Text(S.of(context).premiumSectionUnavailable),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('OK'),
+              child: Text(S.of(context).ok),
             ),
           ],
         );
@@ -444,9 +342,9 @@ final List<String> _motivationQuotes = [
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Produktive Zeit (Woche)',
-                style: TextStyle(fontSize: 10, color: Colors.white70),
+              Text(
+                S.of(context).productiveTimeWeek,
+                style: const TextStyle(fontSize: 10, color: Colors.white70),
               ),
             ],
           ),
@@ -478,9 +376,9 @@ final List<String> _motivationQuotes = [
               ),
             ),
             const SizedBox(height: 4),
-            const Text(
-              'Streak',
-              style: TextStyle(fontSize: 10, color: Colors.white70),
+            Text(
+              S.of(context).streak,
+              style: const TextStyle(fontSize: 10, color: Colors.white70),
             ),
           ],
         ),
@@ -531,9 +429,9 @@ final List<String> _motivationQuotes = [
                 ],
               ),
               const SizedBox(height: 4),
-              const Text(
-                'Flow Timer',
-                style: TextStyle(fontSize: 10, color: Colors.white70),
+              Text(
+                S.of(context).flowTimer,
+                style: const TextStyle(fontSize: 10, color: Colors.white70),
               ),
             ],
           ),
@@ -594,7 +492,7 @@ final List<String> _motivationQuotes = [
                 },
                 child: _buildPieChart(
                   tasksPercent,
-                  title: 'Tasks',
+                  title: S.of(context).tasks,
                   size: 120,
                 ),
               ),
@@ -616,7 +514,7 @@ final List<String> _motivationQuotes = [
                 },
                 child: _buildPieChart(
                   _calculateHabitsPercent(),
-                  title: 'Habits',
+                  title: S.of(context).habits,
                   size: 120,
                 ),
               ),
@@ -662,13 +560,13 @@ final List<String> _motivationQuotes = [
     if (totalCount == 0) return null;
     final ratio = doneCount / totalCount;
     if (ratio >= 1.0) {
-      return 'Perfekt! Du hast heute alle Gewohnheiten erledigt. Keep pushing!';
+      return S.current.cheerPerfect;
     } else if (ratio >= 0.5) {
-      return 'Schon über die Hälfte deiner Gewohnheiten geschafft – stark!';
+      return S.current.cheerHalf;
     } else if (ratio > 0.0) {
-      return 'Noch nicht fertig, aber du packst das. Nur weitermachen!';
+      return S.current.cheerAlmost;
     } else {
-      return 'Pack an! Zeit, etwas zu tun!';
+      return S.current.cheerStart;
     }
   }
 
@@ -683,9 +581,11 @@ final List<String> _motivationQuotes = [
           borderRadius: BorderRadius.circular(8),
         ),
         padding: const EdgeInsets.all(12),
-        child: const Center(
-          child: Text('Keine Aufgaben für heute',
-              style: TextStyle(color: Colors.white)),
+        child: Center(
+          child: Text(
+            S.of(context).noTasksToday,
+            style: const TextStyle(color: Colors.white),
+          ),
         ),
       );
     }
@@ -698,9 +598,9 @@ final List<String> _motivationQuotes = [
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          const Text(
-            'HEUTIGE TASKS',
-            style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          Text(
+            S.of(context).todaysTasks,
+            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
           ),
           const Divider(color: Colors.grey),
           ...tasks.map((task) {
@@ -813,9 +713,9 @@ final List<String> _motivationQuotes = [
 
     return Column(
       children: [
-        const Text(
-          'WOCHENFORTSCHRITT',
-          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        Text(
+          S.of(context).weeklyProgress,
+          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         SizedBox(
@@ -838,8 +738,7 @@ final List<String> _motivationQuotes = [
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
                 topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles:
-                    AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,

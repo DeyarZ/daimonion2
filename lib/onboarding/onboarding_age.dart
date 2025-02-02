@@ -1,14 +1,10 @@
+// lib/onboarding/onboarding_age.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-import '../onboarding/onboarding_name.dart'; 
-import '../onboarding/onboarding_age.dart'; 
-import '../onboarding/onboarding_chatbot.dart'; 
-import '../onboarding/onboarding_finish.dart'; 
-import '../onboarding/onboarding_goals.dart'; 
-import '../onboarding/onboarding_todos.dart'; 
 import 'package:flutter/cupertino.dart';
-
+import '../l10n/generated/l10n.dart';
+import '../onboarding/onboarding_goals.dart';
 
 class OnboardingAgePage extends StatefulWidget {
   const OnboardingAgePage({Key? key}) : super(key: key);
@@ -31,7 +27,6 @@ class _OnboardingAgePageState extends State<OnboardingAgePage> {
   void _goNext() {
     final settingsBox = Hive.box('settings');
     settingsBox.put('userAge', _selectedAge);
-
     Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const OnboardingGoalsPage()),
@@ -40,17 +35,17 @@ class _OnboardingAgePageState extends State<OnboardingAgePage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24.0),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
-            crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
-                "Wie alt bist du?",
-                style: TextStyle(
+              Text(
+                loc.onboardingAgeQuestion,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -81,18 +76,18 @@ class _OnboardingAgePageState extends State<OnboardingAgePage> {
               ElevatedButton(
                 onPressed: _goNext,
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                    ),
+                  backgroundColor: Colors.redAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32.0,
                     vertical: 14.0,
                   ),
                 ),
-                child: const Text(
-                  "Weiter",
-                  style: TextStyle(fontSize: 16),
+                child: Text(
+                  loc.continueButton,
+                  style: const TextStyle(fontSize: 16),
                 ),
               ),
             ],

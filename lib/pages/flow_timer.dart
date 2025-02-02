@@ -1,8 +1,11 @@
+// lib/pages/flow_timer.dart
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
 import '../services/flow_timer_service.dart';
-import '../widgets/ad_wrapper.dart'; // Import des AdWrapper
+import '../widgets/ad_wrapper.dart';
+import '../l10n/generated/l10n.dart';
 
 class FlowTimerPage extends StatefulWidget {
   const FlowTimerPage({Key? key}) : super(key: key);
@@ -16,6 +19,7 @@ class _FlowTimerPageState extends State<FlowTimerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     final flowTimer = context.watch<FlowTimerService>();
 
     final timeString = _formatTime(flowTimer.secondsLeft);
@@ -31,7 +35,7 @@ class _FlowTimerPageState extends State<FlowTimerPage> {
     return AdWrapper(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('Focus!'),
+          title: Text(loc.flowTimerTitle),
           backgroundColor: Colors.black,
         ),
         backgroundColor: Colors.black,
@@ -66,7 +70,8 @@ class _FlowTimerPageState extends State<FlowTimerPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(
-                    'Flow ${currentFlowIndex + 1} / $totalFlows',
+                    // Nutzt einen Platzhalter-String aus der Lokalisierung:
+                    loc.flowCounter(currentFlowIndex + 1, totalFlows),
                     style: const TextStyle(color: Colors.white, fontSize: 16),
                   ),
                   const SizedBox(width: 8),
@@ -114,9 +119,7 @@ class _FlowTimerPageState extends State<FlowTimerPage> {
     );
   }
   
-  // ------------------------------------------------
   // 1) Flow-Kästchen
-  // ------------------------------------------------
   Widget _buildFlowSquares(FlowTimerService flowTimer) {
     final currentFlowIndex = flowTimer.flowIndex;
     final totalFlows = flowTimer.flows;
@@ -175,10 +178,9 @@ class _FlowTimerPageState extends State<FlowTimerPage> {
     );
   }
 
-  // ------------------------------------------------
   // 2) Zeit-Einstellung-Dialog
-  // ------------------------------------------------
   Future<void> _changeTimeDialog(BuildContext ctx) async {
+    final loc = S.of(ctx);
     final flowTimer = ctx.read<FlowTimerService>();
     final controller = TextEditingController(text: flowTimer.minutes.toString());
 
@@ -186,15 +188,15 @@ class _FlowTimerPageState extends State<FlowTimerPage> {
       context: ctx,
       builder: (dialogCtx) {
         return AlertDialog(
-          title: const Text('Timer einstellen (Minuten)'),
+          title: Text(loc.flowTimerSetTimeTitle),
           content: TextField(
             controller: controller,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(hintText: 'Minuten eingeben'),
+            decoration: InputDecoration(hintText: loc.flowTimerSetTimeHint),
           ),
           actions: [
             TextButton(
-              child: const Text('OK'),
+              child: Text(loc.ok),
               onPressed: () {
                 Navigator.pop(dialogCtx);
                 final newM = int.tryParse(controller.text);
@@ -209,10 +211,9 @@ class _FlowTimerPageState extends State<FlowTimerPage> {
     );
   }
 
-  // ------------------------------------------------
   // 3) Flow-Anzahl-Einstellung-Dialog
-  // ------------------------------------------------
   Future<void> _changeFlowsDialog(BuildContext ctx) async {
+    final loc = S.of(ctx);
     final flowTimer = ctx.read<FlowTimerService>();
     final flowController = TextEditingController(text: flowTimer.flows.toString());
 
@@ -220,15 +221,15 @@ class _FlowTimerPageState extends State<FlowTimerPage> {
       context: ctx,
       builder: (dialogCtx) {
         return AlertDialog(
-          title: const Text('Anzahl Flows einstellen'),
+          title: Text(loc.flowTimerSetFlowsTitle),
           content: TextField(
             controller: flowController,
             keyboardType: TextInputType.number,
-            decoration: const InputDecoration(hintText: 'Flows eingeben'),
+            decoration: InputDecoration(hintText: loc.flowTimerSetFlowsHint),
           ),
           actions: [
             TextButton(
-              child: const Text('OK'),
+              child: Text(loc.ok),
               onPressed: () {
                 Navigator.pop(dialogCtx);
                 final newF = int.tryParse(flowController.text);
@@ -243,9 +244,7 @@ class _FlowTimerPageState extends State<FlowTimerPage> {
     );
   }
 
-  // ------------------------------------------------
   // 4) Zeit-Format
-  // ------------------------------------------------
   String _formatTime(int sec) {
     final m = sec ~/ 60;
     final s = sec % 60;

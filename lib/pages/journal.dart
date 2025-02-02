@@ -1,6 +1,9 @@
+// lib/pages/journal.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import '../services/db_service.dart';
+import '../l10n/generated/l10n.dart';
 
 // ------------------------------------
 // Model: JournalEntry
@@ -34,9 +37,10 @@ class _JournalPageState extends State<JournalPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Journal'),
+        title: Text(loc.journalTitle),
         backgroundColor: Colors.black,
       ),
       backgroundColor: Colors.black,
@@ -46,10 +50,10 @@ class _JournalPageState extends State<JournalPage> {
           final entries = _boxToJournalList(box);
 
           if (entries.isEmpty) {
-            return const Center(
+            return Center(
               child: Text(
-                'Noch keine Einträge im Journal',
-                style: TextStyle(color: Colors.white),
+                loc.noJournalEntries,
+                style: const TextStyle(color: Colors.white),
               ),
             );
           }
@@ -115,12 +119,13 @@ class _JournalPageState extends State<JournalPage> {
   // Build single tile
   // -------------------------------------------------------------
   Widget _buildListTile(JournalEntry entry, int index) {
+    final loc = S.of(context);
     return Card(
       color: Colors.grey[850],
       margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       child: ListTile(
         title: Text(
-          entry.title.isEmpty ? '(Ohne Titel)' : entry.title,
+          entry.title.isEmpty ? loc.untitled : entry.title,
           style: const TextStyle(color: Colors.white),
         ),
         subtitle: Text(
@@ -268,12 +273,11 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
   }
 
   void _saveEntry() {
+    final loc = S.of(context);
     final updatedEntry = JournalEntry(
-      title: _titleController.text.trim().isEmpty
-          ? '(Ohne Titel)'
-          : _titleController.text.trim(),
+      title: _titleController.text.trim().isEmpty ? loc.untitled : _titleController.text.trim(),
       content: _contentController.text,
-      date: widget.entry.date, // Datum bleibt
+      date: widget.entry.date, // Datum bleibt unverändert
       mood: _selectedMood,
     );
     widget.onSave(updatedEntry);
@@ -282,11 +286,10 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.entry.title.isEmpty
-            ? 'Neuer Eintrag'
-            : 'Eintrag bearbeiten'),
+        title: Text(widget.entry.title.isEmpty ? loc.newJournalEntry : loc.editJournalEntry),
         backgroundColor: Colors.black,
         actions: [
           IconButton(
@@ -305,7 +308,7 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
               controller: _titleController,
               style: const TextStyle(color: Colors.white),
               decoration: InputDecoration(
-                labelText: 'Titel',
+                labelText: loc.journalTitleLabel,
                 labelStyle: TextStyle(color: Colors.grey[400]),
                 enabledBorder: const OutlineInputBorder(
                   borderSide: BorderSide(color: Colors.grey),
@@ -321,7 +324,7 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                const Text('Stimmung:', style: TextStyle(color: Colors.white)),
+                Text(loc.journalMoodLabel, style: const TextStyle(color: Colors.white)),
                 DropdownButton<String>(
                   dropdownColor: Colors.grey[900],
                   value: _selectedMood,
@@ -352,7 +355,7 @@ class _JournalDetailPageState extends State<JournalDetailPage> {
                 controller: _contentController,
                 style: const TextStyle(color: Colors.white),
                 decoration: InputDecoration(
-                  labelText: 'Inhalt',
+                  labelText: loc.journalContentLabel,
                   labelStyle: TextStyle(color: Colors.grey[400]),
                   enabledBorder: const OutlineInputBorder(
                     borderSide: BorderSide(color: Colors.grey),

@@ -10,6 +10,8 @@ import 'package:collection/collection.dart'; // für firstWhereOrNull
 
 import '../services/openai_service.dart';
 import '../haertegrad_enum.dart';
+// Importiere deine generierte Lokalisierung (Pfad ggf. anpassen)
+import '../l10n/generated/l10n.dart';
 
 class ChatbotPage extends StatefulWidget {
   const ChatbotPage({Key? key}) : super(key: key);
@@ -110,7 +112,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
       setState(() {
         _messages.add({
           'role': 'bot',
-          'content': 'Ein Fehler ist aufgetreten: $e',
+          'content': S.of(context).errorOccurred(e.toString()),
         });
       });
     }
@@ -142,14 +144,12 @@ class _ChatbotPageState extends State<ChatbotPage> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text("Upgrade nötig"),
-          content: const Text(
-            "Du hast deine 5 kostenlosen Prompts verbraucht.\n\nHol dir jetzt die Premium-Version für unbegrenzte Chats!",
-          ),
+          title: Text(S.of(context).upgradeTitle),
+          content: Text(S.of(context).upgradeContent),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text("Abbrechen"),
+              child: Text(S.of(context).cancel),
             ),
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
@@ -176,7 +176,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
                   _showErrorDialog();
                 }
               },
-              child: const Text("Premium kaufen"),
+              child: Text(S.of(context).buyPremium),
             ),
           ],
         );
@@ -190,14 +190,12 @@ class _ChatbotPageState extends State<ChatbotPage> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Fehler'),
-          content: const Text(
-            'Es ist ein Fehler aufgetreten. Bitte versuche es später erneut.',
-          ),
+          title: Text(S.of(context).errorTitle),
+          content: Text(S.of(context).errorContent),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('OK'),
+              child: Text(S.of(context).ok),
             ),
           ],
         );
@@ -211,12 +209,12 @@ class _ChatbotPageState extends State<ChatbotPage> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Erfolg'),
-          content: const Text('Du hast erfolgreich Premium freigeschaltet!'),
+          title: Text(S.of(context).successTitle),
+          content: Text(S.of(context).successContent),
           actions: [
             TextButton(
               onPressed: () => Navigator.of(ctx).pop(),
-              child: const Text('OK'),
+              child: Text(S.of(context).ok),
             ),
           ],
         );
@@ -235,7 +233,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Daimonion Chat'),
+        title: Text(S.of(context).appBarTitle),
       ),
       body: Column(
         children: [
@@ -251,7 +249,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
             Padding(
               padding: const EdgeInsets.symmetric(vertical: 4.0),
               child: Text(
-                'Kostenlose Prompts genutzt: $usedPrompts / 5',
+                S.of(context).freePromptsCounter(usedPrompts),
                 style: const TextStyle(color: Colors.grey, fontSize: 12),
               ),
             ),
@@ -268,12 +266,12 @@ class _ChatbotPageState extends State<ChatbotPage> {
   // ------------------------------------------------
   Widget _buildSuggestionsArea() {
     final suggestions = [
-      "Ich fühle mich heute faul und unmotiviert.",
-      "Ich weiß nicht, was ich mit meinem Tag anfangen soll.",
-      "Ich möchte neue Gewohnheiten aufbauen, aber wie?",
-      "Ich habe keine Lust zu trainieren. Überzeug mich!",
-      "Womit kann ich heute anfangen, produktiver zu sein?",
-      "Gib mir einen Tritt in den Hintern!",
+      S.of(context).suggestion1,
+      S.of(context).suggestion2,
+      S.of(context).suggestion3,
+      S.of(context).suggestion4,
+      S.of(context).suggestion5,
+      S.of(context).suggestion6,
     ];
 
     return Center(
@@ -345,7 +343,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
               keyboardType: TextInputType.multiline,
               maxLines: null,
               decoration: InputDecoration(
-                hintText: 'Frag Daimonion was du willst...',
+                hintText: S.of(context).hintText,
                 hintStyle: const TextStyle(color: Colors.grey),
                 filled: true,
                 fillColor: Colors.grey[900],

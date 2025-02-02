@@ -1,14 +1,15 @@
+// lib/pages/todo_list.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 import '../services/db_service.dart';
 import '../widgets/ad_wrapper.dart';
-
-// NEU: Import main.dart, wo scheduleDailyTodoReminder() steht:
-import '../main.dart';
+import '../main.dart'; // für scheduleDailyTodoReminder()
+import '../l10n/generated/l10n.dart';
 
 // ------------------------------
-// Model: Task (unchanged)
+// Model: Task (unverändert)
 // ------------------------------
 class Task {
   final String id;
@@ -37,56 +38,67 @@ class ToDoListPage extends StatefulWidget {
 }
 
 class _ToDoListPageState extends State<ToDoListPage> {
-  final TextEditingController _controller = TextEditingController();
   final _uuid = const Uuid();
   final DBService _dbService = DBService();
   bool _hideCompleted = false;
 
+  /// NEU: Notification-Toggle-Status
+  bool _notificationsOn = false;
+
+  /// NEU: Für Task-Erstellung zwischengespeicherte Deadline
+  DateTime _newTaskDeadline = DateTime.now();
+
   @override
   void dispose() {
-    _controller.dispose();
     super.dispose();
   }
 
-  // NEU: Button-Handler, um daily Noti einzurichten
-  Future<void> _activateDailyReminder() async {
-    await scheduleDailyTodoReminder(); // from main.dart
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Täglicher Reminder um 20:00 aktiviert!")),
-    );
-  }
-
-  Future<void> _cancelDailyReminder() async {
-    const notificationId = 5678;
-    await flutterLocalNotificationsPlugin.cancel(notificationId);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Täglicher Reminder wurde deaktiviert.")),
-    );
+  // ----------------------------------------------------
+  // Notifications togglen
+  // ----------------------------------------------------
+  Future<void> _toggleNotifications() async {
+    setState(() {
+      _notificationsOn = !_notificationsOn;
+    });
+    if (_notificationsOn) {
+      await scheduleDailyTodoReminder();
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.of(context).dailyReminderActivated)),
+      );
+    } else {
+      const notificationId = 5678;
+      await flutterLocalNotificationsPlugin.cancel(notificationId);
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(S.of(context).dailyReminderDeactivated)),
+      );
+    }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return AdWrapper(
       child: Scaffold(
         appBar: AppBar(
-          title: const Text('To-Do-Liste'),
+          title: Text(loc.todoListTitle),
           backgroundColor: Colors.black,
           actions: [
-            // NEU: Buttons zum Testen
+            // NEU: Notification Toggle
             IconButton(
-              onPressed: _activateDailyReminder,
-              icon: const Icon(Icons.notifications_active),
+              icon: Icon(
+                _notificationsOn
+                    ? Icons.notifications_active
+                    : Icons.notifications_off,
+              ),
+              onPressed: _toggleNotifications,
             ),
-            IconButton(
-              onPressed: _cancelDailyReminder,
-              icon: const Icon(Icons.notifications_off),
-            ),
-
             // Switch zum Ausblenden fertiger Tasks
             Row(
               children: [
-                const Text('Hide done',
-                    style: TextStyle(fontSize: 12, color: Colors.white70)),
+                Text(
+                  loc.hideDone,
+                  style: const TextStyle(fontSize: 12, color: Colors.white70),
+                ),
                 Switch(
                   activeColor: Colors.redAccent,
                   value: _hideCompleted,
@@ -98,8 +110,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
                 ),
               ],
             ),
-
-            // Kalender-Icon (unverändert)
+            // Kalender-Icon (wie gehabt)
             IconButton(
               icon: const Icon(Icons.calendar_today),
               onPressed: () async {
@@ -115,54 +126,20 @@ class _ToDoListPageState extends State<ToDoListPage> {
           ],
         ),
         backgroundColor: Colors.black,
+
+        /// NEU: Weg mit dem alten Textfeld in der Kopfzeile.
+        /// Wir zeigen direkt die Liste + FAB
         body: Column(
           children: [
-            // Eingabefeld (mehrzeilig) + Add-Button ...
-            Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12),
-              child: Row(
-                children: [
-                  Expanded(
-                    child: TextField(
-                      controller: _controller,
-                      style: const TextStyle(color: Colors.white),
-                      keyboardType: TextInputType.multiline,
-                      maxLines: null,
-                      decoration: const InputDecoration(
-                        hintText: 'Neue Aufgabe...',
-                        hintStyle: TextStyle(color: Colors.grey),
-                        enabledBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.grey),
-                        ),
-                        focusedBorder: UnderlineInputBorder(
-                          borderSide: BorderSide(color: Colors.redAccent),
-                        ),
-                      ),
-                      onSubmitted: (val) => _pickDeadlineAndAdd(val),
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
-                    ),
-                    onPressed: () => _pickDeadlineAndAdd(_controller.text),
-                    child: const Text('Add'),
-                  ),
-                ],
-              ),
-            ),
-
-            // Tasks-Liste
             Expanded(
               child: ValueListenableBuilder(
                 valueListenable: _dbService.listenableTasks(),
                 builder: (context, Box box, child) {
                   if (box.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Text(
-                        'Keine Aufgaben',
-                        style: TextStyle(color: Colors.white),
+                        loc.noTasks,
+                        style: const TextStyle(color: Colors.white),
                       ),
                     );
                   }
@@ -173,14 +150,15 @@ class _ToDoListPageState extends State<ToDoListPage> {
                       : allTasks;
 
                   if (filteredTasks.isEmpty) {
-                    return const Center(
+                    return Center(
                       child: Text(
-                        'Keine passenden Aufgaben',
-                        style: TextStyle(color: Colors.white),
+                        loc.noMatchingTasks,
+                        style: const TextStyle(color: Colors.white),
                       ),
                     );
                   }
 
+                  // Sortierung
                   filteredTasks.sort((a, b) => b.deadline.compareTo(a.deadline));
                   final grouped = _groupTasksByDate(filteredTasks);
                   final sortedDates = grouped.keys.toList()
@@ -191,8 +169,8 @@ class _ToDoListPageState extends State<ToDoListPage> {
                     itemBuilder: (context, index) {
                       final dateKey = sortedDates[index];
                       var tasksForDate = grouped[dateKey]!;
-                      tasksForDate
-                          .sort((a, b) => b.createdAt.compareTo(a.createdAt));
+                      tasksForDate.sort(
+                          (a, b) => b.createdAt.compareTo(a.createdAt));
 
                       return Padding(
                         padding: const EdgeInsets.symmetric(horizontal: 12.0),
@@ -221,42 +199,128 @@ class _ToDoListPageState extends State<ToDoListPage> {
             ),
           ],
         ),
+
+        /// NEU: Ein FloatingActionButton
+        floatingActionButton: FloatingActionButton(
+          backgroundColor: Colors.redAccent,
+          onPressed: _showAddTaskSheet,
+          child: const Icon(Icons.add),
+        ),
       ),
     );
   }
 
-
   // ----------------------------------------------------
-  // Deadline wählen & Task anlegen
+  // Neuer Bottom Sheet zum Hinzufügen von Tasks
   // ----------------------------------------------------
-  Future<void> _pickDeadlineAndAdd(String taskTitle) async {
-    final trimmed = taskTitle.trim();
-    if (trimmed.isEmpty) return;
-    _controller.clear();
+  void _showAddTaskSheet() {
+    final loc = S.of(context);
+    final TextEditingController controller = TextEditingController();
+    // Deadline standardmäßig heute
+    _newTaskDeadline = DateTime.now();
 
-    final picked = await showDatePicker(
+    showModalBottomSheet(
       context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime.now().subtract(const Duration(days: 365)),
-      lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+      backgroundColor: Colors.grey[900],
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      isScrollControlled: true,
+      builder: (ctx) {
+        return Padding(
+          padding: MediaQuery.of(ctx).viewInsets,
+          child: Container(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Text(
+                  loc.newTaskHint,
+                  style: const TextStyle(color: Colors.white, fontSize: 16),
+                ),
+                const SizedBox(height: 12),
+                TextField(
+                  controller: controller,
+                  style: const TextStyle(color: Colors.white),
+                  maxLines: null,
+                  decoration: InputDecoration(
+                    hintText: loc.taskTitleLabel,
+                    hintStyle: const TextStyle(color: Colors.grey),
+                    enabledBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.grey),
+                    ),
+                    focusedBorder: const UnderlineInputBorder(
+                      borderSide: BorderSide(color: Colors.redAccent),
+                    ),
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    // Aktuell gewählte Deadline
+                    Text(
+                      '${loc.dueOn(_formatDate(_newTaskDeadline))}',
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                    IconButton(
+                      icon: const Icon(Icons.calendar_month,
+                          color: Colors.redAccent),
+                      onPressed: () async {
+                        final picked = await showDatePicker(
+                          context: context,
+                          initialDate: _newTaskDeadline,
+                          firstDate: DateTime.now()
+                              .subtract(const Duration(days: 365)),
+                          lastDate: DateTime.now()
+                              .add(const Duration(days: 365 * 5)),
+                        );
+                        if (picked != null) {
+                          setState(() {
+                            _newTaskDeadline = picked;
+                          });
+                          // Modal bleibt offen, also setState() für
+                          // den BottomSheet-Context -> use ModalRoute.of(ctx)
+                          (ctx as Element).markNeedsBuild();
+                        }
+                      },
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                ElevatedButton(
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.redAccent,
+                  ),
+                  onPressed: () async {
+                    final title = controller.text.trim();
+                    if (title.isNotEmpty) {
+                      await _dbService.addTask({
+                        'id': _uuid.v4(),
+                        'title': title,
+                        'completed': false,
+                        'deadline': _newTaskDeadline.millisecondsSinceEpoch,
+                        'createdAt': DateTime.now().millisecondsSinceEpoch,
+                      });
+                    }
+                    Navigator.pop(ctx);
+                  },
+                  child: Text(loc.addTask),
+                ),
+                const SizedBox(height: 8),
+              ],
+            ),
+          ),
+        );
+      },
     );
-    if (picked != null) {
-      final createdAt = DateTime.now().millisecondsSinceEpoch;
-
-      await _dbService.addTask({
-        'id': _uuid.v4(),
-        'title': trimmed,
-        'completed': false,
-        'deadline': picked.millisecondsSinceEpoch,
-        'createdAt': createdAt,
-      });
-    }
   }
 
   // ----------------------------------------------------
-  // Ein Task-Item im UI
+  // Ein Task-Item im UI (unverändert bis auf Kleinigkeiten)
   // ----------------------------------------------------
   Widget _buildTaskTile(Task task) {
+    final loc = S.of(context);
     return Dismissible(
       key: ValueKey(task.id),
       direction: DismissDirection.endToStart,
@@ -292,7 +356,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
             ),
           ),
           subtitle: Text(
-            'Fällig am ${_formatDate(task.deadline)}',
+            loc.dueOn(_formatDate(task.deadline)),
             style: const TextStyle(color: Colors.white70, fontSize: 12),
           ),
           trailing: IconButton(
@@ -306,61 +370,62 @@ class _ToDoListPageState extends State<ToDoListPage> {
   }
 
   // ----------------------------------------------------
-  // Edit Task (mit custom Dialog)
+  // Edit Task (unverändert)
   // ----------------------------------------------------
   void _editTask(Task task) {
+    final loc = S.of(context);
     final editController = TextEditingController(text: task.title);
-
-    // **NEU**: showDialog mit eigenem Stil
     showDialog(
       context: context,
       builder: (ctx) {
         return Dialog(
           backgroundColor: Colors.grey[900],
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
           child: Container(
             padding: const EdgeInsets.all(16),
-            // Wir brauchen Column => title, textfield, date-button, action-buttons
             child: SingleChildScrollView(
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  const Text(
-                    'Aufgabe bearbeiten',
-                    style: TextStyle(color: Colors.white, fontSize: 16, fontWeight: FontWeight.bold),
+                  Text(
+                    loc.editTaskDialogTitle,
+                    style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
-                  // Mehrzeiliges Textfeld
                   TextField(
                     controller: editController,
                     style: const TextStyle(color: Colors.white),
-                    keyboardType: TextInputType.multiline,
                     maxLines: null,
-                    decoration: const InputDecoration(
-                      labelText: 'Titel',
-                      labelStyle: TextStyle(color: Colors.grey),
-                      enabledBorder: UnderlineInputBorder(
+                    decoration: InputDecoration(
+                      labelText: loc.taskTitleLabel,
+                      labelStyle: const TextStyle(color: Colors.grey),
+                      enabledBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey),
                       ),
-                      focusedBorder: UnderlineInputBorder(
+                      focusedBorder: const UnderlineInputBorder(
                         borderSide: BorderSide(color: Colors.redAccent),
                       ),
                     ),
                   ),
                   const SizedBox(height: 16),
-
-                  // Deadline ändern
                   ElevatedButton.icon(
                     style: ElevatedButton.styleFrom(
                       backgroundColor: Colors.redAccent,
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                      shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8)),
                     ),
                     onPressed: () async {
                       final pickedDate = await showDatePicker(
                         context: context,
                         initialDate: task.deadline,
-                        firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                        lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+                        firstDate: DateTime.now()
+                            .subtract(const Duration(days: 365)),
+                        lastDate: DateTime.now()
+                            .add(const Duration(days: 365 * 5)),
                       );
                       if (pickedDate != null) {
                         setState(() {
@@ -369,17 +434,16 @@ class _ToDoListPageState extends State<ToDoListPage> {
                       }
                     },
                     icon: const Icon(Icons.calendar_today),
-                    label: const Text('Deadline ändern'),
+                    label: Text(loc.changeDeadline),
                   ),
                   const SizedBox(height: 24),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.end,
                     children: [
                       TextButton(
-                        child: const Text(
-                          'Abbrechen',
-                          style: TextStyle(color: Colors.white),
+                        child: Text(
+                          loc.cancel,
+                          style: const TextStyle(color: Colors.white),
                         ),
                         onPressed: () => Navigator.pop(ctx),
                       ),
@@ -387,15 +451,14 @@ class _ToDoListPageState extends State<ToDoListPage> {
                       ElevatedButton(
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.redAccent,
-                          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                          shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(8)),
                         ),
                         onPressed: () async {
                           final newTitle = editController.text.trim();
                           if (newTitle.isNotEmpty) {
                             task.title = newTitle;
                           }
-
-                          // Update Hive
                           final tasks = await _getAllTasksAsModels();
                           final index = tasks.indexWhere((t) => t.id == task.id);
                           if (index != -1) {
@@ -405,14 +468,16 @@ class _ToDoListPageState extends State<ToDoListPage> {
                                 'id': task.id,
                                 'title': task.title,
                                 'completed': task.completed,
-                                'deadline': task.deadline.millisecondsSinceEpoch,
-                                'createdAt': task.createdAt.millisecondsSinceEpoch,
+                                'deadline':
+                                    task.deadline.millisecondsSinceEpoch,
+                                'createdAt':
+                                    task.createdAt.millisecondsSinceEpoch,
                               },
                             );
                           }
                           Navigator.pop(ctx);
                         },
-                        child: const Text('Speichern'),
+                        child: Text(loc.save),
                       ),
                     ],
                   )
@@ -426,7 +491,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
   }
 
   // ----------------------------------------------------
-  // Toggle
+  // Toggle Task
   // ----------------------------------------------------
   Future<void> _toggleTask(Task task) async {
     final tasks = await _getAllTasksAsModels();
@@ -448,7 +513,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
   }
 
   // ----------------------------------------------------
-  // Delete
+  // Delete Task
   // ----------------------------------------------------
   Future<void> _deleteTask(Task task) async {
     final tasks = await _getAllTasksAsModels();
@@ -459,7 +524,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
   }
 
   // ----------------------------------------------------
-  // Box -> List<Task>
+  // Box -> List<Task> (unverändert)
   // ----------------------------------------------------
   List<Task> _boxToTaskList(Box box) {
     final List<Task> tasks = [];
@@ -471,7 +536,8 @@ class _ToDoListPageState extends State<ToDoListPage> {
       final title = data['title'] as String? ?? '';
       final completed = data['completed'] as bool? ?? false;
       final deadlineTimestamp = data['deadline'] as int?;
-      final createdAtTimestamp = data['createdAt'] as int? ?? DateTime.now().millisecondsSinceEpoch;
+      final createdAtTimestamp =
+          data['createdAt'] as int? ?? DateTime.now().millisecondsSinceEpoch;
 
       final deadline = deadlineTimestamp != null
           ? DateTime.fromMillisecondsSinceEpoch(deadlineTimestamp)
@@ -491,7 +557,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
   }
 
   // ----------------------------------------------------
-  // Alle Tasks als Models
+  // Alle Tasks als Models (unverändert)
   // ----------------------------------------------------
   Future<List<Task>> _getAllTasksAsModels() async {
     final box = await Hive.openBox<Map>(DBService.tasksBoxName);
@@ -499,7 +565,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
   }
 
   // ----------------------------------------------------
-  // Gruppieren nach Datum
+  // Gruppieren nach Datum (unverändert)
   // ----------------------------------------------------
   Map<DateTime, List<Task>> _groupTasksByDate(List<Task> tasks) {
     final Map<DateTime, List<Task>> map = {};
@@ -517,7 +583,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
 }
 
 // ----------------------------------------------------
-// CalendarViewPage
+// CalendarViewPage (unverändert)
 // ----------------------------------------------------
 class CalendarViewPage extends StatefulWidget {
   final List<Task> tasks;
@@ -536,13 +602,14 @@ class _CalendarViewPageState extends State<CalendarViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     final filtered = widget.tasks
         .where((t) => _isSameDay(t.deadline, _selectedDay))
         .toList();
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Kalender-Übersicht'),
+        title: Text(loc.calendarViewTitle),
         backgroundColor: Colors.black,
       ),
       backgroundColor: Colors.black,
@@ -554,16 +621,15 @@ class _CalendarViewPageState extends State<CalendarViewPage> {
             child: ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
               onPressed: _pickDate,
-              child: Text('Tag wählen: ${_formattedDate(_selectedDay)}'),
+              child: Text(loc.chooseDay(_formattedDate(_selectedDay))),
             ),
           ),
-
           // Liste der gefilterten Tasks
           Expanded(
             child: filtered.isEmpty
                 ? Center(
                     child: Text(
-                      'Keine Aufgaben für ${_formattedDate(_selectedDay)}',
+                      loc.noTasksForDay(_formattedDate(_selectedDay)),
                       style: const TextStyle(color: Colors.white),
                     ),
                   )

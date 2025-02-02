@@ -1,12 +1,9 @@
+// lib/onboarding/onboarding_name.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-import '../onboarding/onboarding_name.dart'; 
-import '../onboarding/onboarding_age.dart'; 
-import '../onboarding/onboarding_chatbot.dart'; 
-import '../onboarding/onboarding_finish.dart'; 
-import '../onboarding/onboarding_goals.dart'; 
-import '../onboarding/onboarding_todos.dart'; 
+import '../onboarding/onboarding_age.dart';
+import '../l10n/generated/l10n.dart';
 
 class OnboardingNamePage extends StatefulWidget {
   const OnboardingNamePage({Key? key}) : super(key: key);
@@ -21,7 +18,6 @@ class _OnboardingNamePageState extends State<OnboardingNamePage> {
   @override
   void initState() {
     super.initState();
-    // Evtl. vorhandenen Namen vorbefüllen:
     final settingsBox = Hive.box('settings');
     final existingName = settingsBox.get('userName', defaultValue: '');
     _nameController.text = existingName;
@@ -32,20 +28,20 @@ class _OnboardingNamePageState extends State<OnboardingNamePage> {
     if (name.isNotEmpty) {
       final settingsBox = Hive.box('settings');
       settingsBox.put('userName', name);
-
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => const OnboardingAgePage()),
       );
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("Bitte gib deinen Namen ein.")),
+        SnackBar(content: Text(S.of(context).nameEmptyWarning)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       body: Center(
         child: Padding(
@@ -54,9 +50,9 @@ class _OnboardingNamePageState extends State<OnboardingNamePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
-                "Wie heißt du?",
-                style: TextStyle(
+              Text(
+                loc.onboardingNameQuestion,
+                style: const TextStyle(
                   fontSize: 24,
                   fontWeight: FontWeight.bold,
                 ),
@@ -66,7 +62,7 @@ class _OnboardingNamePageState extends State<OnboardingNamePage> {
               TextField(
                 controller: _nameController,
                 decoration: InputDecoration(
-                  hintText: 'Dein Name',
+                  hintText: loc.nameHint,
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),
@@ -81,18 +77,18 @@ class _OnboardingNamePageState extends State<OnboardingNamePage> {
               ElevatedButton(
                 onPressed: _goNext,
                 style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
-                    shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12.0),
-                    ),
+                  backgroundColor: Colors.redAccent,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(12.0),
+                  ),
                   padding: const EdgeInsets.symmetric(
                     horizontal: 32.0,
                     vertical: 14.0,
                   ),
                 ),
-                child: const Text(
-                  "Weiter",
-                  style: TextStyle(fontSize: 16),
+                child: Text(
+                  loc.continueButton,
+                  style: const TextStyle(fontSize: 16),
                 ),
               ),
             ],
@@ -102,4 +98,3 @@ class _OnboardingNamePageState extends State<OnboardingNamePage> {
     );
   }
 }
-

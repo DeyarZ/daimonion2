@@ -1,3 +1,5 @@
+// lib/pages/profile.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
@@ -5,6 +7,7 @@ import 'package:collection/collection.dart'; // Für firstWhereOrNull
 
 import '../haertegrad_enum.dart';
 import 'privacy_and_terms_page.dart';
+import '../l10n/generated/l10n.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -40,8 +43,6 @@ class _ProfilePageState extends State<ProfilePage> {
     // Härtegrad laden
     final storedIndex = box.get('haertegrad', defaultValue: 2);
     currentHaertegrad = Haertegrad.values[storedIndex];
-
-    // Benachrichtigungen & Dark Mode => auskommentiert
   }
 
   // -------------------------
@@ -49,9 +50,10 @@ class _ProfilePageState extends State<ProfilePage> {
   // -------------------------
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Profil'),
+        title: Text(loc.profileTitle),
         backgroundColor: Colors.black,
       ),
       backgroundColor: Colors.black,
@@ -76,12 +78,13 @@ class _ProfilePageState extends State<ProfilePage> {
   // HEADER
   // -------------------------
   Widget _buildProfileHeader() {
+    final loc = S.of(context);
     return Column(
       children: [
         const SizedBox(height: 12),
-        const Text(
-          'WHO COULD YOU BE?',
-          style: TextStyle(
+        Text(
+          loc.profileHeader,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.white,
@@ -94,7 +97,7 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         const SizedBox(height: 16),
         Text(
-          userName.isEmpty ? 'Unbekannter Nutzer' : userName,
+          userName.isEmpty ? loc.unknownUser : userName,
           style: const TextStyle(
             fontSize: 18,
             fontWeight: FontWeight.bold,
@@ -104,9 +107,9 @@ class _ProfilePageState extends State<ProfilePage> {
         const SizedBox(height: 8),
         GestureDetector(
           onTap: _editProfile,
-          child: const Text(
-            'Bearbeiten',
-            style: TextStyle(
+          child: Text(
+            loc.editProfile,
+            style: const TextStyle(
               fontSize: 14,
               color: Colors.redAccent,
               decoration: TextDecoration.underline,
@@ -121,6 +124,7 @@ class _ProfilePageState extends State<ProfilePage> {
   // SETTINGS
   // -------------------------
   Widget _buildSettingsCard() {
+    final loc = S.of(context);
     return Card(
       color: Colors.grey[850],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -128,57 +132,26 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
         child: Column(
           children: [
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.only(top: 8, bottom: 8),
+                padding: const EdgeInsets.only(top: 8, bottom: 8),
                 child: Text(
-                  'EINSTELLUNGEN',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  loc.settingsTitle,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
             const Divider(color: Colors.grey, height: 1),
-
             // Härtegrad
             ListTile(
-              title: const Text('Härtegrad', style: TextStyle(color: Colors.white)),
+              title: Text(loc.hardnessTitle, style: const TextStyle(color: Colors.white)),
               trailing: Text(
-                _haertegradToString(currentHaertegrad),
+                _haertegradToString(context, currentHaertegrad),
                 style: const TextStyle(color: Colors.redAccent),
               ),
               onTap: _changeHaertegrad,
             ),
-
-            // ---------------------------------------------------------
-            // AUSKOMMENTIERTE FEATURES: PUSH NOTIFS & DARK MODE
-            // ---------------------------------------------------------
-            /*
-            const Divider(color: Colors.grey, height: 1),
-            SwitchListTile(
-              title: const Text('Benachrichtigungen', style: TextStyle(color: Colors.white)),
-              activeColor: Colors.redAccent,
-              value: notificationsEnabled,
-              onChanged: (val) {
-                setState(() {
-                  notificationsEnabled = val;
-                });
-                Hive.box('settings').put('notificationsEnabled', val);
-              },
-            ),
-            const Divider(color: Colors.grey, height: 1),
-            SwitchListTile(
-              title: const Text('Dark Mode', style: TextStyle(color: Colors.white)),
-              activeColor: Colors.redAccent,
-              value: darkModeEnabled,
-              onChanged: (val) {
-                setState(() {
-                  darkModeEnabled = val;
-                });
-                Hive.box('settings').put('darkModeEnabled', val);
-              },
-            ),
-            */
           ],
         ),
       ),
@@ -189,6 +162,7 @@ class _ProfilePageState extends State<ProfilePage> {
   // LEGAL & VERSION
   // -------------------------
   Widget _buildLegalCard() {
+    final loc = S.of(context);
     return Card(
       color: Colors.grey[850],
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
@@ -196,26 +170,25 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
         child: Column(
           children: [
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.only(top: 8, bottom: 8),
+                padding: const EdgeInsets.only(top: 8, bottom: 8),
                 child: Text(
-                  'RECHTLICHES & APP-INFOS',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  loc.legalAndAppInfoTitle,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
             const Divider(color: Colors.grey, height: 1),
             ListTile(
-              title: const Text('Datenschutz & Nutzungsbedingungen',
-                  style: TextStyle(color: Colors.white)),
+              title: Text(loc.privacyAndTerms, style: const TextStyle(color: Colors.white)),
               trailing: const Icon(Icons.chevron_right, color: Colors.white),
               onTap: _showPrivacy,
             ),
             const Divider(color: Colors.grey, height: 1),
             ListTile(
-              title: const Text('Version', style: TextStyle(color: Colors.white)),
+              title: Text(loc.version, style: const TextStyle(color: Colors.white)),
               trailing: Text(appVersion, style: const TextStyle(color: Colors.white70)),
             ),
           ],
@@ -228,6 +201,7 @@ class _ProfilePageState extends State<ProfilePage> {
   // ACCOUNT
   // -------------------------
   Widget _buildAccountCard() {
+    final loc = S.of(context);
     final isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
     return Card(
       color: Colors.grey[850],
@@ -236,55 +210,33 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
         child: Column(
           children: [
-            const Align(
+            Align(
               alignment: Alignment.centerLeft,
               child: Padding(
-                padding: EdgeInsets.only(top: 8, bottom: 8),
+                padding: const EdgeInsets.only(top: 8, bottom: 8),
                 child: Text(
-                  'ACCOUNT',
-                  style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                  loc.accountTitle,
+                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
                 ),
               ),
             ),
             const Divider(color: Colors.grey, height: 1),
-
-            // ABMELDEN & ACCOUNT LÖSCHEN (auskommentiert):
-            /*
-            ListTile(
-              leading: const Icon(Icons.exit_to_app, color: Colors.white),
-              title: const Text('Abmelden', style: TextStyle(color: Colors.white)),
-              onTap: _signOut,
-            ),
-            const Divider(color: Colors.grey, height: 1),
-            ListTile(
-              leading: const Icon(Icons.delete_forever, color: Colors.redAccent),
-              title: const Text('Account löschen', style: TextStyle(color: Colors.redAccent)),
-              onTap: _deleteAccount,
-            ),
-            const Divider(color: Colors.grey, height: 1),
-            */
-
-            // ---------------------------------------------------------
-            // Upgrade zu Premium => nur anzeigen, wenn kein Premium
-            // ---------------------------------------------------------
             if (!isPremium) ...[
               ListTile(
                 leading: const Icon(Icons.star, color: Colors.amber),
-                title: const Text(
-                  'Upgrade zu Premium',
-                  style: TextStyle(color: Colors.amber),
+                title: Text(
+                  loc.upgradeToPremium,
+                  style: const TextStyle(color: Colors.amber),
                 ),
                 onTap: _upgradeToPremium,
               ),
               const Divider(color: Colors.grey, height: 1),
             ],
-
-            // Optional: Restore Purchases (insb. iOS)
             ListTile(
               leading: const Icon(Icons.restart_alt, color: Colors.white),
-              title: const Text(
-                'Restore Purchases',
-                style: TextStyle(color: Colors.white),
+              title: Text(
+                loc.restorePurchases,
+                style: const TextStyle(color: Colors.white),
               ),
               onTap: _restorePurchases,
             ),
@@ -312,14 +264,15 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  String _haertegradToString(Haertegrad hg) {
+  String _haertegradToString(BuildContext context, Haertegrad hg) {
+    final loc = S.of(context);
     switch (hg) {
       case Haertegrad.normal:
-        return 'Normal';
+        return loc.hardnessNormal;
       case Haertegrad.hart:
-        return 'Hart';
+        return loc.hardnessHard;
       case Haertegrad.brutalEhrlich:
-        return 'Brutal ehrlich';
+        return loc.hardnessBrutal;
     }
   }
 
@@ -330,21 +283,21 @@ class _ProfilePageState extends State<ProfilePage> {
       builder: (ctx) {
         final controller = TextEditingController(text: userName);
         return AlertDialog(
-          title: const Text('Name bearbeiten'),
+          title: Text(S.of(ctx).editProfileTitle),
           content: TextField(
             controller: controller,
-            decoration: const InputDecoration(hintText: 'Dein Name'),
+            decoration: InputDecoration(hintText: S.of(ctx).editProfileHint),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Abbrechen'),
+              child: Text(S.of(ctx).cancel),
             ),
             ElevatedButton(
               onPressed: () {
                 Navigator.pop(ctx, controller.text.trim());
               },
-              child: const Text('Speichern'),
+              child: Text(S.of(ctx).save),
             ),
           ],
         );
@@ -366,72 +319,60 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // ---------------------------------------------------------
-  // NEU: Upgrade zu Premium
-  // ---------------------------------------------------------
   Future<void> _upgradeToPremium() async {
+    final loc = S.of(context);
     try {
       final offerings = await Purchases.getOfferings();
       if (offerings.current != null) {
-        // Premium-Paket suchen => z.B. "premium"
         final premiumPackage = offerings.current!.availablePackages.firstWhereOrNull(
           (pkg) => pkg.identifier == "premium",
         );
-
-        // Not found => Fehler
         if (premiumPackage == null) {
-          _showErrorDialog("Premium-Paket nicht gefunden");
+          _showErrorDialog(loc.premiumPackageNotFound);
           return;
         }
-
-        // Kauf starten
         final purchaserInfo = await Purchases.purchasePackage(premiumPackage);
         final isPremium = purchaserInfo.entitlements.all["premium"]?.isActive ?? false;
         if (isPremium) {
           Hive.box('settings').put('isPremium', true);
-          _showSuccessDialog("Herzlichen Glückwunsch! Du bist Premium.");
+          _showSuccessDialog(loc.premiumUpgradeSuccess);
           setState(() {});
         }
       } else {
-        _showErrorDialog("Keine Angebote verfügbar");
+        _showErrorDialog(loc.noOffersAvailable);
       }
     } catch (e) {
-      _showErrorDialog("Fehler beim Kauf: $e");
+      _showErrorDialog(loc.purchaseError(e.toString()));
     }
   }
 
-  // ---------------------------------------------------------
-  // NEU: Restore Purchases (insb. iOS)
-  // ---------------------------------------------------------
   Future<void> _restorePurchases() async {
+    final loc = S.of(context);
     try {
       final customerInfo = await Purchases.restorePurchases();
       final isPremium = customerInfo.entitlements.all["premium"]?.isActive ?? false;
       if (isPremium) {
         Hive.box('settings').put('isPremium', true);
-        _showSuccessDialog("Premium wiederhergestellt!");
+        _showSuccessDialog(loc.premiumRestored);
         setState(() {});
       } else {
-        _showErrorDialog("Keine aktiven Käufe gefunden.");
+        _showErrorDialog(loc.noActivePurchases);
       }
     } catch (e) {
-      _showErrorDialog("Fehler beim Wiederherstellen: $e");
+      _showErrorDialog(loc.restoreError(e.toString()));
     }
   }
 
-  // ---------------------------------------------------------
-  // Hilfs-Dialoge
-  // ---------------------------------------------------------
   void _showErrorDialog(String msg) {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Fehler'),
+        title: Text(S.of(ctx).errorTitle),
         content: Text(msg),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('OK'),
+            child: Text(S.of(ctx).ok),
           )
         ],
       ),
@@ -442,24 +383,22 @@ class _ProfilePageState extends State<ProfilePage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: const Text('Erfolg'),
+        title: Text(S.of(ctx).successTitle),
         content: Text(msg),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: const Text('OK'),
+            child: Text(S.of(ctx).ok),
           )
         ],
       ),
     );
   }
-
-
-  // ---------------------------------------------------------
-  // SEPARATE PAGE FOR HÄRTEGRAD-AUSWAHL
-  // ---------------------------------------------------------
 }
 
+// ---------------------------------------------------------
+// SEPARATE PAGE FOR HÄRTEGRAD-AUSWAHL
+// ---------------------------------------------------------
 class HaertegradPage extends StatefulWidget {
   final Haertegrad selectedHaertegrad;
 
@@ -480,9 +419,10 @@ class _HaertegradPageState extends State<HaertegradPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Härtegrad wählen'),
+        title: Text(loc.selectHardness),
         backgroundColor: Colors.black,
       ),
       backgroundColor: Colors.black,
@@ -490,9 +430,9 @@ class _HaertegradPageState extends State<HaertegradPage> {
         padding: const EdgeInsets.all(16.0),
         child: Column(
           children: [
-            const Text(
-              'WIE HART SOLL ICH ZU DIR SEIN?',
-              style: TextStyle(
+            Text(
+              loc.hardnessQuestion,
+              style: const TextStyle(
                   fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 24),
@@ -501,7 +441,7 @@ class _HaertegradPageState extends State<HaertegradPage> {
               child: Column(
                 children: [
                   RadioListTile<Haertegrad>(
-                    title: const Text('Normal', style: TextStyle(color: Colors.white)),
+                    title: Text(loc.hardnessNormal, style: const TextStyle(color: Colors.white)),
                     value: Haertegrad.normal,
                     groupValue: _currentSelection,
                     activeColor: Colors.redAccent,
@@ -509,7 +449,7 @@ class _HaertegradPageState extends State<HaertegradPage> {
                   ),
                   Divider(color: Colors.grey[700], height: 1),
                   RadioListTile<Haertegrad>(
-                    title: const Text('Hart', style: TextStyle(color: Colors.white)),
+                    title: Text(loc.hardnessHard, style: const TextStyle(color: Colors.white)),
                     value: Haertegrad.hart,
                     groupValue: _currentSelection,
                     activeColor: Colors.redAccent,
@@ -517,7 +457,7 @@ class _HaertegradPageState extends State<HaertegradPage> {
                   ),
                   Divider(color: Colors.grey[700], height: 1),
                   RadioListTile<Haertegrad>(
-                    title: const Text('Brutal ehrlich', style: TextStyle(color: Colors.redAccent)),
+                    title: Text(loc.hardnessBrutal, style: const TextStyle(color: Colors.redAccent)),
                     value: Haertegrad.brutalEhrlich,
                     groupValue: _currentSelection,
                     activeColor: Colors.redAccent,
@@ -530,7 +470,7 @@ class _HaertegradPageState extends State<HaertegradPage> {
             ElevatedButton(
               style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
               onPressed: () => Navigator.pop(context, _currentSelection),
-              child: const Text('Speichern'),
+              child: Text(loc.save),
             ),
           ],
         ),

@@ -1,11 +1,13 @@
-import 'package:flutter/material.dart';
-import '../onboarding/onboarding_name.dart'; 
-import '../onboarding/onboarding_age.dart'; 
-import '../onboarding/onboarding_chatbot.dart'; 
-import '../onboarding/onboarding_finish.dart'; 
-import '../onboarding/onboarding_goals.dart'; 
-import '../onboarding/onboarding_todos.dart'; 
+// lib/pages/first_time_page.dart
 
+import 'package:flutter/material.dart';
+import '../onboarding/onboarding_name.dart';
+import '../onboarding/onboarding_age.dart';
+import '../onboarding/onboarding_chatbot.dart';
+import '../onboarding/onboarding_finish.dart';
+import '../onboarding/onboarding_goals.dart';
+import '../onboarding/onboarding_todos.dart';
+import '../l10n/generated/l10n.dart'; // Lokalisierung importieren
 
 class FirstTimePage extends StatelessWidget {
   final VoidCallback onFinish; // Callback vom AuthGate
@@ -13,6 +15,7 @@ class FirstTimePage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -33,10 +36,10 @@ class FirstTimePage extends StatelessWidget {
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
-                  const Text(
-                    'WILLST DU JEMAND SEIN, DER KONTROLLE HAT,\nODER WILLST DU EIN SKLAVE DEINER IMPULSE BLEIBEN?',
+                  Text(
+                    loc.firstTimeHeadline,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 22,
                       color: Colors.white,
                       fontWeight: FontWeight.bold,
@@ -62,9 +65,9 @@ class FirstTimePage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                     ),
-                    child: const Text(
-                      'ICH BIN BEREIT',
-                      style: TextStyle(
+                    child: Text(
+                      loc.firstTimeButtonText,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),
@@ -79,4 +82,3 @@ class FirstTimePage extends StatelessWidget {
     );
   }
 }
-

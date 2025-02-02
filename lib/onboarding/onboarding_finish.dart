@@ -1,14 +1,9 @@
+// lib/onboarding/onboarding_finish.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-import '../onboarding/onboarding_name.dart'; 
-import '../onboarding/onboarding_age.dart'; 
-import '../onboarding/onboarding_chatbot.dart'; 
-import '../onboarding/onboarding_finish.dart'; 
-import '../onboarding/onboarding_goals.dart'; 
-import '../onboarding/onboarding_todos.dart'; 
-
-import '../main.dart';
+import '../main.dart'; // für MainScreen
+import '../l10n/generated/l10n.dart';
 
 class OnboardingFinishPage extends StatelessWidget {
   const OnboardingFinishPage({Key? key}) : super(key: key);
@@ -26,6 +21,7 @@ class OnboardingFinishPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -45,22 +41,21 @@ class OnboardingFinishPage extends StatelessWidget {
             child: Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  const Text(
-                    'DU HAST ES GESCHAFFT!',
+                  Text(
+                    loc.onboardingFinishHeadline,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 24,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
                   ),
                   const SizedBox(height: 16),
-                  const Text(
-                    'Jetzt beginnt der wahre Grind. Du bist bereit, die Kontrolle zu übernehmen.',
+                  Text(
+                    loc.onboardingFinishSubheadline,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 16,
                       color: Colors.white70,
                     ),
@@ -78,9 +73,9 @@ class OnboardingFinishPage extends StatelessWidget {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                     ),
-                    child: const Text(
-                      'LET’S GO ZUM DASHBOARD!',
-                      style: TextStyle(
+                    child: Text(
+                      loc.onboardingFinishButtonText,
+                      style: const TextStyle(
                         fontSize: 18,
                         fontWeight: FontWeight.bold,
                       ),

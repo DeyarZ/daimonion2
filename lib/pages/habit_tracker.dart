@@ -10,6 +10,9 @@ import '../services/db_service.dart';
 // NEU: Notification-Funktionen aus main.dart
 import 'package:daimonion_app/main.dart' show scheduleHabitNotifications, cancelHabitNotifications;
 
+// Lokalisierung importieren
+import '../l10n/generated/l10n.dart';
+
 // -------------------------------------------
 // Model-Klasse: Habit
 // -------------------------------------------
@@ -72,9 +75,10 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Habit Tracker'),
+        title: Text(loc.habitTrackerTitle),
         backgroundColor: Colors.black,
       ),
       backgroundColor: Colors.black,
@@ -83,7 +87,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
           const SizedBox(height: 8),
           Center(
             child: Text(
-              'Heute: ${_formatDate(today)}',
+              '${loc.todayLabel} ${_formatDate(today)}',
               style: const TextStyle(
                 color: Colors.redAccent,
                 fontSize: 16,
@@ -99,10 +103,10 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
                 final habits = _boxToHabitList(box);
 
                 if (habits.isEmpty) {
-                  return const Center(
+                  return Center(
                     child: Text(
-                      'Noch keine Gewohnheiten',
-                      style: TextStyle(color: Colors.white),
+                      loc.noHabitsMessage,
+                      style: const TextStyle(color: Colors.white),
                     ),
                   );
                 }
@@ -124,6 +128,8 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
                           const Padding(
                             padding: EdgeInsets.all(8),
                             child: Text(
+                              // Hier kann auch ein lokalisierter String stehen, wenn gewünscht:
+                              // z.B. S.of(context).habitHeader,
                               'Habit',
                               style: TextStyle(
                                 color: Colors.white,
@@ -311,7 +317,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Neue Gewohnheit'),
+          title: Text(S.of(ctx).newHabitTitle),
           content: StatefulBuilder(
             builder: (context, setStateDialog) {
               return SingleChildScrollView(
@@ -321,7 +327,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
                     // Titel
                     TextField(
                       controller: controller,
-                      decoration: const InputDecoration(hintText: 'Name'),
+                      decoration: InputDecoration(hintText: S.of(context).newHabitNameHint),
                     ),
                     const SizedBox(height: 12),
 
@@ -355,7 +361,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
                     // Reminder optional
                     Row(
                       children: [
-                        const Text('Reminder (optional):'),
+                        Text(S.of(context).reminderLabel),
                         const SizedBox(width: 8),
                         ElevatedButton(
                           style: ElevatedButton.styleFrom(
@@ -375,7 +381,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
                           },
                           child: Text(
                             (chosenHour == null || chosenMinute == null)
-                                ? 'Keine'
+                                ? S.of(context).noReminder
                                 : '${chosenHour!.toString().padLeft(2, '0')}:${chosenMinute!.toString().padLeft(2, '0')}',
                           ),
                         ),
@@ -389,7 +395,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Abbrechen'),
+              child: Text(S.of(ctx).cancel),
             ),
             TextButton(
               onPressed: () async {
@@ -428,7 +434,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
                 }
                 Navigator.pop(ctx);
               },
-              child: const Text('Ok'),
+              child: Text(S.of(ctx).ok),
             ),
           ],
         );
@@ -444,19 +450,19 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> {
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Löschen?'),
-          content: Text('Möchtest du die Gewohnheit "${habit.name}" wirklich löschen?'),
+          title: Text(S.of(ctx).deleteHabitTitle),
+          content: Text(S.of(ctx).deleteHabitMessage(habit.name)),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('Abbrechen'),
+              child: Text(S.of(ctx).cancel),
             ),
             TextButton(
               onPressed: () async {
                 await _deleteHabit(habit);
                 Navigator.pop(ctx);
               },
-              child: const Text('Ja, löschen'),
+              child: Text(S.of(ctx).confirmDeleteHabit),
             ),
           ],
         );

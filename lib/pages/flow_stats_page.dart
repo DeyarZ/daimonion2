@@ -1,20 +1,19 @@
+// lib/pages/flow_stats_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'dart:math';
+import '../l10n/generated/l10n.dart'; // Lokalisierung importieren
 
-// ---------------------------------------
 // MODELDATEN
-// ---------------------------------------
 class FlowSession {
   final DateTime date;
   final int minutes;
   FlowSession({required this.date, required this.minutes});
 }
 
-// ---------------------------------------
 // FLOWSTATS-PAGE
-// ---------------------------------------
 class FlowStatsPage extends StatefulWidget {
   const FlowStatsPage({Key? key}) : super(key: key);
 
@@ -82,9 +81,7 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
     setState(() {});
   }
 
-  // ------------------------------------------------------
   // FILTER-BUTTON
-  // ------------------------------------------------------
   Widget _buildFilterButton(String filterKey, String label) {
     final isSelected = _currentFilter == filterKey;
     return GestureDetector(
@@ -111,9 +108,7 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
     );
   }
 
-  // ------------------------------------------------------
   // DATENAUFBEREITUNG
-  // ------------------------------------------------------
   void _setupWeekData(List<FlowSession> sessions) {
     final List<double> dayTotals = List.filled(7, 0.0);
     for (var fs in sessions) {
@@ -154,14 +149,13 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
     _barLabels = _generateLast12MonthLabels(now);
   }
 
-  // ------------------------------------------------------
   // BAU DES UI
-  // ------------------------------------------------------
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Flow Stats'),
+        title: Text(loc.flowStatsTitle),
         backgroundColor: Colors.black,
       ),
       backgroundColor: Colors.black,
@@ -174,11 +168,11 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                _buildFilterButton('week', 'Woche'),
+                _buildFilterButton('week', loc.filterWeek),
                 const SizedBox(width: 8),
-                _buildFilterButton('month', 'Monat'),
+                _buildFilterButton('month', loc.filterMonth),
                 const SizedBox(width: 8),
-                _buildFilterButton('year', 'Jahr'),
+                _buildFilterButton('year', loc.filterYear),
               ],
             ),
             const SizedBox(height: 16),
@@ -191,7 +185,7 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
             ),
             const SizedBox(height: 24),
 
-            // STATS ALS LISTE (vertical)
+            // STATS-LISTE
             _buildStatsList(),
           ],
         ),
@@ -199,14 +193,13 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
     );
   }
 
-  // ------------------------------------------------------
   // BARCHART
-  // ------------------------------------------------------
   Widget _buildBarChart(BuildContext context) {
+    final loc = S.of(context);
     if (_barValues.isEmpty) {
       return Center(
         child: Text(
-          'Keine Daten für diesen Zeitraum',
+          loc.noDataMessage,
           style: TextStyle(color: Colors.white.withOpacity(0.7)),
         ),
       );
@@ -218,10 +211,8 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
     // Dynamische Balkenbreite, je nach Anzahl
     double barWidth = 30; // default
     if (_barValues.length >= 12) {
-      // z.B. bei "year" -> 12 bars -> schmaler
       barWidth = 20;
     } else if (_barValues.length <= 4) {
-      // z.B. month -> 4 bars -> bisschen breiter
       barWidth = 40;
     }
 
@@ -292,24 +283,23 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
     );
   }
 
-  // ------------------------------------------------------
   // STATS-LISTE
-  // ------------------------------------------------------
   Widget _buildStatsList() {
+    final loc = S.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        _statItem(title: 'Flows', value: _totalFlowCount.toString()),
+        _statItem(title: loc.statFlows, value: _totalFlowCount.toString()),
         const SizedBox(height: 8),
-        _statItem(title: 'Minuten gesamt', value: _totalFlowMinutes.toString()),
+        _statItem(title: loc.statTotalMinutes, value: _totalFlowMinutes.toString()),
         const SizedBox(height: 8),
         _statItem(
-          title: 'Ø Zeit pro Flow (Min)', 
+          title: loc.statAverageFlow,
           value: _averageFlowMinutes.toStringAsFixed(1),
         ),
         const SizedBox(height: 8),
         _statItem(
-          title: 'Ø Zeit pro Woche (Min)',
+          title: loc.statAverageWeeklyFlow,
           value: _averageWeeklyFlowMinutes.isNaN
               ? '0.0'
               : _averageWeeklyFlowMinutes.toStringAsFixed(1),
@@ -337,9 +327,7 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
     );
   }
 
-  // ------------------------------------------------------
   // HELPER
-  // ------------------------------------------------------
   List<FlowSession> _boxToFlowSessions(Box<Map> box) {
     final List<FlowSession> result = [];
     for (int i = 0; i < box.length; i++) {
@@ -404,5 +392,4 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
       default: return '?';
     }
   }
-  
 }

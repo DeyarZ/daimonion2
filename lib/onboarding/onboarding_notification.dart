@@ -1,3 +1,5 @@
+// lib/onboarding/onboarding_notification.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:permission_handler/permission_handler.dart';
@@ -6,6 +8,7 @@ import 'onboarding_todos.dart';
 
 // Globale Notification-Plugin Instanz importieren
 import '../main.dart';
+import '../l10n/generated/l10n.dart';
 
 class OnboardingNotificationPage extends StatefulWidget {
   const OnboardingNotificationPage({Key? key}) : super(key: key);
@@ -58,16 +61,19 @@ class _OnboardingNotificationPageState
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
+      backgroundColor: Colors.black,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
-              "Mach den ersten Schritt",
-              style: TextStyle(
+            const SizedBox(height: 40),
+            Text(
+              loc.onboardingNotificationHeadline,
+              style: const TextStyle(
                 fontSize: 28,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -75,9 +81,12 @@ class _OnboardingNotificationPageState
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 16),
-            const Text(
-              "Stell dir vor, du wirst jeden Tag daran erinnert, besser zu sein als gestern. Deine Ziele, deine To-Dos, deine Disziplin – alles wird stärker, weil du es wirst. Schalte jetzt Benachrichtigungen ein und lass dich von deinem inneren Daimonion pushen.",
-              style: TextStyle(fontSize: 18, color: Colors.white70),
+            Text(
+              loc.onboardingNotificationDescription,
+              style: const TextStyle(
+                fontSize: 18,
+                color: Colors.white70,
+              ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 32),
@@ -91,9 +100,9 @@ class _OnboardingNotificationPageState
                 ),
               ),
               onPressed: _requestNotificationPermission,
-              child: const Text(
-                "Push mich!",
-                style: TextStyle(
+              child: Text(
+                loc.onboardingNotificationButtonText,
+                style: const TextStyle(
                   fontSize: 18,
                   fontWeight: FontWeight.bold,
                 ),
@@ -101,15 +110,15 @@ class _OnboardingNotificationPageState
             ),
             const SizedBox(height: 24),
             if (_permissionGranted)
-              const Text(
-                "Benachrichtigungen sind jetzt aktiv! Lass uns loslegen.",
-                style: TextStyle(color: Colors.green, fontSize: 16),
+              Text(
+                loc.notificationActiveMessage,
+                style: const TextStyle(color: Colors.green, fontSize: 16),
                 textAlign: TextAlign.center,
               )
             else if (_permissionDenied)
-              const Text(
-                "Benachrichtigungen wurden abgelehnt. Du kannst sie später in den Einstellungen aktivieren.",
-                style: TextStyle(color: Colors.redAccent, fontSize: 16),
+              Text(
+                loc.notificationDeniedMessage,
+                style: const TextStyle(color: Colors.redAccent, fontSize: 16),
                 textAlign: TextAlign.center,
               ),
             const Spacer(),
@@ -123,9 +132,9 @@ class _OnboardingNotificationPageState
                 ),
               ),
               onPressed: _goNext,
-              child: const Text(
-                "Weiter zur nächsten Challenge",
-                style: TextStyle(
+              child: Text(
+                loc.onboardingNotificationNextChallenge,
+                style: const TextStyle(
                   fontSize: 16,
                   fontWeight: FontWeight.bold,
                 ),
@@ -135,7 +144,6 @@ class _OnboardingNotificationPageState
           ],
         ),
       ),
-      backgroundColor: Colors.black,
     );
   }
 }

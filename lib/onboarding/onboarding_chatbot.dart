@@ -1,13 +1,10 @@
+// lib/onboarding/onboarding_chatbot.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
-import '../onboarding/onboarding_name.dart'; 
-import '../onboarding/onboarding_age.dart'; 
-import '../onboarding/onboarding_chatbot.dart'; 
-import '../onboarding/onboarding_finish.dart'; 
-import '../onboarding/onboarding_goals.dart'; 
-import '../onboarding/onboarding_todos.dart'; 
-import '../onboarding/onboarding_notification.dart'; 
+import '../onboarding/onboarding_notification.dart';
+import '../l10n/generated/l10n.dart';
 
 class OnboardingChatbotPage extends StatefulWidget {
   const OnboardingChatbotPage({Key? key}) : super(key: key);
@@ -45,7 +42,7 @@ class _OnboardingChatbotPageState extends State<OnboardingChatbotPage> {
         setState(() {
           _chosenMode = mode;
           _warningMessage = mode == 'brutalEhrlich'
-              ? 'Achtung: Im Modus "Brutal Ehrlich" wirst du beleidigt und extrem herausgefordert.'
+              ? S.of(context).chatbotWarning
               : '';
         });
       },
@@ -77,6 +74,7 @@ class _OnboardingChatbotPageState extends State<OnboardingChatbotPage> {
 
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
@@ -84,18 +82,18 @@ class _OnboardingChatbotPageState extends State<OnboardingChatbotPage> {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             const SizedBox(height: 40),
-            const Text(
-              "Chatbot Härtegrad",
-              style: TextStyle(
+            Text(
+              loc.onboardingChatbotTitle,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
               ),
               textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            _buildModeButton('normal', 'Normal', Colors.blue),
-            _buildModeButton('hart', 'Hart', Colors.blue),
-            _buildModeButton('brutalEhrlich', 'Brutal Ehrlich', Colors.red),
+            _buildModeButton('normal', loc.chatbotModeNormal, Colors.blue),
+            _buildModeButton('hart', loc.chatbotModeHard, Colors.blue),
+            _buildModeButton('brutalEhrlich', loc.chatbotModeBrutal, Colors.red),
             if (_warningMessage.isNotEmpty) ...[
               const SizedBox(height: 24),
               Text(
@@ -121,9 +119,9 @@ class _OnboardingChatbotPageState extends State<OnboardingChatbotPage> {
                   vertical: 14.0,
                 ),
               ),
-              child: const Text(
-                "Weiter",
-                style: TextStyle(fontSize: 16),
+              child: Text(
+                loc.continueButton,
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],

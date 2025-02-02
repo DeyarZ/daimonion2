@@ -1,52 +1,56 @@
+// lib/pages/tools_page.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'flow_timer.dart';
 import 'todo_list.dart';
 import 'journal.dart';
 import 'habit_tracker.dart';
-import '../widgets/ad_wrapper.dart'; // Import des AdWrapper
+import '../widgets/ad_wrapper.dart';
+import '../l10n/generated/l10n.dart';
 
 class ToolsPage extends StatelessWidget {
   const ToolsPage({Key? key}) : super(key: key);
 
-  // Liste der Tools
-  final List<_ToolItem> tools = const [
-    _ToolItem(
-      title: 'Flow Timer',
-      imagePath: 'assets/images/Flow_Timer.png',
-      isPremium: false,
-      pageToNavigate: FlowTimerPage(),
-    ),
-    _ToolItem(
-      title: 'Tasks',
-      imagePath: 'assets/images/To_Do_List.jpg',
-      isPremium: false,
-      pageToNavigate: ToDoListPage(),
-    ),
-    _ToolItem(
-      title: 'Journal',
-      imagePath: 'assets/images/journal.jpg',
-      isPremium: true,
-      pageToNavigate: JournalPage(),
-    ),
-    _ToolItem(
-      title: 'Gewohnheitstracker',
-      imagePath: 'assets/images/habits.jpg',
-      isPremium: true,
-      pageToNavigate: HabitTrackerPage(),
-    ),
-  ];
-
   @override
   Widget build(BuildContext context) {
-    // Check ob Premium
+    // Dynamisch die Tool-Items aus der Lokalisierung erstellen
+    final loc = S.of(context);
+    final List<_ToolItem> tools = [
+      _ToolItem(
+        title: loc.flowTimerToolTitle,
+        imagePath: 'assets/images/Flow_Timer.png',
+        isPremium: false,
+        pageToNavigate: const FlowTimerPage(),
+      ),
+      _ToolItem(
+        title: loc.tasksToolTitle,
+        imagePath: 'assets/images/To_Do_List.jpg',
+        isPremium: false,
+        pageToNavigate: const ToDoListPage(),
+      ),
+      _ToolItem(
+        title: loc.journalToolTitle,
+        imagePath: 'assets/images/journal.jpg',
+        isPremium: true,
+        pageToNavigate: const JournalPage(),
+      ),
+      _ToolItem(
+        title: loc.habitTrackerToolTitle,
+        imagePath: 'assets/images/habits.jpg',
+        isPremium: true,
+        pageToNavigate: const HabitTrackerPage(),
+      ),
+    ];
+
+    // Check, ob der User Premium hat
     final isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
 
     return AdWrapper(
       child: Scaffold(
         backgroundColor: Colors.black,
         appBar: AppBar(
-          title: const Text('Deine Werkzeuge zum Sieg'),
+          title: Text(loc.toolsPageTitle),
           backgroundColor: Colors.black,
         ),
         body: Padding(
@@ -84,16 +88,17 @@ class ToolsPage extends StatelessWidget {
 
   // Einfacher Dialog: sag "Hol Premium"
   void _showPaywallDialog(BuildContext context) {
+    final loc = S.of(context);
     showDialog(
       context: context,
       builder: (ctx) {
         return AlertDialog(
-          title: const Text('Premium benötigt'),
-          content: const Text('Dieses Tool ist nur für Premium-Mitglieder verfügbar.'),
+          title: Text(loc.paywallTitle),
+          content: Text(loc.paywallContent),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: const Text('OK'),
+              child: Text(loc.ok),
             ),
           ],
         );
@@ -157,7 +162,6 @@ class _ToolCardItem extends StatelessWidget {
                 width: double.infinity,
                 fit: BoxFit.cover,
               ),
-
               // Leichter schwarzer Gradient
               Container(
                 decoration: BoxDecoration(
@@ -171,7 +175,6 @@ class _ToolCardItem extends StatelessWidget {
                   ),
                 ),
               ),
-
               // Titel
               Positioned(
                 left: 12,
@@ -185,7 +188,6 @@ class _ToolCardItem extends StatelessWidget {
                   ),
                 ),
               ),
-
               // Lock-Overlay, falls isPremium => lock
               if (showLock)
                 Positioned(

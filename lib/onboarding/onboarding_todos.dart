@@ -1,17 +1,11 @@
+// lib/onboarding/onboarding_todos.dart
+
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-
-import '../onboarding/onboarding_name.dart'; 
-import '../onboarding/onboarding_age.dart'; 
-import '../onboarding/onboarding_chatbot.dart'; 
-import '../onboarding/onboarding_finish.dart'; 
-import '../onboarding/onboarding_goals.dart'; 
-import '../onboarding/onboarding_todos.dart'; 
-
 import 'package:uuid/uuid.dart';
-
-// Dein DBService & tasksBoxName
 import '../services/db_service.dart';
+import '../onboarding/onboarding_finish.dart';
+import '../l10n/generated/l10n.dart';
 
 class OnboardingTodosPage extends StatefulWidget {
   const OnboardingTodosPage({Key? key}) : super(key: key);
@@ -121,6 +115,7 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
   // ---------------------------------------
   @override
   Widget build(BuildContext context) {
+    final loc = S.of(context);
     return Scaffold(
       backgroundColor: Colors.black,
       body: Padding(
@@ -128,9 +123,9 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            const Text(
-              "Deine ersten To-Dos",
-              style: TextStyle(
+            Text(
+              loc.onboardingTodosTitle,
+              style: const TextStyle(
                 fontSize: 24,
                 fontWeight: FontWeight.bold,
                 color: Colors.white,
@@ -139,17 +134,14 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
             ),
             const SizedBox(height: 16),
             Text(
-              "Leg jetzt deine ersten Aufgaben an. "
-              "Diese To-Dos landen direkt in deiner Hauptliste.",
+              loc.onboardingTodosSubheadline,
               style: TextStyle(
                 fontSize: 16,
                 color: Colors.grey[400],
               ),
               textAlign: TextAlign.center,
             ),
-
             const SizedBox(height: 24),
-
             // Vorschlags-Buttons
             SingleChildScrollView(
               scrollDirection: Axis.horizontal,
@@ -177,9 +169,7 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
                 }).toList(),
               ),
             ),
-
             const SizedBox(height: 16),
-
             Row(
               children: [
                 Expanded(
@@ -187,7 +177,7 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
                     controller: _todoController,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      hintText: "Neue Aufgabe...",
+                      hintText: loc.newTodoHint,
                       hintStyle: const TextStyle(color: Colors.grey),
                       enabledBorder: OutlineInputBorder(
                         borderSide: BorderSide(color: Colors.grey),
@@ -205,27 +195,25 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.redAccent,
-                    padding:
-                        const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+                    padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
                   ),
                   onPressed: _addTodo,
-                  child: const Text(
-                    "Add",
-                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+                  child: Text(
+                    loc.addTodo,
+                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
                   ),
                 ),
               ],
             ),
-
             const SizedBox(height: 24),
             Expanded(
               child: _onboardingTodos.isEmpty
                   ? Center(
                       child: Text(
-                        "Noch keine To-Dos hinzugefügt.",
+                        loc.noTodosAdded,
                         style: TextStyle(color: Colors.grey[500]),
                       ),
                     )
@@ -233,9 +221,7 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
                       itemCount: _onboardingTodos.length,
                       itemBuilder: (context, index) {
                         final todo = _onboardingTodos[index];
-                        final deadline = DateTime.fromMillisecondsSinceEpoch(
-                          todo['deadline'],
-                        );
+                        final deadline = DateTime.fromMillisecondsSinceEpoch(todo['deadline']);
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 8),
                           padding: const EdgeInsets.all(12),
@@ -249,12 +235,11 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
                               style: const TextStyle(color: Colors.white),
                             ),
                             subtitle: Text(
-                              "Fällig am ${_formatDate(deadline)}",
+                              loc.dueOn(_formatDate(deadline)),
                               style: const TextStyle(color: Colors.white70),
                             ),
                             trailing: IconButton(
-                              icon:
-                                  const Icon(Icons.delete, color: Colors.redAccent),
+                              icon: const Icon(Icons.delete, color: Colors.redAccent),
                               onPressed: () => _removeTodo(index),
                             ),
                             onTap: () => _pickDeadline(index),
@@ -263,9 +248,7 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
                       },
                     ),
             ),
-
             const SizedBox(height: 24),
-
             ElevatedButton(
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.redAccent,
@@ -275,9 +258,9 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
                 ),
               ),
               onPressed: _goNext,
-              child: const Text(
-                "Weiter",
-                style: TextStyle(fontSize: 16),
+              child: Text(
+                loc.continueButton,
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ],
@@ -290,4 +273,3 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
     return "${date.day}.${date.month}.${date.year}";
   }
 }
-

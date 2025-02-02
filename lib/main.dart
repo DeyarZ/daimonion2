@@ -12,13 +12,17 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/data/latest.dart' as tz;
 import 'package:timezone/timezone.dart' as tz;
 
-// DEIN Haertegrad-Enum (pfad anpassen, wenn woanders)
+// NEU: Lokalisierung
+import 'package:flutter_localizations/flutter_localizations.dart';
+import 'l10n/generated/l10n.dart';
+
+// DEIN Haertegrad-Enum (Pfad anpassen, wenn woanders)
 import 'package:daimonion_app/haertegrad_enum.dart';
 
 // Services (anpassen an deine Struktur)
 import 'services/flow_timer_service.dart';
 import 'services/db_service.dart';
-import '../services/openai_service.dart';
+import 'services/openai_service.dart';
 
 // Pages (anpassen an deine Struktur)
 import 'pages/auth_gate.dart';
@@ -98,7 +102,7 @@ Future<void> scheduleHabitNotifications({
   }
 }
 
-// Cancelt Habit-Notifications (wenn user habit löscht)
+// Cancelt Habit-Notifications (wenn User Habit löscht)
 Future<void> cancelHabitNotifications(
   String habitId,
   Set<int> weekdays,
@@ -151,7 +155,6 @@ Map<String, String> _getTodoReminderText(Haertegrad grad) {
   }
 }
 
-
 // Geplante tägliche Reminder-Funktion
 Future<void> scheduleDailyTodoReminder() async {
   // 1) Holen wir den Härtegrad
@@ -183,7 +186,7 @@ Future<void> scheduleDailyTodoReminder() async {
     20, // 20:00
     0,
   );
-  // wenn 20:00 schon vorbei -> +1 Tag
+  // Wenn 20:00 schon vorbei -> +1 Tag
   if (scheduledTime.isBefore(now)) {
     scheduledTime = scheduledTime.add(const Duration(days: 1));
   }
@@ -330,6 +333,14 @@ class DaimonionApp extends StatelessWidget {
       title: 'Daimonion',
       theme: ThemeData.dark(),
       debugShowCheckedModeBanner: false,
+      // Lokalisierungs-Setup:
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: S.delegate.supportedLocales,
       home: const AuthGate(),
     );
   }
