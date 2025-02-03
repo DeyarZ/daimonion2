@@ -1444,6 +1444,211 @@ class S {
       args: [],
     );
   }
+
+  /// `FUNDAMENTALS`
+  String get dailyFundamentalsTitle {
+    return Intl.message(
+      'FUNDAMENTALS',
+      name: 'dailyFundamentalsTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Did you work out today?`
+  String get dailyCheckGym {
+    return Intl.message(
+      'Did you work out today?',
+      name: 'dailyCheckGym',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Did you do something mentally productive today?`
+  String get dailyCheckMental {
+    return Intl.message(
+      'Did you do something mentally productive today?',
+      name: 'dailyCheckMental',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Did you stay porn-free today?`
+  String get dailyCheckNoPorn {
+    return Intl.message(
+      'Did you stay porn-free today?',
+      name: 'dailyCheckNoPorn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Did you eat healthy today?`
+  String get dailyCheckHealthyEating {
+    return Intl.message(
+      'Did you eat healthy today?',
+      name: 'dailyCheckHealthyEating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Did you do something good for others today?`
+  String get dailyCheckHelpOthers {
+    return Intl.message(
+      'Did you do something good for others today?',
+      name: 'dailyCheckHelpOthers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Did you spend time in nature today?`
+  String get dailyCheckNature {
+    return Intl.message(
+      'Did you spend time in nature today?',
+      name: 'dailyCheckNature',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You messed up, motherfucker!`
+  String get dailyInsultTitle {
+    return Intl.message(
+      'You messed up, motherfucker!',
+      name: 'dailyInsultTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You ignored ALL fundamentals, worthless scum!`
+  String get dailyInsultAllMissed {
+    return Intl.message(
+      'You ignored ALL fundamentals, worthless scum!',
+      name: 'dailyInsultAllMissed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You missed {count} fundamentals, bitch. That won't lead you anywhere!`
+  String dailyInsultSomeMissed(Object count) {
+    return Intl.message(
+      'You missed $count fundamentals, bitch. That won\'t lead you anywhere!',
+      name: 'dailyInsultSomeMissed',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Sport`
+  String get shortCheckGym {
+    return Intl.message('Sport', name: 'shortCheckGym', desc: '', args: []);
+  }
+
+  /// `Mental`
+  String get shortCheckMental {
+    return Intl.message('Mental', name: 'shortCheckMental', desc: '', args: []);
+  }
+
+  /// `No Porn`
+  String get shortCheckNoPorn {
+    return Intl.message(
+      'No Porn',
+      name: 'shortCheckNoPorn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Healthy`
+  String get shortCheckHealthyEating {
+    return Intl.message(
+      'Healthy',
+      name: 'shortCheckHealthyEating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Help`
+  String get shortCheckHelpOthers {
+    return Intl.message(
+      'Help',
+      name: 'shortCheckHelpOthers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Nature`
+  String get shortCheckNature {
+    return Intl.message('Nature', name: 'shortCheckNature', desc: '', args: []);
+  }
+
+  /// `Did you work out today, motherfucker?`
+  String get fullCheckGym {
+    return Intl.message(
+      'Did you work out today, motherfucker?',
+      name: 'fullCheckGym',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Did you do something mentally productive?`
+  String get fullCheckMental {
+    return Intl.message(
+      'Did you do something mentally productive?',
+      name: 'fullCheckMental',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Did you stay away from porn, you nasty fuck?`
+  String get fullCheckNoPorn {
+    return Intl.message(
+      'Did you stay away from porn, you nasty fuck?',
+      name: 'fullCheckNoPorn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Did you eat healthy, you donut junkie?`
+  String get fullCheckHealthyEating {
+    return Intl.message(
+      'Did you eat healthy, you donut junkie?',
+      name: 'fullCheckHealthyEating',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Did you do something good for others?`
+  String get fullCheckHelpOthers {
+    return Intl.message(
+      'Did you do something good for others?',
+      name: 'fullCheckHelpOthers',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Did you spend time in nature today?`
+  String get fullCheckNature {
+    return Intl.message(
+      'Did you spend time in nature today?',
+      name: 'fullCheckNature',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -1,13 +1,13 @@
-// lib/pages/dashboard.dart
-
-import 'dart:math'; // Für den Zufall
+import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:timezone/timezone.dart' as tz;
 
-// Deine Services & Pages
+// Services & Pages (anpassen an deine Ordnerstruktur)
 import '../services/db_service.dart';
 import '../services/flow_timer_service.dart';
 import '../pages/todo_list.dart';
@@ -17,6 +17,12 @@ import '../widgets/ad_wrapper.dart';
 
 // Importiere Lokalisierung
 import '../l10n/generated/l10n.dart';
+
+// ------------------------------------------------
+// Lokale Notifications Plugin
+// ------------------------------------------------
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
 
 // ------------------------------------------------
 // MODELDATEN für Flow-Sessions
@@ -59,6 +65,67 @@ class Habit {
 }
 
 // ------------------------------------------------
+// DAILY CHECK MODELL
+// ------------------------------------------------
+class DailyCheckModel {
+  bool gym;
+  bool mental;
+  bool noPorn;
+  bool healthyEating;
+  bool helpOthers;
+  bool natureTime;
+
+  DailyCheckModel({
+    this.gym = false,
+    this.mental = false,
+    this.noPorn = false,
+    this.healthyEating = false,
+    this.helpOthers = false,
+    this.natureTime = false,
+  });
+
+  Map<String, bool> toMap() {
+    return {
+      'gym': gym,
+      'mental': mental,
+      'noPorn': noPorn,
+      'healthyEating': healthyEating,
+      'helpOthers': helpOthers,
+      'natureTime': natureTime,
+    };
+  }
+
+  factory DailyCheckModel.fromMap(Map map) {
+    return DailyCheckModel(
+      gym: map['gym'] ?? false,
+      mental: map['mental'] ?? false,
+      noPorn: map['noPorn'] ?? false,
+      healthyEating: map['healthyEating'] ?? false,
+      helpOthers: map['helpOthers'] ?? false,
+      natureTime: map['natureTime'] ?? false,
+    );
+  }
+
+  /// Wie viele NICHT erledigt?
+  int get missedCount {
+    int c = 0;
+    if (!gym) c++;
+    if (!mental) c++;
+    if (!noPorn) c++;
+    if (!healthyEating) c++;
+    if (!helpOthers) c++;
+    if (!natureTime) c++;
+    return c;
+  }
+}
+
+// ------------------------------------------------
+// Hive Keys
+// ------------------------------------------------
+const String dailyChecksBoxKey = 'dailyChecksBoxKey';
+const String dailyCheckDateKey = 'dailyCheckDateKey';
+
+// ------------------------------------------------
 // DASHBOARD
 // ------------------------------------------------
 class DashboardPage extends StatefulWidget {
@@ -72,57 +139,155 @@ class DashboardPageState extends State<DashboardPage> {
   final DBService _dbService = DBService();
   final Uuid _uuid = const Uuid();
 
-  int _streak = 0; // aus Hive gelesen
+  int _streak = 0; 
   final List<DateTime> _weekDates = [];
-
-  /// Hier speichern wir die echten Flow-Sekunden der letzten 7 Tage
-  int? _weeklyFlowSeconds;
-
-  /// Motivationsbilder (die Strings bleiben hardgecoded, da Assets nicht lokalisiert werden)
+  int? _weeklyFlowSeconds; 
   final List<String> _motivationImages = [
-    'assets/images/arnold.jpg',
     'assets/images/8bit_squat.png',
+    'assets/images/alexander.png',
+    'assets/images/arnold.jpg',
     'assets/images/chess.png',
     'assets/images/ferrari.png',
+    'assets/images/garage.png',
+    'assets/images/gervonta.png',
+    'assets/images/gloves.png',
     'assets/images/greek_focus.png',
+    'assets/images/gymrack.png',
+    'assets/images/hustle_rari-png',
+    'assets/images/khabib.png',
+    'assets/images/lambo_gelb.png',
+    'assets/images/limit.png',
+    'assets/images/lion.png',
+    'assets/images/matrix.png',
     'assets/images/napoleon.png',
+    'assets/images/nate.png',
+    'assets/images/rolex.png',
     'assets/images/ronaldo.png',
     'assets/images/spartan.png',
     'assets/images/tate.png',
     'assets/images/wolf.png',
   ];
 
-  late String _randomQuote; // Wird aus dem lokalisierten Motivations-String gezogen
+  late String _randomQuote;
   late String _randomImage;
+
+  // Daily Checks
+  DailyCheckModel _todayCheck = DailyCheckModel();
 
   @override
   void initState() {
     super.initState();
     _initWeekDates();
-
-    // Streak-Wert aus settings-Box laden
-    final settingsBox = Hive.box('settings');
-    _streak = settingsBox.get('streak', defaultValue: 1);
-
-    // Zufälliges Bild wählen
-    _randomImage = _motivationImages[Random().nextInt(_motivationImages.length)];
-
-    // Echte wöchentliche Flow-Minuten laden und in Sek. umrechnen
+    _loadStreakFromHive();
     _loadWeeklyFlowSeconds();
+    _pickRandomImage();
+
+    // DailyCheck laden
+    _loadTodayChecks().then((_) {
+      // Neuer Tag => verpasste Checks => Notification
+      _handleNewDayAndScheduleInsult();
+    });
   }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    // Motivationssprüche via Lokalisierung laden (String mit "||" als Trenner)
     final quotes = S.of(context).motivationQuotes.split('||');
-    // Zufällig einen Spruch auswählen
     _randomQuote = quotes[Random().nextInt(quotes.length)];
   }
 
-  // -----------------------------------------
-  // Wochentage init
-  // -----------------------------------------
+  // ------------------------------------------------
+  // Neuer Tag => Beleidigungs-Notif
+  // ------------------------------------------------
+  Future<void> _handleNewDayAndScheduleInsult() async {
+    final box = Hive.box('settings');
+    final storedDate = box.get(dailyCheckDateKey, defaultValue: '');
+    final todayDateKey = _formatDateKey(DateTime.now());
+
+    if (storedDate != todayDateKey && storedDate.isNotEmpty) {
+      final missedCount = await _countMissedTasksYesterday(storedDate);
+      if (missedCount > 0) {
+        await _scheduleInsultNotification(missedCount);
+      }
+    }
+    box.put(dailyCheckDateKey, todayDateKey);
+  }
+
+  Future<int> _countMissedTasksYesterday(String dateKey) async {
+    final box = Hive.box('settings');
+    final map = box.get('$dailyChecksBoxKey\_$dateKey') as Map?;
+    if (map == null) {
+      return 6; // Alle 6 verpasst
+    }
+    final model = DailyCheckModel.fromMap(map);
+    return model.missedCount;
+  }
+
+  Future<void> _scheduleInsultNotification(int missedCount) async {
+    final androidDetails = const AndroidNotificationDetails(
+      'daily_insult_channel',
+      'Daily Insult Channel',
+      channelDescription: 'Channel for daily humiliations',
+      importance: Importance.high,
+      priority: Priority.high,
+    );
+    final noticeDetails = NotificationDetails(android: androidDetails);
+
+    final title = S.of(context).dailyInsultTitle;
+    String body;
+    if (missedCount == 6) {
+      body = S.of(context).dailyInsultAllMissed;
+    } else {
+      body = S.of(context).dailyInsultSomeMissed(missedCount.toString());
+    }
+
+    const notificationId = 3333;
+    final now = tz.TZDateTime.now(tz.local);
+    var scheduled = tz.TZDateTime(tz.local, now.year, now.month, now.day, 0, 5);
+    if (scheduled.isBefore(now)) {
+      scheduled = scheduled.add(const Duration(days: 1));
+    }
+
+    await flutterLocalNotificationsPlugin.zonedSchedule(
+      notificationId,
+      title,
+      body,
+      scheduled,
+      noticeDetails,
+      androidAllowWhileIdle: true,
+      uiLocalNotificationDateInterpretation:
+          UILocalNotificationDateInterpretation.absoluteTime,
+    );
+  }
+
+  // ------------------------------------------------
+  // Daily Checks heute laden
+  // ------------------------------------------------
+  Future<void> _loadTodayChecks() async {
+    final box = Hive.box('settings');
+    final todayKey = _formatDateKey(DateTime.now());
+    final map = box.get('$dailyChecksBoxKey\_$todayKey') as Map?;
+
+    if (map != null) {
+      setState(() {
+        _todayCheck = DailyCheckModel.fromMap(map);
+      });
+    } else {
+      setState(() {
+        _todayCheck = DailyCheckModel();
+      });
+    }
+  }
+
+  Future<void> _saveTodayChecks() async {
+    final box = Hive.box('settings');
+    final todayKey = _formatDateKey(DateTime.now());
+    await box.put('$dailyChecksBoxKey\_$todayKey', _todayCheck.toMap());
+  }
+
+  // ------------------------------------------------
+  // Week, Streak, Flow
+  // ------------------------------------------------
   void _initWeekDates() {
     final now = DateTime.now();
     final monday = now.subtract(Duration(days: now.weekday - 1));
@@ -131,25 +296,20 @@ class DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  // -----------------------------------------
-  // Wöchentliche Flow-Minuten *richtig* laden
-  // -----------------------------------------
+  void _loadStreakFromHive() {
+    final settingsBox = Hive.box('settings');
+    _streak = settingsBox.get('streak', defaultValue: 1);
+  }
+
   Future<void> _loadWeeklyFlowSeconds() async {
     final box = await Hive.openBox<Map>('flow_sessions');
     final allSessions = _boxToFlowSessions(box);
 
-    // Wir betrachten die letzten 7 Tage, also "ab Start des Tages, 6 Tage zurück"
     final now = DateTime.now();
     final from = now.subtract(const Duration(days: 6));
-
-    final filtered = allSessions
-        .where((fs) => fs.date.isAfter(_startOfDay(from)))
-        .toList();
-
-    // Gesamt-Minuten summieren
+    final filtered =
+        allSessions.where((fs) => fs.date.isAfter(_startOfDay(from))).toList();
     final totalFlowMinutes = filtered.fold<int>(0, (sum, fs) => sum + fs.minutes);
-
-    // In Sekunden umrechnen
     final totalSeconds = totalFlowMinutes * 60;
 
     setState(() {
@@ -157,9 +317,9 @@ class DashboardPageState extends State<DashboardPage> {
     });
   }
 
-  // -----------------------------------------
+  // ------------------------------------------------
   // BUILD
-  // -----------------------------------------
+  // ------------------------------------------------
   @override
   Widget build(BuildContext context) {
     final flowTimer = context.watch<FlowTimerService>();
@@ -180,7 +340,7 @@ class DashboardPageState extends State<DashboardPage> {
           child: Column(
             children: [
               // ------------------------------------
-              // TOP-ROW mit 3 Cards
+              // TOP-ROW (Flow, Streak, Timer)
               // ------------------------------------
               Row(
                 children: [
@@ -190,6 +350,152 @@ class DashboardPageState extends State<DashboardPage> {
                   const SizedBox(width: 8),
                   Expanded(child: _buildFlowTimerCard(isRunning, '$m:$s')),
                 ],
+              ),
+              const SizedBox(height: 16),
+
+              // ------------------------------------
+              // FUNDAMENTALS
+              // ------------------------------------
+              Card(
+                color: Colors.grey[850],
+                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                child: Padding(
+                  padding: const EdgeInsets.all(12.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Text(
+                        S.of(context).dailyFundamentalsTitle, // "FUNDAMENTALS"
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontWeight: FontWeight.bold,
+                          fontSize: 18,
+                        ),
+                      ),
+                      const SizedBox(height: 12),
+                      GridView.count(
+                        crossAxisCount: 3,
+                        shrinkWrap: true,
+                        physics: const NeverScrollableScrollPhysics(),
+                        crossAxisSpacing: 8,
+                        mainAxisSpacing: 8,
+                        childAspectRatio: 1.2,
+                        children: [
+                          // GYM
+                          _buildDailyCheckShortItem(
+                            shortLabel: S.of(context).shortCheckGym,     // "Sport"
+                            fullText: S.of(context).fullCheckGym,        // "Did you workout..."
+                            isDone: _todayCheck.gym,
+                            onToggleDirect: () {
+                              setState(() {
+                                _todayCheck.gym = !_todayCheck.gym;
+                              });
+                              _saveTodayChecks();
+                            },
+                            onDialogChanged: (val) {
+                              setState(() {
+                                _todayCheck.gym = val;
+                              });
+                              _saveTodayChecks();
+                            },
+                          ),
+                          // MENTAL
+                          _buildDailyCheckShortItem(
+                            shortLabel: S.of(context).shortCheckMental,
+                            fullText: S.of(context).fullCheckMental,
+                            isDone: _todayCheck.mental,
+                            onToggleDirect: () {
+                              setState(() {
+                                _todayCheck.mental = !_todayCheck.mental;
+                              });
+                              _saveTodayChecks();
+                            },
+                            onDialogChanged: (val) {
+                              setState(() {
+                                _todayCheck.mental = val;
+                              });
+                              _saveTodayChecks();
+                            },
+                          ),
+                          // NO PORN
+                          _buildDailyCheckShortItem(
+                            shortLabel: S.of(context).shortCheckNoPorn,
+                            fullText: S.of(context).fullCheckNoPorn,
+                            isDone: _todayCheck.noPorn,
+                            onToggleDirect: () {
+                              setState(() {
+                                _todayCheck.noPorn = !_todayCheck.noPorn;
+                              });
+                              _saveTodayChecks();
+                            },
+                            onDialogChanged: (val) {
+                              setState(() {
+                                _todayCheck.noPorn = val;
+                              });
+                              _saveTodayChecks();
+                            },
+                          ),
+                          // HEALTHY EATING
+                          _buildDailyCheckShortItem(
+                            shortLabel: S.of(context).shortCheckHealthyEating,
+                            fullText: S.of(context).fullCheckHealthyEating,
+                            isDone: _todayCheck.healthyEating,
+                            onToggleDirect: () {
+                              setState(() {
+                                _todayCheck.healthyEating =
+                                    !_todayCheck.healthyEating;
+                              });
+                              _saveTodayChecks();
+                            },
+                            onDialogChanged: (val) {
+                              setState(() {
+                                _todayCheck.healthyEating = val;
+                              });
+                              _saveTodayChecks();
+                            },
+                          ),
+                          // HELP OTHERS
+                          _buildDailyCheckShortItem(
+                            shortLabel: S.of(context).shortCheckHelpOthers,
+                            fullText: S.of(context).fullCheckHelpOthers,
+                            isDone: _todayCheck.helpOthers,
+                            onToggleDirect: () {
+                              setState(() {
+                                _todayCheck.helpOthers = !_todayCheck.helpOthers;
+                              });
+                              _saveTodayChecks();
+                            },
+                            onDialogChanged: (val) {
+                              setState(() {
+                                _todayCheck.helpOthers = val;
+                              });
+                              _saveTodayChecks();
+                            },
+                          ),
+                          // NATURE
+                          _buildDailyCheckShortItem(
+                            shortLabel: S.of(context).shortCheckNature,
+                            fullText: S.of(context).fullCheckNature,
+                            isDone: _todayCheck.natureTime,
+                            onToggleDirect: () {
+                              setState(() {
+                                _todayCheck.natureTime =
+                                    !_todayCheck.natureTime;
+                              });
+                              _saveTodayChecks();
+                            },
+                            onDialogChanged: (val) {
+                              setState(() {
+                                _todayCheck.natureTime = val;
+                              });
+                              _saveTodayChecks();
+                            },
+                          ),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
               ),
               const SizedBox(height: 16),
 
@@ -218,8 +524,7 @@ class DashboardPageState extends State<DashboardPage> {
                   final todayTasks = tasks.where((t) => _isSameDay(t.deadline, now)).toList();
                   final totalTasks = todayTasks.length;
                   final doneTasks = todayTasks.where((t) => t.completed).length;
-                  final tasksPercent =
-                      (totalTasks == 0) ? 0.0 : (doneTasks / totalTasks);
+                  final tasksPercent = (totalTasks == 0) ? 0.0 : (doneTasks / totalTasks);
 
                   final dailyPercents = _calculateWeeklyPercents(tasks);
 
@@ -285,33 +590,116 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // -----------------------------------------
-  // PAYWALL
-  // -----------------------------------------
-  void _showPaywallDialog() {
-    showDialog(
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  DAILY CHECK: KURZES ITEM + DIREKTER ICON-TOGGLE
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Widget _buildDailyCheckShortItem({
+    required String shortLabel,
+    required String fullText,
+    required bool isDone,
+    required VoidCallback onToggleDirect, 
+    required ValueChanged<bool> onDialogChanged,
+  }) {
+    return Container(
+      decoration: BoxDecoration(
+        color: Colors.grey[800],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      padding: const EdgeInsets.all(6),
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          // A) TEXT-Bereich => bei Tap => Dialog
+          InkWell(
+            onTap: () {
+              _showCheckDialog(
+                fullText: fullText,
+                currentValue: isDone,
+                onChanged: onDialogChanged,
+              );
+            },
+            child: Text(
+              shortLabel,
+              style: const TextStyle(color: Colors.white, fontSize: 13),
+              textAlign: TextAlign.center,
+            ),
+          ),
+          const SizedBox(height: 8),
+          // B) ICON => bei Tap => direkter Toggle
+          GestureDetector(
+            onTap: onToggleDirect,
+            child: Icon(
+              isDone ? Icons.check_circle : Icons.circle_outlined,
+              color: isDone ? Colors.redAccent : Colors.grey[400],
+              size: 30,
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  DIALOG mit vollem Text + Switch
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Future<void> _showCheckDialog({
+    required String fullText,
+    required bool currentValue,
+    required ValueChanged<bool> onChanged,
+  }) async {
+    bool tempVal = currentValue;
+    await showDialog(
       context: context,
       builder: (ctx) {
-        return AlertDialog(
-          title: Text(S.of(context).premiumRequired),
-          content: Text(S.of(context).premiumSectionUnavailable),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(ctx),
-              child: Text(S.of(context).ok),
-            ),
-          ],
+        return StatefulBuilder(
+          builder: (context, setStateDialog) {
+            return AlertDialog(
+              backgroundColor: Colors.grey[900],
+              title: Text(
+                fullText,
+                style: const TextStyle(color: Colors.white),
+              ),
+              content: Row(
+                children: [
+                  const Text("No", style: TextStyle(color: Colors.white)),
+                  const Spacer(),
+                  Switch(
+                    value: tempVal,
+                    activeColor: Colors.redAccent,
+                    onChanged: (val) {
+                      setStateDialog(() {
+                        tempVal = val;
+                      });
+                    },
+                  ),
+                  const Spacer(),
+                  const Text("Yes", style: TextStyle(color: Colors.white)),
+                ],
+              ),
+              actions: [
+                TextButton(
+                  child: const Text("CANCEL", style: TextStyle(color: Colors.white54)),
+                  onPressed: () => Navigator.pop(ctx),
+                ),
+                TextButton(
+                  child: const Text("OK", style: TextStyle(color: Colors.redAccent)),
+                  onPressed: () {
+                    onChanged(tempVal);
+                    Navigator.pop(ctx);
+                  },
+                ),
+              ],
+            );
+          },
         );
       },
     );
   }
 
-  // -----------------------------------------
-  // WEEKLY FLOW TIME CARD (ECHTE LOGIK)
-  // -----------------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  Weekly Flow Time Card
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildWeeklyFlowTimeCard() {
-    // Falls es noch null ist (z.B. bevor Hive geladen ist),
-    // kannst du "Loading" anzeigen oder '00:00'
     final value = _weeklyFlowSeconds ?? 0;
     final weeklyTimeHHMM = _formatWeeklyFlowTime(value);
 
@@ -353,9 +741,9 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // -----------------------------------------
-  // STREAK
-  // -----------------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  Streak Card
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildStreakCard() {
     return Container(
       decoration: BoxDecoration(
@@ -386,9 +774,9 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // -----------------------------------------
-  // FLOW TIMER
-  // -----------------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  Flow Timer Card
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildFlowTimerCard(bool isRunning, String timeString) {
     final flowTimer = context.watch<FlowTimerService>();
     return GestureDetector(
@@ -440,9 +828,9 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // -----------------------------------------
-  // MOTIVATION SECTION
-  // -----------------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  Motivation Section
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildMotivationSection() {
     return Column(
       children: [
@@ -470,9 +858,13 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // -----------------------------------------
-  // TODAY + Circle-Charts
-  // -----------------------------------------
+  void _pickRandomImage() {
+    _randomImage = _motivationImages[Random().nextInt(_motivationImages.length)];
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  Today & Pie-Charts
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildTodayAndPieRow(double tasksPercent, List<Task> todayTasks) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -501,8 +893,7 @@ class DashboardPageState extends State<DashboardPage> {
             Expanded(
               child: GestureDetector(
                 onTap: () {
-                  final isPremium =
-                      Hive.box('settings').get('isPremium', defaultValue: false);
+                  final isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
                   if (!isPremium) {
                     _showPaywallDialog();
                   } else {
@@ -526,7 +917,7 @@ class DashboardPageState extends State<DashboardPage> {
   }
 
   // -----------------------------------------
-  // PERCENT HABITS
+  // HABIT PERCENT
   // -----------------------------------------
   double _calculateHabitsPercent() {
     final habitBox = _dbService.getHabitsBox();
@@ -545,29 +936,24 @@ class DashboardPageState extends State<DashboardPage> {
   }
 
   // -----------------------------------------
-  // CHEER MSG
+  // PAYWALL
   // -----------------------------------------
-  String? _calculateCheerMessage(List<Habit> habits) {
-    final todayWd = DateTime.now().weekday;
-    final dayKey = _formatDateKey(DateTime.now());
-    int doneCount = 0, totalCount = 0;
-    for (var h in habits) {
-      if (h.selectedWeekdays.contains(todayWd)) {
-        totalCount++;
-        if (h.dailyStatus[dayKey] == true) doneCount++;
-      }
-    }
-    if (totalCount == 0) return null;
-    final ratio = doneCount / totalCount;
-    if (ratio >= 1.0) {
-      return S.current.cheerPerfect;
-    } else if (ratio >= 0.5) {
-      return S.current.cheerHalf;
-    } else if (ratio > 0.0) {
-      return S.current.cheerAlmost;
-    } else {
-      return S.current.cheerStart;
-    }
+  void _showPaywallDialog() {
+    showDialog(
+      context: context,
+      builder: (ctx) {
+        return AlertDialog(
+          title: Text(S.of(context).premiumRequired),
+          content: Text(S.of(context).premiumSectionUnavailable),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child: Text(S.of(context).ok),
+            ),
+          ],
+        );
+      },
+    );
   }
 
   // -----------------------------------------
@@ -613,9 +999,7 @@ class DashboardPageState extends State<DashboardPage> {
               child: ListTile(
                 leading: IconButton(
                   icon: Icon(
-                    task.completed
-                        ? Icons.check_circle
-                        : Icons.radio_button_unchecked,
+                    task.completed ? Icons.check_circle : Icons.radio_button_unchecked,
                     color: task.completed ? Colors.green : Colors.white,
                   ),
                   onPressed: () => _toggleTask(task),
@@ -706,10 +1090,10 @@ class DashboardPageState extends State<DashboardPage> {
   }
 
   // -----------------------------------------
-  // WEEKLY PROGRESS => BAR CHART
+  // WEEKLY BAR CHART
   // -----------------------------------------
   Widget _buildWeeklyProgressChart(List<double> dailyPercents) {
-    final days = ['MO', 'DI', 'MI', 'DO', 'FR', 'SA', 'SO'];
+    final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
     return Column(
       children: [
@@ -737,8 +1121,12 @@ class DashboardPageState extends State<DashboardPage> {
               ),
               borderData: FlBorderData(show: false),
               titlesData: FlTitlesData(
-                topTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
-                rightTitles: AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                topTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
+                rightTitles: AxisTitles(
+                  sideTitles: SideTitles(showTitles: false),
+                ),
                 leftTitles: AxisTitles(
                   sideTitles: SideTitles(
                     showTitles: true,
@@ -793,18 +1181,42 @@ class DashboardPageState extends State<DashboardPage> {
   }
 
   // -----------------------------------------
+  // CHEER MSG
+  // -----------------------------------------
+  String? _calculateCheerMessage(List<Habit> habits) {
+    final todayWd = DateTime.now().weekday;
+    final dayKey = _formatDateKey(DateTime.now());
+    int doneCount = 0, totalCount = 0;
+    for (var h in habits) {
+      if (h.selectedWeekdays.contains(todayWd)) {
+        totalCount++;
+        if (h.dailyStatus[dayKey] == true) doneCount++;
+      }
+    }
+    if (totalCount == 0) return null;
+    final ratio = doneCount / totalCount;
+    if (ratio >= 1.0) {
+      return S.of(context).cheerPerfect;
+    } else if (ratio >= 0.5) {
+      return S.of(context).cheerHalf;
+    } else if (ratio > 0.0) {
+      return S.of(context).cheerAlmost;
+    } else {
+      return S.of(context).cheerStart;
+    }
+  }
+
+  // -----------------------------------------
   // UTILS
   // -----------------------------------------
-  /// Sekunden in HH:MM formatieren
+  /// z. B. 1800 Sek => "00:30"
   String _formatWeeklyFlowTime(int totalSeconds) {
     final hours = totalSeconds ~/ 3600;
     final minutes = (totalSeconds % 3600) ~/ 60;
-    final hh = hours.toString().padLeft(2, '0');
-    final mm = minutes.toString().padLeft(2, '0');
-    return "$hh:$mm";
+    return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}";
   }
 
-  /// Hive-Daten in FlowSession-Modell konvertieren
+  /// FLOW-Sessions aus Box
   List<FlowSession> _boxToFlowSessions(Box<Map> box) {
     final List<FlowSession> result = [];
     for (int i = 0; i < box.length; i++) {
@@ -819,10 +1231,9 @@ class DashboardPageState extends State<DashboardPage> {
     return result;
   }
 
-  /// Start des Tages (ohne Uhrzeit)
   DateTime _startOfDay(DateTime d) => DateTime(d.year, d.month, d.day);
 
-  /// Tasks aus Box
+  /// Tasks
   List<Task> _boxToTaskList(Box box) {
     final List<Task> tasks = [];
     for (int i = 0; i < box.length; i++) {
@@ -847,7 +1258,7 @@ class DashboardPageState extends State<DashboardPage> {
     return tasks;
   }
 
-  /// Habits aus Box
+  /// Habits
   List<Habit> _boxToHabitList(Box box) {
     final List<Habit> habits = [];
     for (int i = 0; i < box.length; i++) {
@@ -869,17 +1280,16 @@ class DashboardPageState extends State<DashboardPage> {
     return habits;
   }
 
-  /// Check same day
   bool _isSameDay(DateTime d1, DateTime d2) {
     return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
   }
 
-  /// DateTime zu String => z.B. "2025-01-26"
+  /// z. B. "2025-02-06"
   String _formatDateKey(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
-  /// Wöchentliche Task-Fortschritte in Prozent
+  /// Weekly Task-Fortschritte
   List<double> _calculateWeeklyPercents(List<Task> tasks) {
     final results = <double>[];
     for (int i = 0; i < 7; i++) {

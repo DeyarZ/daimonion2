@@ -22,26 +22,29 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(date) => "Choose day: ${date}";
 
-  static String m1(habitName) =>
+  static String m1(count) =>
+      "You missed ${count} fundamentals, bitch. That won\'t lead you anywhere!";
+
+  static String m2(habitName) =>
       "Do you really want to delete the habit \"${habitName}\"?";
 
-  static String m2(entryTitle) =>
+  static String m3(entryTitle) =>
       "Do you really want to delete the entry \"${entryTitle}\"?";
 
-  static String m3(date) => "Due on ${date}";
+  static String m4(date) => "Due on ${date}";
 
-  static String m4(error) => "An error occurred: ${error}";
+  static String m5(error) => "An error occurred: ${error}";
 
-  static String m5(currentFlow, totalFlows) =>
+  static String m6(currentFlow, totalFlows) =>
       "Flow ${currentFlow} / ${totalFlows}";
 
-  static String m6(usedPrompts) => "Free prompts used: ${usedPrompts} / 5";
+  static String m7(usedPrompts) => "Free prompts used: ${usedPrompts} / 5";
 
-  static String m7(date) => "No tasks for ${date}";
+  static String m8(date) => "No tasks for ${date}";
 
-  static String m8(error) => "Purchase error: ${error}";
+  static String m9(error) => "Purchase error: ${error}";
 
-  static String m9(error) => "Restore error: ${error}";
+  static String m10(error) => "Restore error: ${error}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -83,6 +86,34 @@ class MessageLookup extends MessageLookupByLibrary {
     "confirmDelete": MessageLookupByLibrary.simpleMessage("Yes, delete"),
     "confirmDeleteHabit": MessageLookupByLibrary.simpleMessage("Yes, delete"),
     "continueButton": MessageLookupByLibrary.simpleMessage("Continue"),
+    "dailyCheckGym": MessageLookupByLibrary.simpleMessage(
+      "Did you work out today?",
+    ),
+    "dailyCheckHealthyEating": MessageLookupByLibrary.simpleMessage(
+      "Did you eat healthy today?",
+    ),
+    "dailyCheckHelpOthers": MessageLookupByLibrary.simpleMessage(
+      "Did you do something good for others today?",
+    ),
+    "dailyCheckMental": MessageLookupByLibrary.simpleMessage(
+      "Did you do something mentally productive today?",
+    ),
+    "dailyCheckNature": MessageLookupByLibrary.simpleMessage(
+      "Did you spend time in nature today?",
+    ),
+    "dailyCheckNoPorn": MessageLookupByLibrary.simpleMessage(
+      "Did you stay porn-free today?",
+    ),
+    "dailyFundamentalsTitle": MessageLookupByLibrary.simpleMessage(
+      "FUNDAMENTALS",
+    ),
+    "dailyInsultAllMissed": MessageLookupByLibrary.simpleMessage(
+      "You ignored ALL fundamentals, worthless scum!",
+    ),
+    "dailyInsultSomeMissed": m1,
+    "dailyInsultTitle": MessageLookupByLibrary.simpleMessage(
+      "You messed up, motherfucker!",
+    ),
     "dailyReminderActivated": MessageLookupByLibrary.simpleMessage(
       "Daily reminder at 20:00 activated!",
     ),
@@ -90,12 +121,12 @@ class MessageLookup extends MessageLookupByLibrary {
       "Daily reminder deactivated.",
     ),
     "dashboardTitle": MessageLookupByLibrary.simpleMessage("Dashboard"),
-    "deleteHabitMessage": m1,
+    "deleteHabitMessage": m2,
     "deleteHabitTitle": MessageLookupByLibrary.simpleMessage("Delete?"),
-    "deleteJournalEntryMessage": m2,
+    "deleteJournalEntryMessage": m3,
     "deleteJournalEntryTitle": MessageLookupByLibrary.simpleMessage("Delete?"),
     "deleteTask": MessageLookupByLibrary.simpleMessage("Delete"),
-    "dueOn": m3,
+    "dueOn": m4,
     "editJournalEntry": MessageLookupByLibrary.simpleMessage("Edit Entry"),
     "editProfile": MessageLookupByLibrary.simpleMessage("Edit"),
     "editProfileHint": MessageLookupByLibrary.simpleMessage("Your Name"),
@@ -105,7 +136,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "errorContent": MessageLookupByLibrary.simpleMessage(
       "An error occurred. Please try again later.",
     ),
-    "errorOccurred": m4,
+    "errorOccurred": m5,
     "errorTitle": MessageLookupByLibrary.simpleMessage("Error"),
     "filterMonth": MessageLookupByLibrary.simpleMessage("Month"),
     "filterWeek": MessageLookupByLibrary.simpleMessage("Week"),
@@ -114,7 +145,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "firstTimeHeadline": MessageLookupByLibrary.simpleMessage(
       "DO YOU WANT TO BE SOMEONE WHO HAS CONTROL,\nOR DO YOU WANT TO REMAIN A SLAVE TO YOUR IMPULSES?",
     ),
-    "flowCounter": m5,
+    "flowCounter": m6,
     "flowStatsTitle": MessageLookupByLibrary.simpleMessage("Flow Stats"),
     "flowTimer": MessageLookupByLibrary.simpleMessage("Flow Timer"),
     "flowTimerBreakLabel": MessageLookupByLibrary.simpleMessage("Break"),
@@ -132,7 +163,25 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "flowTimerTitle": MessageLookupByLibrary.simpleMessage("Flow Timer"),
     "flowTimerToolTitle": MessageLookupByLibrary.simpleMessage("Flow Timer"),
-    "freePromptsCounter": m6,
+    "freePromptsCounter": m7,
+    "fullCheckGym": MessageLookupByLibrary.simpleMessage(
+      "Did you work out today, motherfucker?",
+    ),
+    "fullCheckHealthyEating": MessageLookupByLibrary.simpleMessage(
+      "Did you eat healthy, you donut junkie?",
+    ),
+    "fullCheckHelpOthers": MessageLookupByLibrary.simpleMessage(
+      "Did you do something good for others?",
+    ),
+    "fullCheckMental": MessageLookupByLibrary.simpleMessage(
+      "Did you do something mentally productive?",
+    ),
+    "fullCheckNature": MessageLookupByLibrary.simpleMessage(
+      "Did you spend time in nature today?",
+    ),
+    "fullCheckNoPorn": MessageLookupByLibrary.simpleMessage(
+      "Did you stay away from porn, you nasty fuck?",
+    ),
     "goalBetterRelationships": MessageLookupByLibrary.simpleMessage(
       "Build better relationships",
     ),
@@ -201,7 +250,7 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "noReminder": MessageLookupByLibrary.simpleMessage("None"),
     "noTasks": MessageLookupByLibrary.simpleMessage("No tasks"),
-    "noTasksForDay": m7,
+    "noTasksForDay": m8,
     "noTasksToday": MessageLookupByLibrary.simpleMessage("No tasks for today"),
     "noTodosAdded": MessageLookupByLibrary.simpleMessage(
       "No to-dos added yet.",
@@ -283,17 +332,23 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "profileHeader": MessageLookupByLibrary.simpleMessage("WHO COULD YOU BE?"),
     "profileTitle": MessageLookupByLibrary.simpleMessage("Profile"),
-    "purchaseError": m8,
+    "purchaseError": m9,
     "reminderLabel": MessageLookupByLibrary.simpleMessage(
       "Reminder (optional):",
     ),
-    "restoreError": m9,
+    "restoreError": m10,
     "restorePurchases": MessageLookupByLibrary.simpleMessage(
       "Restore Purchases",
     ),
     "save": MessageLookupByLibrary.simpleMessage("Save"),
     "selectHardness": MessageLookupByLibrary.simpleMessage("Select Hardness"),
     "settingsTitle": MessageLookupByLibrary.simpleMessage("SETTINGS"),
+    "shortCheckGym": MessageLookupByLibrary.simpleMessage("Sport"),
+    "shortCheckHealthyEating": MessageLookupByLibrary.simpleMessage("Healthy"),
+    "shortCheckHelpOthers": MessageLookupByLibrary.simpleMessage("Help"),
+    "shortCheckMental": MessageLookupByLibrary.simpleMessage("Mental"),
+    "shortCheckNature": MessageLookupByLibrary.simpleMessage("Nature"),
+    "shortCheckNoPorn": MessageLookupByLibrary.simpleMessage("No Porn"),
     "statAverageFlow": MessageLookupByLibrary.simpleMessage(
       "Avg Time per Flow (Min)",
     ),
