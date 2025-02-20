@@ -92,14 +92,14 @@ class _OnboardingGoalsPageState extends State<OnboardingGoalsPage> {
                       title: Text(
                         goal,
                         style: TextStyle(
-                          color: isSelected ? Colors.red : Colors.black87,
+                          color: isSelected ? const Color.fromARGB(255, 223, 27, 27) : Colors.black87,
                           fontWeight:
                               isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
                       ),
                       trailing: Checkbox(
                         value: isSelected,
-                        activeColor: Colors.red,
+                        activeColor: const Color.fromARGB(255, 223, 27, 27),
                         onChanged: (_) => _toggleGoal(goal),
                       ),
                     ),
@@ -111,7 +111,7 @@ class _OnboardingGoalsPageState extends State<OnboardingGoalsPage> {
             ElevatedButton(
               onPressed: _goNext,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
+                backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
                 ),

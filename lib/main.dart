@@ -22,7 +22,9 @@ import 'package:daimonion_app/haertegrad_enum.dart';
 // Services (anpassen an deine Struktur)
 import 'services/flow_timer_service.dart';
 import 'services/db_service.dart';
-import 'services/openai_service.dart';
+
+// *** NEU: Gamification-Service importieren ***
+import 'services/gamification_service.dart';
 
 // Pages (anpassen an deine Struktur)
 import 'pages/auth_gate.dart';
@@ -201,8 +203,7 @@ Future<void> scheduleDailyTodoReminder() async {
     scheduledTime,
     details,
     androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
-    matchDateTimeComponents: DateTimeComponents.time, 
-    // ^ DateTimeComponents.time => täglich wiederholend um dieselbe Uhrzeit
+    matchDateTimeComponents: DateTimeComponents.time,
     uiLocalNotificationDateInterpretation:
         UILocalNotificationDateInterpretation.absoluteTime,
     payload: 'dailyTodoPayload',
@@ -229,11 +230,19 @@ Future<void> main() async {
 
   // Hive init
   await Hive.initFlutter();
+
+  // *** NEU: Adapter für GamificationStats registrieren ***
+  Hive.registerAdapter(GamificationStatsAdapter());
+
+  // *** NEU: GamificationService initialisieren ***
+  await GamificationService().init();
+
+  // Deine anderen Boxen öffnen
   await Hive.openBox<Map>(DBService.tasksBoxName);
   await Hive.openBox<Map>(DBService.habitsBoxName);
   await Hive.openBox<Map>(DBService.journalBoxName);
   await Hive.openBox('settings');
-
+  await Hive.openBox('trainingPlanBox');
   // ----------------------------------------------------------
   // RevenueCat konfigurieren
   // ----------------------------------------------------------
@@ -288,7 +297,7 @@ Future<void> main() async {
   const AndroidInitializationSettings androidInit =
       AndroidInitializationSettings('@mipmap/ic_launcher');
   const DarwinInitializationSettings iosInit = DarwinInitializationSettings(
-    requestAlertPermission: false, 
+    requestAlertPermission: false,
     requestBadgePermission: false,
     requestSoundPermission: false,
   );
@@ -301,7 +310,7 @@ Future<void> main() async {
     initSettings,
     onDidReceiveNotificationResponse: (response) {
       debugPrint('Notification tapped: ${response.payload}');
-      // Hier könntest du z.B. zur Todo-Liste navigieren, 
+      // Hier könntest du z.B. zur Todo-Liste navigieren,
       // aber brauchst evtl. nen globalen Navigator
     },
   );
@@ -321,9 +330,6 @@ Future<void> main() async {
   );
 }
 
-// ----------------------------------------------------------
-// 5) Deine App-Klassen
-// ----------------------------------------------------------
 class DaimonionApp extends StatelessWidget {
   const DaimonionApp({Key? key}) : super(key: key);
 
@@ -408,31 +414,27 @@ class MainScreenState extends State<MainScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _pages[_currentIndex],
-      bottomNavigationBar: BottomNavigationBar(
-        currentIndex: _currentIndex,
-        onTap: _onTabTapped,
-        selectedItemColor: Colors.redAccent,
-        unselectedItemColor: Colors.white54,
-        backgroundColor: Colors.grey[900],
-        type: BottomNavigationBarType.fixed,
-        items: const [
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Dashboard',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chat',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.build),
-            label: 'Tools',
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.person),
-            label: 'Profil',
-          ),
-        ],
+      bottomNavigationBar: Container(
+        decoration: BoxDecoration(
+          color: Colors.black,
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              blurRadius: 8,
+              offset: const Offset(0, -2),
+            ),
+          ],
+        ),
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            _buildNavItem(iconPath: 'assets/icon/home.png', index: 0),
+            _buildNavItem(iconPath: 'assets/icon/chat.png', index: 1),
+            _buildNavItem(iconPath: 'assets/icon/tools.png', index: 2),
+            _buildNavItem(iconPath: 'assets/icon/profile.png', index: 3),
+          ],
+        ),
       ),
       bottomSheet: _isAdLoaded
           ? Container(
@@ -444,4 +446,33 @@ class MainScreenState extends State<MainScreen> {
           : null,
     );
   }
+
+  Widget _buildNavItem({
+    required String iconPath,
+    required int index,
+  }) {
+    final bool isSelected = _currentIndex == index;
+    return GestureDetector(
+      onTap: () => _onTabTapped(index),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          ImageIcon(
+            AssetImage(iconPath),
+            size: 32,
+            color: isSelected ? const Color.fromARGB(255, 223, 27, 27) : Colors.white54,
+          ),
+          // Dezent: kleine Linie, nur wenn ausgewählt
+          if (isSelected)
+            Container(
+              margin: const EdgeInsets.only(top: 4),
+              height: 2,
+              width: 28,
+              color: const Color.fromARGB(255, 223, 27, 27),
+            ),
+        ],
+      ),
+    );
+  }
 }
+

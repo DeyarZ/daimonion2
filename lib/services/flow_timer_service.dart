@@ -1,11 +1,15 @@
+// lib/services/flow_timer_service.dart
+
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:hive/hive.dart';
+// NEU: Import für Gamification
+import 'package:daimonion_app/services/gamification_service.dart';
 
 class FlowTimerService extends ChangeNotifier {
-  int _minutes = 25; // Wie lange dauert 1 Flow in Minuten?
-  int _flows = 4; // Wie viele Flows hintereinander (du kannst mehr als 4)
-  int _flowIndex = 0; // Welcher Flow ist grade dran?
+  int _minutes = 25;  // Dauer eines Flows (Default 25 Min)
+  int _flows = 4;     // Anzahl der Flows nacheinander
+  int _flowIndex = 0; // Aktueller Flow (0-based)
   int _secondsLeft = 25 * 60;
   bool _isRunning = false;
 
@@ -30,7 +34,7 @@ class FlowTimerService extends ChangeNotifier {
   }
 
   // ------------------------------------------------
-  // Setzen der Anzahl Flows (z.B. per Dialog)
+  // Setzen der Anzahl Flows
   // ------------------------------------------------
   void updateFlows(int newFlows) {
     _flows = newFlows;
@@ -61,8 +65,8 @@ class FlowTimerService extends ChangeNotifier {
         _secondsLeft = 0;
         notifyListeners();
 
-        final flowDuration = _minutes; // Dauer des abgeschlossenen Flows
-        _storeFlowSession(flowDuration); // Speichern der Flow-Session
+        final flowDuration = _minutes; // Dauer dieses Flows
+        _storeFlowSession(flowDuration); // Speichern & XP vergeben
 
         _flowIndex++;
         if (_flowIndex < _flows) {
@@ -70,8 +74,7 @@ class FlowTimerService extends ChangeNotifier {
           _secondsLeft = _minutes * 60;
           startTimer();
         } else {
-          // ALLE FLOWS DONE => autom. Reset
-          // Kleiner Delay, damit man kurz sieht, dass der letzte Flow fertig ist
+          // ALLE FLOWS DONE => Reset nach kurzem Delay
           Future.delayed(const Duration(seconds: 2), () {
             resetTimer();
           });
@@ -105,14 +108,28 @@ class FlowTimerService extends ChangeNotifier {
 
   // ------------------------------------------------
   // Speichern der Flow-Session in Hive
+  // Hier bauen wir die XP-Vergabe ein
   // ------------------------------------------------
   Future<void> _storeFlowSession(int durationMinutes) async {
     final box = await Hive.openBox<Map>('flow_sessions');
     final now = DateTime.now();
 
+    // Flow in die DB schreiben
     await box.add({
       'date': now.millisecondsSinceEpoch,
       'minutes': durationMinutes,
     });
+
+    // Jetzt XP vergeben: 1 XP pro 10 Minuten, abgerundet
+    final int xpToAward = durationMinutes ~/ 10; 
+    // => 25 Min => 2 XP, 30 => 3 XP, etc.
+
+    if (xpToAward > 0) {
+      GamificationService().addXPWithStreak(xpToAward);
+
+      // Wenn du z.B. eine UI-Nachricht willst, musst du das
+      // im Widget machen, das FlowTimerService benutzt:
+      // z.B. in einem Listener oder via Callback
+    }
   }
 }

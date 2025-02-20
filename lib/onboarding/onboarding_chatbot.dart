@@ -93,13 +93,13 @@ class _OnboardingChatbotPageState extends State<OnboardingChatbotPage> {
             const SizedBox(height: 24),
             _buildModeButton('normal', loc.chatbotModeNormal, Colors.blue),
             _buildModeButton('hart', loc.chatbotModeHard, Colors.blue),
-            _buildModeButton('brutalEhrlich', loc.chatbotModeBrutal, Colors.red),
+            _buildModeButton('brutalEhrlich', loc.chatbotModeBrutal, const Color.fromARGB(255, 223, 27, 27)),
             if (_warningMessage.isNotEmpty) ...[
               const SizedBox(height: 24),
               Text(
                 _warningMessage,
                 style: const TextStyle(
-                  color: Colors.red,
+                  color: Color.fromARGB(255, 223, 27, 27),
                   fontSize: 14,
                   fontWeight: FontWeight.bold,
                 ),
@@ -110,7 +110,7 @@ class _OnboardingChatbotPageState extends State<OnboardingChatbotPage> {
             ElevatedButton(
               onPressed: _goNext,
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
+                backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12.0),
                 ),

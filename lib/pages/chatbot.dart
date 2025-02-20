@@ -1,12 +1,12 @@
 // lib/pages/chatbot.dart
 
-import 'dart:convert'; // Für UTF8-Decode, falls nötig
+// Für UTF8-Decode, falls nötig
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 
 // Für RevenueCat
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:collection/collection.dart'; // für firstWhereOrNull
+// für firstWhereOrNull
 
 import '../services/openai_service.dart';
 import '../haertegrad_enum.dart';
@@ -23,6 +23,10 @@ class ChatbotPage extends StatefulWidget {
 class _ChatbotPageState extends State<ChatbotPage> {
   final TextEditingController _controller = TextEditingController();
   final OpenAIService _openAIService = OpenAIService();
+  final ScrollController _scrollController = ScrollController();
+
+  // Variable, ob der Scroll-Down-Button angezeigt wird
+  bool _showScrollDownButton = false;
 
   final List<Map<String, String>> _messages = [];
 
@@ -39,6 +43,45 @@ class _ChatbotPageState extends State<ChatbotPage> {
 
     // 2) Check, ob 7 Tage seit dem Start der Free Prompts abgelaufen sind
     _checkAndResetPromptsIfNeeded();
+
+    // 3) Scroll-Listener für den "Scroll-to-Bottom"-Button
+    _scrollController.addListener(() {
+      // Wenn wir 100 Pixel oder mehr von der untersten Position entfernt sind:
+      if (_scrollController.offset <
+          _scrollController.position.maxScrollExtent - 100) {
+        if (!_showScrollDownButton) {
+          setState(() {
+            _showScrollDownButton = true;
+          });
+        }
+      } else {
+        if (_showScrollDownButton) {
+          setState(() {
+            _showScrollDownButton = false;
+          });
+        }
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    _controller.dispose();
+    super.dispose();
+  }
+
+  // Scrollt zum Ende der Liste, falls möglich
+  void _scrollToBottom() {
+    Future.delayed(const Duration(milliseconds: 100), () {
+      if (_scrollController.hasClients) {
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 300),
+          curve: Curves.easeOut,
+        );
+      }
+    });
   }
 
   // ------------------------------------------------
@@ -89,6 +132,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
       _messages.add({'role': 'user', 'content': text});
     });
     _controller.clear();
+    _scrollToBottom();
 
     try {
       // 3) Hole Bot-Antwort via OpenAI
@@ -98,6 +142,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
       setState(() {
         _messages.add({'role': 'bot', 'content': ''});
       });
+      _scrollToBottom();
 
       // 5) Typewriter-Animation
       for (int i = 0; i < response.length; i++) {
@@ -107,6 +152,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
               response.substring(0, i + 1);
         });
       }
+      _scrollToBottom();
     } catch (e) {
       // Fehlerfall
       setState(() {
@@ -115,6 +161,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
           'content': S.of(context).errorOccurred(e.toString()),
         });
       });
+      _scrollToBottom();
     }
   }
 
@@ -152,7 +199,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
               child: Text(S.of(context).cancel),
             ),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+              style: ElevatedButton.styleFrom(backgroundColor: const Color.fromARGB(255, 223, 27, 27)),
               onPressed: () async {
                 try {
                   final premiumPackage = await _getPremiumPackage();
@@ -163,7 +210,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
                   }
 
                   // => Kauf starten
-                  final purchaserInfo = await Purchases.purchasePackage(premiumPackage);
+                  final purchaserInfo =
+                      await Purchases.purchasePackage(premiumPackage);
 
                   // => Check Entitlement
                   if (purchaserInfo.entitlements.all["premium"]?.isActive == true) {
@@ -232,31 +280,67 @@ class _ChatbotPageState extends State<ChatbotPage> {
     final isPremium = settingsBox.get('isPremium', defaultValue: false);
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       appBar: AppBar(
         title: Text(S.of(context).appBarTitle),
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      body: Column(
-        children: [
-          // 1) Messages oder Suggestions
-          Expanded(
-            child: _messages.isEmpty
-                ? _buildSuggestionsArea()
-                : _buildMessagesList(),
-          ),
-
-          // 2) Anzeige, wie viele Prompts schon genutzt (falls nicht Premium)
-          if (!isPremium)
-            Padding(
-              padding: const EdgeInsets.symmetric(vertical: 4.0),
-              child: Text(
-                S.of(context).freePromptsCounter(usedPrompts),
-                style: const TextStyle(color: Colors.grey, fontSize: 12),
-              ),
+      extendBodyBehindAppBar: true,
+      body: GestureDetector(
+        // Tastatur wegkicken, wenn irgendwo getippt wird
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [Colors.black, Colors.grey.shade900],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
             ),
-
-          // 3) Eingabefeld + Sendeknopf
-          _buildInputBar(),
-        ],
+          ),
+          child: Column(
+            children: [
+              SizedBox(height: kToolbarHeight + 20),
+              // Chat-Bereich als Stack: Hier wird der Scroll-Down-Button überlagert
+              Expanded(
+                child: Stack(
+                  children: [
+                    _messages.isEmpty
+                        ? _buildSuggestionsArea()
+                        : _buildMessagesList(),
+                    if (_showScrollDownButton)
+                      Positioned(
+                        bottom: 16,
+                        right: 16,
+                        child: FloatingActionButton(
+                          mini: true,
+                          backgroundColor: const Color.fromARGB(255, 223, 27, 27),
+                          onPressed: _scrollToBottom,
+                          child: const Icon(Icons.arrow_downward, size: 20),
+                        ),
+                      ),
+                  ],
+                ),
+              ),
+              // Anzeige der genutzten Prompts (falls nicht Premium)
+              if (!isPremium)
+                Padding(
+                  padding: const EdgeInsets.symmetric(vertical: 4.0),
+                  child: Text(
+                    S.of(context).freePromptsCounter(usedPrompts),
+                    style: const TextStyle(color: Colors.grey, fontSize: 12),
+                  ),
+                ),
+              // Eingabefeld + Sendeknopf
+              Padding(
+                padding: EdgeInsets.only(
+                  bottom: MediaQuery.of(context).viewInsets.bottom,
+                ),
+                child: _buildInputBar(),
+              ),
+            ],
+          ),
+        ),
       ),
     );
   }
@@ -285,8 +369,8 @@ class _ChatbotPageState extends State<ChatbotPage> {
             return ChoiceChip(
               label: Text(text, style: const TextStyle(color: Colors.white)),
               selected: false,
-              backgroundColor: Colors.grey[800],
-              selectedColor: Colors.redAccent,
+              backgroundColor: Colors.grey.shade800,
+              selectedColor: const Color.fromARGB(255, 223, 27, 27),
               onSelected: (_) {
                 setState(() {
                   _controller.text = text;
@@ -304,22 +388,41 @@ class _ChatbotPageState extends State<ChatbotPage> {
   // ------------------------------------------------
   Widget _buildMessagesList() {
     return ListView.builder(
+      controller: _scrollController,
+      keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
       itemCount: _messages.length,
       itemBuilder: (BuildContext context, int index) {
         final msg = _messages[index];
         final isUser = (msg['role'] == 'user');
-        return Container(
+        return Align(
           alignment: isUser ? Alignment.centerRight : Alignment.centerLeft,
-          margin: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
           child: Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+            margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            constraints: BoxConstraints(
+              maxWidth: MediaQuery.of(context).size.width * 0.75,
+            ),
             decoration: BoxDecoration(
-              color: isUser ? Colors.redAccent : Colors.grey[800],
-              borderRadius: BorderRadius.circular(8),
+              color: isUser ? const Color.fromARGB(255, 223, 27, 27) : Colors.grey.shade800,
+              borderRadius: BorderRadius.only(
+                topLeft: const Radius.circular(16),
+                topRight: const Radius.circular(16),
+                bottomLeft:
+                    isUser ? const Radius.circular(16) : Radius.zero,
+                bottomRight:
+                    isUser ? Radius.zero : const Radius.circular(16),
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.black.withOpacity(0.3),
+                  offset: const Offset(2, 2),
+                  blurRadius: 4,
+                ),
+              ],
             ),
             child: Text(
               msg['content'] ?? '',
-              style: const TextStyle(color: Colors.white),
+              style: const TextStyle(color: Colors.white, fontSize: 16),
             ),
           ),
         );
@@ -332,7 +435,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   // ------------------------------------------------
   Widget _buildInputBar() {
     return Padding(
-      padding: const EdgeInsets.all(8.0),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
         children: [
           // TextField
@@ -346,21 +449,28 @@ class _ChatbotPageState extends State<ChatbotPage> {
                 hintText: S.of(context).hintText,
                 hintStyle: const TextStyle(color: Colors.grey),
                 filled: true,
-                fillColor: Colors.grey[900],
+                fillColor: Colors.grey.shade900,
                 border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
+                  borderRadius: BorderRadius.circular(30),
                   borderSide: BorderSide.none,
                 ),
-                contentPadding: const EdgeInsets.all(16),
+                contentPadding: const EdgeInsets.symmetric(
+                    horizontal: 20, vertical: 16),
               ),
               onSubmitted: (_) => _sendMessage(),
             ),
           ),
           const SizedBox(width: 8),
           // Send-Button
-          IconButton(
-            icon: const Icon(Icons.send, color: Colors.redAccent),
-            onPressed: _sendMessage,
+          Container(
+            decoration: const BoxDecoration(
+              shape: BoxShape.circle,
+              color: Color.fromARGB(255, 223, 27, 27),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.send, color: Colors.white),
+              onPressed: _sendMessage,
+            ),
           ),
         ],
       ),

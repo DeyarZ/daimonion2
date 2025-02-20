@@ -92,7 +92,7 @@ class _OnboardingNotificationPageState
             const SizedBox(height: 32),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
+                backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(
@@ -118,13 +118,13 @@ class _OnboardingNotificationPageState
             else if (_permissionDenied)
               Text(
                 loc.notificationDeniedMessage,
-                style: const TextStyle(color: Colors.redAccent, fontSize: 16),
+                style: const TextStyle(color: Color.fromARGB(255, 223, 27, 27), fontSize: 16),
                 textAlign: TextAlign.center,
               ),
             const Spacer(),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
+                backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                 padding:
                     const EdgeInsets.symmetric(horizontal: 32, vertical: 16),
                 shape: RoundedRectangleBorder(

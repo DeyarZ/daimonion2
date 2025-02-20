@@ -64,7 +64,7 @@ class OnboardingFinishPage extends StatelessWidget {
                   ElevatedButton(
                     onPressed: () => _finishOnboarding(context),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
+                      backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32.0,
                         vertical: 16.0,

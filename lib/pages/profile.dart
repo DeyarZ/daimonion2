@@ -1,13 +1,18 @@
 // lib/pages/profile.dart
 
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
-import 'package:collection/collection.dart'; // Für firstWhereOrNull
+import 'package:image_picker/image_picker.dart';
+import 'package:url_launcher/url_launcher.dart';               // <-- Für Feedback-Mailto
 
 import '../haertegrad_enum.dart';
+import 'gamification_page.dart';
+import '../services/gamification_service.dart';               // <-- Für Rang-Anzeige
 import 'privacy_and_terms_page.dart';
 import '../l10n/generated/l10n.dart';
+import 'subscription_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({Key? key}) : super(key: key);
@@ -17,51 +22,47 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
-  // -------------------------
-  // FIELDS
-  // -------------------------
   String userName = '';
   Haertegrad currentHaertegrad = Haertegrad.brutalEhrlich;
   String appVersion = '1.0.0';
+  String? profileImagePath;
 
-  // -------------------------
-  // INIT
-  // -------------------------
   @override
   void initState() {
     super.initState();
 
-    // Ensure settings box is open
     if (!Hive.isBoxOpen('settings')) {
       Hive.openBox('settings');
     }
     final box = Hive.box('settings');
 
-    // User-Name laden
     userName = box.get('userName', defaultValue: '');
-
-    // Härtegrad laden
     final storedIndex = box.get('haertegrad', defaultValue: 2);
     currentHaertegrad = Haertegrad.values[storedIndex];
+
+    profileImagePath = box.get('profileImagePath');
   }
 
-  // -------------------------
-  // BUILD
-  // -------------------------
   @override
   Widget build(BuildContext context) {
     final loc = S.of(context);
+
+    // Gamification-Objekt -> Rang
+    final gamification = GamificationService();
+    final currentStatus = gamification.currentStatus; // z. B. "Rekrut"
+
     return Scaffold(
       appBar: AppBar(
         title: Text(loc.profileTitle),
         backgroundColor: Colors.black,
+        elevation: 0,
       ),
       backgroundColor: Colors.black,
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16),
         child: Column(
           children: [
-            _buildProfileHeader(),
+            _buildProfileHeader(currentStatus),
             const SizedBox(height: 24),
             _buildSettingsCard(),
             const SizedBox(height: 16),
@@ -74,10 +75,10 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // -------------------------
-  // HEADER
-  // -------------------------
-  Widget _buildProfileHeader() {
+  // ----------------------------------------------------------
+  // PROFILE HEADER
+  // ----------------------------------------------------------
+  Widget _buildProfileHeader(String rank) {
     final loc = S.of(context);
     return Column(
       children: [
@@ -85,25 +86,56 @@ class _ProfilePageState extends State<ProfilePage> {
         Text(
           loc.profileHeader,
           style: const TextStyle(
+            fontSize: 22,
+            fontWeight: FontWeight.bold,
+            color: Colors.white,
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Profilbild per InkWell antippbar -> Image ändern
+        InkWell(
+          onTap: _pickNewProfileImage,
+          child: Container(
+            padding: const EdgeInsets.all(4),
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              gradient: const LinearGradient(
+                colors: [Color(0xFF2A2A2A), Color(0xFF1A1A1A)],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: CircleAvatar(
+              radius: 60,
+              backgroundColor: Colors.grey[800],
+              backgroundImage: _loadProfileImage(),
+            ),
+          ),
+        ),
+        const SizedBox(height: 16),
+
+        // Benutzername
+        Text(
+          userName.isEmpty ? loc.unknownUser : userName,
+          style: const TextStyle(
             fontSize: 20,
             fontWeight: FontWeight.bold,
             color: Colors.white,
           ),
         ),
-        const SizedBox(height: 16),
-        const CircleAvatar(
-          radius: 60,
-          backgroundImage: AssetImage('assets/icon/app_icon.jpeg'),
-        ),
-        const SizedBox(height: 16),
+
+        // Rang
+        const SizedBox(height: 4),
         Text(
-          userName.isEmpty ? loc.unknownUser : userName,
+          rank,
           style: const TextStyle(
-            fontSize: 18,
-            fontWeight: FontWeight.bold,
-            color: Colors.white,
+            fontSize: 16,
+            color: Colors.white70,
+            fontStyle: FontStyle.italic,
           ),
         ),
+
         const SizedBox(height: 8),
         GestureDetector(
           onTap: _editProfile,
@@ -111,7 +143,7 @@ class _ProfilePageState extends State<ProfilePage> {
             loc.editProfile,
             style: const TextStyle(
               fontSize: 14,
-              color: Colors.redAccent,
+              color: Color.fromARGB(255, 223, 27, 27),
               decoration: TextDecoration.underline,
             ),
           ),
@@ -120,135 +152,280 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // -------------------------
-  // SETTINGS
-  // -------------------------
+  ImageProvider? _loadProfileImage() {
+    if (profileImagePath != null && profileImagePath!.isNotEmpty) {
+      return FileImage(File(profileImagePath!));
+    } else {
+      return const AssetImage('assets/icon/app_icon.png');
+    }
+  }
+
+  Future<void> _pickNewProfileImage() async {
+    final picker = ImagePicker();
+    try {
+      final picked = await picker.pickImage(source: ImageSource.gallery);
+      if (picked != null) {
+        final path = picked.path;
+        setState(() {
+          profileImagePath = path;
+        });
+        Hive.box('settings').put('profileImagePath', path);
+      }
+    } catch (e) {
+      debugPrint("Image picking error: $e");
+    }
+  }
+
+  // ----------------------------------------------------------
+  // SETTINGS CARD
+  // ----------------------------------------------------------
   Widget _buildSettingsCard() {
     final loc = S.of(context);
-    return Card(
-      color: Colors.grey[850],
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        child: Column(
-          children: [
-            Align(
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color.fromARGB(255, 44, 44, 44),
+            Color.fromARGB(255, 48, 48, 48),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            offset: const Offset(0, 2),
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          // Titel
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            child: Align(
               alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 8),
-                child: Text(
-                  loc.settingsTitle,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              child: Text(
+                loc.settingsTitle,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
             ),
-            const Divider(color: Colors.grey, height: 1),
-            // Härtegrad
-            ListTile(
-              title: Text(loc.hardnessTitle, style: const TextStyle(color: Colors.white)),
-              trailing: Text(
-                _haertegradToString(context, currentHaertegrad),
-                style: const TextStyle(color: Colors.redAccent),
+          ),
+          const Divider(color: Colors.grey, height: 1),
+
+          // Härtegrad
+          ListTile(
+            title:
+                Text(loc.hardnessTitle, style: const TextStyle(color: Colors.white)),
+            trailing: Text(
+              _haertegradToString(context, currentHaertegrad),
+              style: const TextStyle(
+                color: Color.fromARGB(255, 223, 27, 27),
+                fontWeight: FontWeight.bold,
               ),
-              onTap: _changeHaertegrad,
             ),
-          ],
-        ),
+            onTap: _changeHaertegrad,
+          ),
+          const Divider(color: Colors.grey, height: 1),
+
+          // Level & XP
+          ListTile(
+            title: const Text("Level & XP", style: TextStyle(color: Colors.white)),
+            trailing: const Icon(Icons.chevron_right, color: Colors.white),
+            onTap: _goToGamificationPage,
+          ),
+
+          const Divider(color: Colors.grey, height: 1),
+
+          // NEU: FEEDBACK-BUTTON
+          ListTile(
+            leading: const Icon(Icons.feedback, color: Colors.white),
+            title:
+                Text(loc.feedbackButtonLabel, style: const TextStyle(color: Colors.white)),
+            onTap: _sendFeedback, // -> mailto
+          ),
+        ],
       ),
     );
   }
 
-  // -------------------------
-  // LEGAL & VERSION
-  // -------------------------
+  // FEEDBACK-FUNKTION -> mailto:
+  Future<void> _sendFeedback() async {
+    final loc = S.of(context);
+
+    // Falls du eine andere Email willst, hier anpassen
+    final email = Uri(
+      scheme: 'mailto',
+      path: 'manuel@worlitzer.de',
+      queryParameters: {
+        'subject': Uri.encodeComponent('Feedback App Daimonion'),
+      },
+    );
+
+    // Start URL
+    if (await canLaunchUrl(email)) {
+      await launchUrl(email);
+    } else {
+      // Falls kein E-Mail-Client o.ä.:
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text(loc.noEmailClientFound)),
+      );
+    }
+  }
+
+  // ----------------------------------------------------------
+  // LEGAL CARD
+  // ----------------------------------------------------------
   Widget _buildLegalCard() {
     final loc = S.of(context);
-    return Card(
-      color: Colors.grey[850],
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        child: Column(
-          children: [
-            Align(
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color.fromARGB(255, 44, 44, 44),
+            Color.fromARGB(255, 48, 48, 48),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            offset: const Offset(0, 2),
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            child: Align(
               alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 8),
-                child: Text(
-                  loc.legalAndAppInfoTitle,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              child: Text(
+                loc.legalAndAppInfoTitle,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
             ),
-            const Divider(color: Colors.grey, height: 1),
-            ListTile(
-              title: Text(loc.privacyAndTerms, style: const TextStyle(color: Colors.white)),
-              trailing: const Icon(Icons.chevron_right, color: Colors.white),
-              onTap: _showPrivacy,
+          ),
+          const Divider(color: Colors.grey, height: 1),
+          ListTile(
+            title: Text(
+              loc.privacyAndTerms,
+              style: const TextStyle(color: Colors.white),
             ),
-            const Divider(color: Colors.grey, height: 1),
-            ListTile(
-              title: Text(loc.version, style: const TextStyle(color: Colors.white)),
-              trailing: Text(appVersion, style: const TextStyle(color: Colors.white70)),
-            ),
-          ],
-        ),
+            trailing: const Icon(Icons.chevron_right, color: Colors.white),
+            onTap: _showPrivacy,
+          ),
+          const Divider(color: Colors.grey, height: 1),
+          ListTile(
+            title:
+                Text(loc.version, style: const TextStyle(color: Colors.white)),
+            trailing:
+                Text(appVersion, style: const TextStyle(color: Colors.white70)),
+          ),
+        ],
       ),
     );
   }
 
-  // -------------------------
-  // ACCOUNT
-  // -------------------------
+  // ----------------------------------------------------------
+  // ACCOUNT CARD
+  // ----------------------------------------------------------
   Widget _buildAccountCard() {
     final loc = S.of(context);
     final isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
-    return Card(
-      color: Colors.grey[850],
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
-        child: Column(
-          children: [
-            Align(
+
+    return Container(
+      decoration: BoxDecoration(
+        gradient: const LinearGradient(
+          colors: [
+            Color.fromARGB(255, 44, 44, 44),
+            Color.fromARGB(255, 48, 48, 48),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            offset: const Offset(0, 2),
+            blurRadius: 6,
+          ),
+        ],
+      ),
+      child: Column(
+        children: [
+          Padding(
+            padding:
+                const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            child: Align(
               alignment: Alignment.centerLeft,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 8),
-                child: Text(
-                  loc.accountTitle,
-                  style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              child: Text(
+                loc.accountTitle,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 16,
                 ),
               ),
+            ),
+          ),
+          const Divider(color: Colors.grey, height: 1),
+
+          // Upgrade?
+          if (!isPremium) ...[
+            ListTile(
+              leading: const Icon(Icons.star, color: Colors.amber),
+              title: Text(
+                loc.upgradeToPremium,
+                style: const TextStyle(
+                  color: Colors.amber, 
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              onTap: _upgradeToPremium,
             ),
             const Divider(color: Colors.grey, height: 1),
-            if (!isPremium) ...[
-              ListTile(
-                leading: const Icon(Icons.star, color: Colors.amber),
-                title: Text(
-                  loc.upgradeToPremium,
-                  style: const TextStyle(color: Colors.amber),
-                ),
-                onTap: _upgradeToPremium,
-              ),
-              const Divider(color: Colors.grey, height: 1),
-            ],
-            ListTile(
-              leading: const Icon(Icons.restart_alt, color: Colors.white),
-              title: Text(
-                loc.restorePurchases,
-                style: const TextStyle(color: Colors.white),
-              ),
-              onTap: _restorePurchases,
-            ),
           ],
-        ),
+
+          // Restore
+          ListTile(
+            leading: const Icon(Icons.restart_alt, color: Colors.white),
+            title: Text(
+              loc.restorePurchases,
+              style: const TextStyle(color: Colors.white),
+            ),
+            onTap: _restorePurchases,
+          ),
+        ],
       ),
     );
   }
 
-  // -------------------------
-  // FUNCS
-  // -------------------------
+  // ----------------------------------------------------------
+  // METHODS
+  // ----------------------------------------------------------
+  void _goToGamificationPage() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const GamificationPage()),
+    );
+  }
+
   Future<void> _changeHaertegrad() async {
     final result = await Navigator.push<Haertegrad>(
       context,
@@ -276,24 +453,43 @@ class _ProfilePageState extends State<ProfilePage> {
     }
   }
 
-  // EDIT PROFILE => Name
   void _editProfile() async {
     final newName = await showDialog<String?>(
       context: context,
       builder: (ctx) {
         final controller = TextEditingController(text: userName);
         return AlertDialog(
-          title: Text(S.of(ctx).editProfileTitle),
+          backgroundColor: Colors.grey[900],
+          title: Text(
+            S.of(ctx).editProfileTitle,
+            style: const TextStyle(color: Colors.white),
+          ),
           content: TextField(
             controller: controller,
-            decoration: InputDecoration(hintText: S.of(ctx).editProfileHint),
+            style: const TextStyle(color: Colors.white),
+            decoration: InputDecoration(
+              hintText: S.of(ctx).editProfileHint,
+              hintStyle: const TextStyle(color: Colors.grey),
+              filled: true,
+              fillColor: Colors.black,
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(12),
+                borderSide: BorderSide.none,
+              ),
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(S.of(ctx).cancel),
+              child: Text(
+                S.of(ctx).cancel,
+                style: const TextStyle(color: Color.fromARGB(255, 223, 27, 27)),
+              ),
             ),
             ElevatedButton(
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 223, 27, 27),
+              ),
               onPressed: () {
                 Navigator.pop(ctx, controller.text.trim());
               },
@@ -315,35 +511,15 @@ class _ProfilePageState extends State<ProfilePage> {
   void _showPrivacy() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const PrivacyAndTermsPage()),
+      MaterialPageRoute(builder: (_) => const PrivacyAndTermsPage()),
     );
   }
 
   Future<void> _upgradeToPremium() async {
-    final loc = S.of(context);
-    try {
-      final offerings = await Purchases.getOfferings();
-      if (offerings.current != null) {
-        final premiumPackage = offerings.current!.availablePackages.firstWhereOrNull(
-          (pkg) => pkg.identifier == "premium",
-        );
-        if (premiumPackage == null) {
-          _showErrorDialog(loc.premiumPackageNotFound);
-          return;
-        }
-        final purchaserInfo = await Purchases.purchasePackage(premiumPackage);
-        final isPremium = purchaserInfo.entitlements.all["premium"]?.isActive ?? false;
-        if (isPremium) {
-          Hive.box('settings').put('isPremium', true);
-          _showSuccessDialog(loc.premiumUpgradeSuccess);
-          setState(() {});
-        }
-      } else {
-        _showErrorDialog(loc.noOffersAvailable);
-      }
-    } catch (e) {
-      _showErrorDialog(loc.purchaseError(e.toString()));
-    }
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => const SubscriptionPage()),
+    );
   }
 
   Future<void> _restorePurchases() async {
@@ -367,12 +543,15 @@ class _ProfilePageState extends State<ProfilePage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(S.of(ctx).errorTitle),
-        content: Text(msg),
+        backgroundColor: Colors.grey[900],
+        title:
+            Text(S.of(ctx).errorTitle, style: const TextStyle(color: Colors.white)),
+        content: Text(msg, style: const TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(S.of(ctx).ok),
+            child: Text(S.of(ctx).ok,
+                style: const TextStyle(color: Color.fromARGB(255, 223, 27, 27))),
           )
         ],
       ),
@@ -383,12 +562,15 @@ class _ProfilePageState extends State<ProfilePage> {
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text(S.of(ctx).successTitle),
-        content: Text(msg),
+        backgroundColor: Colors.grey[900],
+        title:
+            Text(S.of(ctx).successTitle, style: const TextStyle(color: Colors.white)),
+        content: Text(msg, style: const TextStyle(color: Colors.white70)),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(ctx),
-            child: Text(S.of(ctx).ok),
+            child: Text(S.of(ctx).ok,
+                style: const TextStyle(color: Color.fromARGB(255, 223, 27, 27))),
           )
         ],
       ),
@@ -396,9 +578,9 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 }
 
-// ---------------------------------------------------------
-// SEPARATE PAGE FOR HÄRTEGRAD-AUSWAHL
-// ---------------------------------------------------------
+// ----------------------------------------------------------
+// HÄRTEGRAD PAGE
+// ----------------------------------------------------------
 class HaertegradPage extends StatefulWidget {
   final Haertegrad selectedHaertegrad;
 
@@ -424,6 +606,7 @@ class _HaertegradPageState extends State<HaertegradPage> {
       appBar: AppBar(
         title: Text(loc.selectHardness),
         backgroundColor: Colors.black,
+        elevation: 0,
       ),
       backgroundColor: Colors.black,
       body: Padding(
@@ -433,34 +616,45 @@ class _HaertegradPageState extends State<HaertegradPage> {
             Text(
               loc.hardnessQuestion,
               style: const TextStyle(
-                  fontSize: 20, color: Colors.white, fontWeight: FontWeight.bold),
+                fontSize: 20, 
+                color: Colors.white, 
+                fontWeight: FontWeight.bold
+              ),
+              textAlign: TextAlign.center,
             ),
             const SizedBox(height: 24),
-            Card(
-              color: Colors.grey[850],
+            Container(
+              decoration: BoxDecoration(
+                color: Colors.grey[850],
+                borderRadius: BorderRadius.circular(12),
+              ),
               child: Column(
                 children: [
                   RadioListTile<Haertegrad>(
-                    title: Text(loc.hardnessNormal, style: const TextStyle(color: Colors.white)),
+                    title: Text(loc.hardnessNormal,
+                        style: const TextStyle(color: Colors.white)),
                     value: Haertegrad.normal,
                     groupValue: _currentSelection,
-                    activeColor: Colors.redAccent,
+                    activeColor: const Color.fromARGB(255, 223, 27, 27),
                     onChanged: (val) => setState(() => _currentSelection = val!),
                   ),
                   Divider(color: Colors.grey[700], height: 1),
                   RadioListTile<Haertegrad>(
-                    title: Text(loc.hardnessHard, style: const TextStyle(color: Colors.white)),
+                    title: Text(loc.hardnessHard,
+                        style: const TextStyle(color: Colors.white)),
                     value: Haertegrad.hart,
                     groupValue: _currentSelection,
-                    activeColor: Colors.redAccent,
+                    activeColor: const Color.fromARGB(255, 223, 27, 27),
                     onChanged: (val) => setState(() => _currentSelection = val!),
                   ),
                   Divider(color: Colors.grey[700], height: 1),
                   RadioListTile<Haertegrad>(
-                    title: Text(loc.hardnessBrutal, style: const TextStyle(color: Colors.redAccent)),
+                    title: Text(loc.hardnessBrutal,
+                        style:
+                            const TextStyle(color: Color.fromARGB(255, 223, 27, 27))),
                     value: Haertegrad.brutalEhrlich,
                     groupValue: _currentSelection,
-                    activeColor: Colors.redAccent,
+                    activeColor: const Color.fromARGB(255, 223, 27, 27),
                     onChanged: (val) => setState(() => _currentSelection = val!),
                   ),
                 ],
@@ -468,7 +662,9 @@ class _HaertegradPageState extends State<HaertegradPage> {
             ),
             const SizedBox(height: 24),
             ElevatedButton(
-              style: ElevatedButton.styleFrom(backgroundColor: Colors.redAccent),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: const Color.fromARGB(255, 223, 27, 27),
+              ),
               onPressed: () => Navigator.pop(context, _currentSelection),
               child: Text(loc.save),
             ),

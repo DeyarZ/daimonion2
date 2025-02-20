@@ -77,7 +77,7 @@ class _OnboardingNamePageState extends State<OnboardingNamePage> {
               ElevatedButton(
                 onPressed: _goNext,
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Colors.redAccent,
+                  backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12.0),
                   ),

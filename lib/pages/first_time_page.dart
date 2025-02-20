@@ -2,11 +2,6 @@
 
 import 'package:flutter/material.dart';
 import '../onboarding/onboarding_name.dart';
-import '../onboarding/onboarding_age.dart';
-import '../onboarding/onboarding_chatbot.dart';
-import '../onboarding/onboarding_finish.dart';
-import '../onboarding/onboarding_goals.dart';
-import '../onboarding/onboarding_todos.dart';
 import '../l10n/generated/l10n.dart'; // Lokalisierung importieren
 
 class FirstTimePage extends StatelessWidget {
@@ -56,7 +51,7 @@ class FirstTimePage extends StatelessWidget {
                       );
                     },
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.redAccent,
+                      backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                       padding: const EdgeInsets.symmetric(
                         horizontal: 32.0,
                         vertical: 16.0,

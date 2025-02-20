@@ -94,7 +94,7 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
       child: Container(
         padding: const EdgeInsets.symmetric(vertical: 8.0, horizontal: 16.0),
         decoration: BoxDecoration(
-          color: isSelected ? Colors.redAccent : Colors.grey[850],
+          color: isSelected ? const Color.fromARGB(255, 223, 27, 27) : Colors.grey[850],
           borderRadius: BorderRadius.circular(8.0),
         ),
         child: Text(
@@ -115,7 +115,7 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
       dayTotals[fs.date.weekday - 1] += fs.minutes;
     }
     _barValues = dayTotals;
-    _barLabels = ['MO', 'DI', 'MI', 'DO', 'FR', 'SA', 'SO'];
+    _barLabels = ['M', 'T', 'W', 'T', 'F', 'S', 'SS'];
   }
 
   void _setupMonthData(List<FlowSession> sessions) {
@@ -272,7 +272,7 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
             barRods: [
               BarChartRodData(
                 toY: val,
-                color: Colors.redAccent,
+                color: const Color.fromARGB(255, 223, 27, 27),
                 width: barWidth,
                 borderRadius: BorderRadius.circular(4),
               ),
@@ -377,18 +377,18 @@ class _FlowStatsPageState extends State<FlowStatsPage> {
 
   String _monthToShort(int m) {
     switch (m) {
-      case 1:  return 'Jan';
-      case 2:  return 'Feb';
-      case 3:  return 'Mär';
-      case 4:  return 'Apr';
-      case 5:  return 'Mai';
-      case 6:  return 'Jun';
-      case 7:  return 'Jul';
-      case 8:  return 'Aug';
-      case 9:  return 'Sep';
-      case 10: return 'Okt';
-      case 11: return 'Nov';
-      case 12: return 'Dez';
+      case 1:  return 'J';
+      case 2:  return 'F';
+      case 3:  return 'M';
+      case 4:  return 'A';
+      case 5:  return 'M';
+      case 6:  return 'J';
+      case 7:  return 'J';
+      case 8:  return 'A';
+      case 9:  return 'S';
+      case 10: return 'O';
+      case 11: return 'N';
+      case 12: return 'D';
       default: return '?';
     }
   }

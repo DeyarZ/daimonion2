@@ -1,3 +1,5 @@
+// lib/pages/dashboard.dart
+
 import 'dart:math';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -14,6 +16,7 @@ import '../pages/todo_list.dart';
 import '../pages/habit_tracker.dart';
 import 'flow_stats_page.dart';
 import '../widgets/ad_wrapper.dart';
+import 'streak_info_page.dart';  // <--- NEU: Hier importierst du die separate StreakInfoPage
 
 // Importiere Lokalisierung
 import '../l10n/generated/l10n.dart';
@@ -139,9 +142,9 @@ class DashboardPageState extends State<DashboardPage> {
   final DBService _dbService = DBService();
   final Uuid _uuid = const Uuid();
 
-  int _streak = 0; 
+  int _streak = 0;
   final List<DateTime> _weekDates = [];
-  int? _weeklyFlowSeconds; 
+  int? _weeklyFlowSeconds;
   final List<String> _motivationImages = [
     'assets/images/8bit_squat.png',
     'assets/images/alexander.png',
@@ -153,7 +156,7 @@ class DashboardPageState extends State<DashboardPage> {
     'assets/images/gloves.png',
     'assets/images/greek_focus.png',
     'assets/images/gymrack.png',
-    'assets/images/hustle_rari-png',
+    'assets/images/hustle_rari.png',
     'assets/images/khabib.png',
     'assets/images/lambo_gelb.png',
     'assets/images/limit.png',
@@ -309,7 +312,8 @@ class DashboardPageState extends State<DashboardPage> {
     final from = now.subtract(const Duration(days: 6));
     final filtered =
         allSessions.where((fs) => fs.date.isAfter(_startOfDay(from))).toList();
-    final totalFlowMinutes = filtered.fold<int>(0, (sum, fs) => sum + fs.minutes);
+    final totalFlowMinutes =
+        filtered.fold<int>(0, (sum, fs) => sum + fs.minutes);
     final totalSeconds = totalFlowMinutes * 60;
 
     setState(() {
@@ -330,308 +334,336 @@ class DashboardPageState extends State<DashboardPage> {
 
     return AdWrapper(
       child: Scaffold(
-        appBar: AppBar(
-          title: Text(S.of(context).dashboardTitle),
-          backgroundColor: Colors.black,
-        ),
-        backgroundColor: Colors.black,
-        body: SingleChildScrollView(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            children: [
-              // ------------------------------------
-              // TOP-ROW (Flow, Streak, Timer)
-              // ------------------------------------
-              Row(
-                children: [
-                  Expanded(child: _buildWeeklyFlowTimeCard()),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildStreakCard()),
-                  const SizedBox(width: 8),
-                  Expanded(child: _buildFlowTimerCard(isRunning, '$m:$s')),
-                ],
-              ),
-              const SizedBox(height: 16),
-
-              // ------------------------------------
-              // FUNDAMENTALS
-              // ------------------------------------
-              Card(
-                color: Colors.grey[850],
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                child: Padding(
-                  padding: const EdgeInsets.all(12.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
+        body: Container(
+          decoration: BoxDecoration(
+            gradient: LinearGradient(
+              colors: [
+                Colors.black,
+                Colors.grey.shade900,
+              ],
+              begin: Alignment.topCenter,
+              end: Alignment.bottomCenter,
+            ),
+          ),
+          child: SafeArea(
+            child: Column(
+              children: [
+                // Custom-AppBar
+                Container(
+                  height: 56,
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  decoration: const BoxDecoration(color: Colors.black),
+                  child: Row(
                     children: [
                       Text(
-                        S.of(context).dailyFundamentalsTitle, // "FUNDAMENTALS"
+                        S.of(context).dashboardTitle,
                         style: const TextStyle(
                           color: Colors.white,
+                          fontSize: 20,
                           fontWeight: FontWeight.bold,
-                          fontSize: 18,
                         ),
                       ),
-                      const SizedBox(height: 12),
-                      GridView.count(
-                        crossAxisCount: 3,
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        crossAxisSpacing: 8,
-                        mainAxisSpacing: 8,
-                        childAspectRatio: 1.2,
-                        children: [
-                          // GYM
-                          _buildDailyCheckShortItem(
-                            shortLabel: S.of(context).shortCheckGym,     // "Sport"
-                            fullText: S.of(context).fullCheckGym,        // "Did you workout..."
-                            isDone: _todayCheck.gym,
-                            onToggleDirect: () {
-                              setState(() {
-                                _todayCheck.gym = !_todayCheck.gym;
-                              });
-                              _saveTodayChecks();
-                            },
-                            onDialogChanged: (val) {
-                              setState(() {
-                                _todayCheck.gym = val;
-                              });
-                              _saveTodayChecks();
-                            },
-                          ),
-                          // MENTAL
-                          _buildDailyCheckShortItem(
-                            shortLabel: S.of(context).shortCheckMental,
-                            fullText: S.of(context).fullCheckMental,
-                            isDone: _todayCheck.mental,
-                            onToggleDirect: () {
-                              setState(() {
-                                _todayCheck.mental = !_todayCheck.mental;
-                              });
-                              _saveTodayChecks();
-                            },
-                            onDialogChanged: (val) {
-                              setState(() {
-                                _todayCheck.mental = val;
-                              });
-                              _saveTodayChecks();
-                            },
-                          ),
-                          // NO PORN
-                          _buildDailyCheckShortItem(
-                            shortLabel: S.of(context).shortCheckNoPorn,
-                            fullText: S.of(context).fullCheckNoPorn,
-                            isDone: _todayCheck.noPorn,
-                            onToggleDirect: () {
-                              setState(() {
-                                _todayCheck.noPorn = !_todayCheck.noPorn;
-                              });
-                              _saveTodayChecks();
-                            },
-                            onDialogChanged: (val) {
-                              setState(() {
-                                _todayCheck.noPorn = val;
-                              });
-                              _saveTodayChecks();
-                            },
-                          ),
-                          // HEALTHY EATING
-                          _buildDailyCheckShortItem(
-                            shortLabel: S.of(context).shortCheckHealthyEating,
-                            fullText: S.of(context).fullCheckHealthyEating,
-                            isDone: _todayCheck.healthyEating,
-                            onToggleDirect: () {
-                              setState(() {
-                                _todayCheck.healthyEating =
-                                    !_todayCheck.healthyEating;
-                              });
-                              _saveTodayChecks();
-                            },
-                            onDialogChanged: (val) {
-                              setState(() {
-                                _todayCheck.healthyEating = val;
-                              });
-                              _saveTodayChecks();
-                            },
-                          ),
-                          // HELP OTHERS
-                          _buildDailyCheckShortItem(
-                            shortLabel: S.of(context).shortCheckHelpOthers,
-                            fullText: S.of(context).fullCheckHelpOthers,
-                            isDone: _todayCheck.helpOthers,
-                            onToggleDirect: () {
-                              setState(() {
-                                _todayCheck.helpOthers = !_todayCheck.helpOthers;
-                              });
-                              _saveTodayChecks();
-                            },
-                            onDialogChanged: (val) {
-                              setState(() {
-                                _todayCheck.helpOthers = val;
-                              });
-                              _saveTodayChecks();
-                            },
-                          ),
-                          // NATURE
-                          _buildDailyCheckShortItem(
-                            shortLabel: S.of(context).shortCheckNature,
-                            fullText: S.of(context).fullCheckNature,
-                            isDone: _todayCheck.natureTime,
-                            onToggleDirect: () {
-                              setState(() {
-                                _todayCheck.natureTime =
-                                    !_todayCheck.natureTime;
-                              });
-                              _saveTodayChecks();
-                            },
-                            onDialogChanged: (val) {
-                              setState(() {
-                                _todayCheck.natureTime = val;
-                              });
-                              _saveTodayChecks();
-                            },
-                          ),
-                        ],
-                      ),
+                      const Spacer(),
                     ],
                   ),
                 ),
-              ),
-              const SizedBox(height: 16),
 
-              // ------------------------------------
-              // MOTIVATION
-              // ------------------------------------
-              Card(
-                color: Colors.grey[850],
-                shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                child: Padding(
-                  padding: const EdgeInsets.all(8),
-                  child: _buildMotivationSection(),
-                ),
-              ),
-              const SizedBox(height: 16),
-
-              // ------------------------------------
-              // TASKS & WEEKLY CHART
-              // ------------------------------------
-              ValueListenableBuilder(
-                valueListenable: _dbService.listenableTasks(),
-                builder: (context, taskBox, _) {
-                  final tasks = _boxToTaskList(taskBox as Box);
-                  final now = DateTime.now();
-
-                  final todayTasks = tasks.where((t) => _isSameDay(t.deadline, now)).toList();
-                  final totalTasks = todayTasks.length;
-                  final doneTasks = todayTasks.where((t) => t.completed).length;
-                  final tasksPercent = (totalTasks == 0) ? 0.0 : (doneTasks / totalTasks);
-
-                  final dailyPercents = _calculateWeeklyPercents(tasks);
-
-                  return Column(
-                    children: [
-                      Card(
-                        color: Colors.grey[850],
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        child: Padding(
-                          padding: const EdgeInsets.all(12),
-                          child: _buildTodayAndPieRow(tasksPercent, todayTasks),
+                // Haupt-Scroll-Bereich
+                Expanded(
+                  child: SingleChildScrollView(
+                    padding: const EdgeInsets.all(16),
+                    child: Column(
+                      children: [
+                        // TOP-ROW (Flow, Streak, Timer)
+                        Row(
+                          children: [
+                            Expanded(child: _buildWeeklyFlowTimeCard()),
+                            const SizedBox(width: 8),
+                            Expanded(child: _buildStreakCard()),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: _buildFlowTimerCard(isRunning, '$m:$s'),
+                            ),
+                          ],
                         ),
-                      ),
-                      const SizedBox(height: 16),
-                      Card(
-                        color: Colors.grey[850],
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                        child: InkWell(
+                        const SizedBox(height: 16),
+
+                        // FUNDAMENTALS
+                        _buildFundamentalsSection(),
+                        const SizedBox(height: 16),
+
+                        // MOTIVATION
+                        GestureDetector(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(builder: (_) => const ToDoListPage()),
-                            );
+                            setState(() {
+                              _pickRandomImage();
+                              final quotes =
+                                  S.of(context).motivationQuotes.split('||');
+                              _randomQuote =
+                                  quotes[Random().nextInt(quotes.length)];
+                            });
                           },
-                          child: Padding(
-                            padding: const EdgeInsets.all(12.0),
-                            child: _buildWeeklyProgressChart(dailyPercents),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: [
+                                  const Color(0xFF2A2A2A),
+                                  const Color(0xFF1A1A1A),
+                                ],
+                                begin: Alignment.topLeft,
+                                end: Alignment.bottomRight,
+                              ),
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.4),
+                                  offset: const Offset(0, 2),
+                                  blurRadius: 6,
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: _buildMotivationSection(),
+                            ),
                           ),
                         ),
-                      ),
-                    ],
-                  );
-                },
-              ),
-              const SizedBox(height: 16),
+                        const SizedBox(height: 16),
 
-              // ------------------------------------
-              // HABIT CHEER
-              // ------------------------------------
-              ValueListenableBuilder(
-                valueListenable: _dbService.listenableHabits(),
-                builder: (context, habitBox, _) {
-                  final habits = _boxToHabitList(habitBox as Box);
-                  final cheer = _calculateCheerMessage(habits);
-                  if (cheer == null) return const SizedBox();
-                  return Card(
-                    color: Colors.grey[850],
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-                    child: Padding(
-                      padding: const EdgeInsets.all(12.0),
-                      child: Text(
-                        cheer,
-                        style: const TextStyle(color: Colors.white),
-                      ),
+                        // TASKS & WEEKLY CHART
+                        ValueListenableBuilder(
+                          valueListenable: _dbService.listenableTasks(),
+                          builder: (context, taskBox, _) {
+                            final tasks = _boxToTaskList(taskBox as Box);
+                            final now = DateTime.now();
+
+                            final todayTasks = tasks
+                                .where((t) => _isSameDay(t.deadline, now))
+                                .toList();
+                            final totalTasks = todayTasks.length;
+                            final doneTasks =
+                                todayTasks.where((t) => t.completed).length;
+                            final tasksPercent = (totalTasks == 0)
+                                ? 0.0
+                                : (doneTasks / totalTasks);
+
+                            final dailyPercents =
+                                _calculateWeeklyPercents(tasks);
+
+                            return Column(
+                              children: [
+                                Container(
+                                  decoration: BoxDecoration(
+                                    gradient: const LinearGradient(
+                                      colors: [
+                                        Color(0xFF2A2A2A),
+                                        Color(0xFF1A1A1A),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                    borderRadius: BorderRadius.circular(16),
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: Colors.black.withOpacity(0.4),
+                                        offset: const Offset(0, 2),
+                                        blurRadius: 6,
+                                      ),
+                                    ],
+                                  ),
+                                  margin: const EdgeInsets.only(bottom: 16),
+                                  child: Padding(
+                                    padding: const EdgeInsets.all(12),
+                                    child: _buildTodayAndPieRow(
+                                      tasksPercent,
+                                      todayTasks,
+                                    ),
+                                  ),
+                                ),
+                                InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const ToDoListPage(),
+                                      ),
+                                    );
+                                  },
+                                  child: Container(
+                                    decoration: BoxDecoration(
+                                      gradient: const LinearGradient(
+                                        colors: [
+                                          Color(0xFF2A2A2A),
+                                          Color(0xFF1A1A1A),
+                                        ],
+                                        begin: Alignment.topLeft,
+                                        end: Alignment.bottomRight,
+                                      ),
+                                      borderRadius: BorderRadius.circular(16),
+                                      boxShadow: [
+                                        BoxShadow(
+                                          color:
+                                              Colors.black.withOpacity(0.4),
+                                          offset: const Offset(0, 2),
+                                          blurRadius: 6,
+                                        ),
+                                      ],
+                                    ),
+                                    padding: const EdgeInsets.all(12),
+                                    child:
+                                        _buildWeeklyProgressChart(dailyPercents),
+                                  ),
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 16),
+
+                        // HABIT CHEER
+                        ValueListenableBuilder(
+                          valueListenable: _dbService.listenableHabits(),
+                          builder: (context, habitBox, _) {
+                            final habits = _boxToHabitList(habitBox as Box);
+                            final cheer = _calculateCheerMessage(habits);
+                            if (cheer == null) return const SizedBox();
+                            return Container(
+                              decoration: BoxDecoration(
+                                gradient: const LinearGradient(
+                                  colors: [
+                                    Color(0xFF2A2A2A),
+                                    Color(0xFF1A1A1A),
+                                  ],
+                                  begin: Alignment.topLeft,
+                                  end: Alignment.bottomRight,
+                                ),
+                                borderRadius: BorderRadius.circular(16),
+                                boxShadow: [
+                                  BoxShadow(
+                                    color: Colors.black.withOpacity(0.4),
+                                    offset: const Offset(0, 2),
+                                    blurRadius: 6,
+                                  ),
+                                ],
+                              ),
+                              padding: const EdgeInsets.all(12),
+                              child: Text(
+                                cheer,
+                                style: const TextStyle(color: Colors.white),
+                              ),
+                            );
+                          },
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
-            ],
+                  ),
+                ),
+              ],
+            ),
           ),
         ),
       ),
     );
-  }
-
+  }// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  FUNDAMENTALS: NEUE SECTION (Horizontal Scroller)
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  //  DAILY CHECK: KURZES ITEM + DIREKTER ICON-TOGGLE
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  Widget _buildDailyCheckShortItem({
-    required String shortLabel,
-    required String fullText,
-    required bool isDone,
-    required VoidCallback onToggleDirect, 
-    required ValueChanged<bool> onDialogChanged,
-  }) {
+  Widget _buildFundamentalsSection() {
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[800],
-        borderRadius: BorderRadius.circular(8),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFF2A2A2A),
+            Color(0xFF1A1A1A),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            offset: const Offset(0, 2),
+            blurRadius: 6,
+          ),
+        ],
       ),
-      padding: const EdgeInsets.all(6),
+      padding: const EdgeInsets.all(12),
       child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // A) TEXT-Bereich => bei Tap => Dialog
-          InkWell(
-            onTap: () {
-              _showCheckDialog(
-                fullText: fullText,
-                currentValue: isDone,
-                onChanged: onDialogChanged,
-              );
-            },
-            child: Text(
-              shortLabel,
-              style: const TextStyle(color: Colors.white, fontSize: 13),
-              textAlign: TextAlign.center,
+          // Überschrift & kurze Erklärung
+          Text(
+            S.of(context).dailyFundamentalsTitle,
+            style: const TextStyle(
+              color: Colors.white,
+              fontSize: 16,
+              fontWeight: FontWeight.bold,
             ),
           ),
-          const SizedBox(height: 8),
-          // B) ICON => bei Tap => direkter Toggle
-          GestureDetector(
-            onTap: onToggleDirect,
-            child: Icon(
-              isDone ? Icons.check_circle : Icons.circle_outlined,
-              color: isDone ? Colors.redAccent : Colors.grey[400],
-              size: 30,
+          const SizedBox(height: 4),
+          //Text(
+          //  S.of(context).dailyFundamentalsDescription, // <- Du könntest in der .arb/.json ein kurzen Text definieren
+          //  style: const TextStyle(color: Colors.white70, fontSize: 12),
+          //),
+          //const SizedBox(height: 8),
+
+          // Horizontal scroller mit den 6 Fundamentals
+          SingleChildScrollView(
+            scrollDirection: Axis.horizontal,
+            child: Row(
+              children: [
+                _buildFundamentalChip(
+                  label: S.of(context).shortCheckGym,
+                  explanation: S.of(context).fullCheckGym,
+                  isDone: _todayCheck.gym,
+                  onToggle: (val) {
+                    setState(() => _todayCheck.gym = val);
+                    _saveTodayChecks();
+                  },
+                  icon: Icons.fitness_center,
+                ),
+                _buildFundamentalChip(
+                  label: S.of(context).shortCheckMental,
+                  explanation: S.of(context).fullCheckMental,
+                  isDone: _todayCheck.mental,
+                  onToggle: (val) {
+                    setState(() => _todayCheck.mental = val);
+                    _saveTodayChecks();
+                  },
+                  icon: Icons.self_improvement,
+                ),
+                _buildFundamentalChip(
+                  label: S.of(context).shortCheckNoPorn,
+                  explanation: S.of(context).fullCheckNoPorn,
+                  isDone: _todayCheck.noPorn,
+                  onToggle: (val) {
+                    setState(() => _todayCheck.noPorn = val);
+                    _saveTodayChecks();
+                  },
+                  icon: Icons.block,
+                ),
+                _buildFundamentalChip(
+                  label: S.of(context).shortCheckHealthyEating,
+                  explanation: S.of(context).fullCheckHealthyEating,
+                  isDone: _todayCheck.healthyEating,
+                  onToggle: (val) {
+                    setState(() => _todayCheck.healthyEating = val);
+                    _saveTodayChecks();
+                  },
+                  icon: Icons.restaurant,
+                ),
+                _buildFundamentalChip(
+                  label: S.of(context).shortCheckHelpOthers,
+                  explanation: S.of(context).fullCheckHelpOthers,
+                  isDone: _todayCheck.helpOthers,
+                  onToggle: (val) {
+                    setState(() => _todayCheck.helpOthers = val);
+                    _saveTodayChecks();
+                  },
+                  icon: Icons.volunteer_activism,
+                ),
+              ],
             ),
           ),
         ],
@@ -640,57 +672,102 @@ class DashboardPageState extends State<DashboardPage> {
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  //  DIALOG mit vollem Text + Switch
+  //  FUNDAMENTAL CHIP (Circle Toggle + Label + Info)
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  Future<void> _showCheckDialog({
-    required String fullText,
-    required bool currentValue,
-    required ValueChanged<bool> onChanged,
-  }) async {
-    bool tempVal = currentValue;
+  Widget _buildFundamentalChip({
+  required String label,
+  required String explanation,
+  required bool isDone,
+  required ValueChanged<bool> onToggle,
+  required IconData icon,
+}) {
+  final circleColor = isDone ? Colors.green : Colors.grey;
+  return Padding(
+    padding: const EdgeInsets.only(right: 8.0),
+    child: GestureDetector(
+      onTap: () => onToggle(!isDone),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Stack(
+            // Wichtig, damit nichts abgeschnitten wird:
+            clipBehavior: Clip.none,
+            children: [
+              Container(
+                height: 48,
+                width: 48,
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: circleColor.withOpacity(0.2),
+                  border: Border.all(color: circleColor, width: 2),
+                ),
+                child: Icon(
+                  isDone ? Icons.check : icon,
+                  color: isDone ? Colors.green : Colors.white70,
+                  size: 24,
+                ),
+              ),
+              // Den Info-Button knapp am Rand statt außerhalb
+              Positioned(
+                right: -5,
+                top: 0,
+                child: InkWell(
+                  onTap: () {
+                    // separate Info-Dialog
+                    _showExplanationDialog(label, explanation);
+                  },
+                  child: Container(
+                    decoration: const BoxDecoration(
+                      color: Colors.grey,
+                      shape: BoxShape.circle,
+                    ),
+                    padding: const EdgeInsets.all(4),
+                    child: const Icon(
+                      Icons.info_outline,
+                      color: Colors.white70,
+                      size: 12,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 6),
+          SizedBox(
+            width: 60,
+            child: Text(
+              label,
+              textAlign: TextAlign.center,
+              style: const TextStyle(color: Colors.white, fontSize: 12),
+              maxLines: 2,
+              overflow: TextOverflow.ellipsis,
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
+}
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  Info-Dialog
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Future<void> _showExplanationDialog(String title, String explanation) async {
     await showDialog(
       context: context,
       builder: (ctx) {
-        return StatefulBuilder(
-          builder: (context, setStateDialog) {
-            return AlertDialog(
-              backgroundColor: Colors.grey[900],
-              title: Text(
-                fullText,
-                style: const TextStyle(color: Colors.white),
-              ),
-              content: Row(
-                children: [
-                  const Text("No", style: TextStyle(color: Colors.white)),
-                  const Spacer(),
-                  Switch(
-                    value: tempVal,
-                    activeColor: Colors.redAccent,
-                    onChanged: (val) {
-                      setStateDialog(() {
-                        tempVal = val;
-                      });
-                    },
-                  ),
-                  const Spacer(),
-                  const Text("Yes", style: TextStyle(color: Colors.white)),
-                ],
-              ),
-              actions: [
-                TextButton(
-                  child: const Text("CANCEL", style: TextStyle(color: Colors.white54)),
-                  onPressed: () => Navigator.pop(ctx),
-                ),
-                TextButton(
-                  child: const Text("OK", style: TextStyle(color: Colors.redAccent)),
-                  onPressed: () {
-                    onChanged(tempVal);
-                    Navigator.pop(ctx);
-                  },
-                ),
-              ],
-            );
-          },
+        return AlertDialog(
+          backgroundColor: Colors.grey[900],
+          title: Text(title, style: const TextStyle(color: Colors.white)),
+          content:
+              Text(explanation, style: const TextStyle(color: Colors.white70)),
+          actions: [
+            TextButton(
+              onPressed: () => Navigator.pop(ctx),
+              child:
+                  const Text("OK", style: TextStyle(color: Color.fromARGB(255, 223, 27, 27))),
+            ),
+          ],
         );
       },
     );
@@ -703,20 +780,27 @@ class DashboardPageState extends State<DashboardPage> {
     final value = _weeklyFlowSeconds ?? 0;
     final weeklyTimeHHMM = _formatWeeklyFlowTime(value);
 
-    return GestureDetector(
-      onTap: () {
-        Navigator.push(
-          context,
-          MaterialPageRoute(builder: (_) => const FlowStatsPage()),
-        );
-      },
-      child: Container(
-        height: 90,
-        decoration: BoxDecoration(
-          color: Colors.grey[900],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        child: Center(
+    return Container(
+      height: 90,
+      decoration: BoxDecoration(
+        color: const Color(0xFF1E1E1E),
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.3),
+            offset: const Offset(0, 2),
+            blurRadius: 4,
+          ),
+        ],
+      ),
+      child: Center(
+        child: GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (_) => const FlowStatsPage()),
+            );
+          },
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
@@ -725,13 +809,14 @@ class DashboardPageState extends State<DashboardPage> {
                 style: const TextStyle(
                   fontFamily: 'Digital',
                   fontSize: 28,
-                  color: Colors.redAccent,
+                  color: Color.fromARGB(255, 223, 27, 27),
                 ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 4),
               Text(
                 S.of(context).productiveTimeWeek,
+                textAlign: TextAlign.center,
                 style: const TextStyle(fontSize: 10, color: Colors.white70),
               ),
             ],
@@ -745,32 +830,49 @@ class DashboardPageState extends State<DashboardPage> {
   //  Streak Card
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildStreakCard() {
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      height: 90,
-      child: Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Text(
-              '$_streak',
-              style: const TextStyle(
-                fontFamily: 'Digital',
-                fontSize: 28,
-                color: Colors.redAccent,
-              ),
-            ),
-            const SizedBox(height: 4),
-            Text(
-              S.of(context).streak,
-              style: const TextStyle(fontSize: 10, color: Colors.white70),
+    return InkWell(
+      onTap: _goToStreakInfo,
+      child: Container(
+        decoration: BoxDecoration(
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              offset: const Offset(0, 2),
+              blurRadius: 4,
             ),
           ],
         ),
+        height: 90,
+        child: Center(
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Text(
+                '$_streak',
+                style: const TextStyle(
+                  fontFamily: 'Digital',
+                  fontSize: 28,
+                  color: Color.fromARGB(255, 223, 27, 27),
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                S.of(context).streak,
+                style: const TextStyle(fontSize: 10, color: Colors.white70),
+              ),
+            ],
+          ),
+        ),
       ),
+    );
+  }
+
+  void _goToStreakInfo() {
+    Navigator.push(
+      context,
+      MaterialPageRoute(builder: (_) => StreakInfoPage(streak: _streak)),
     );
   }
 
@@ -790,8 +892,15 @@ class DashboardPageState extends State<DashboardPage> {
       child: Container(
         height: 90,
         decoration: BoxDecoration(
-          color: Colors.grey[900],
-          borderRadius: BorderRadius.circular(8),
+          color: const Color(0xFF1E1E1E),
+          borderRadius: BorderRadius.circular(16),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.3),
+              offset: const Offset(0, 2),
+              blurRadius: 4,
+            ),
+          ],
         ),
         child: Center(
           child: Column(
@@ -802,7 +911,7 @@ class DashboardPageState extends State<DashboardPage> {
                 children: [
                   Icon(
                     isRunning ? Icons.pause_circle : Icons.play_circle,
-                    color: Colors.redAccent,
+                    color: const Color.fromARGB(255, 223, 27, 27),
                     size: 24,
                   ),
                   const SizedBox(width: 6),
@@ -811,7 +920,7 @@ class DashboardPageState extends State<DashboardPage> {
                     style: const TextStyle(
                       fontFamily: 'Digital',
                       fontSize: 28,
-                      color: Colors.redAccent,
+                      color: Color.fromARGB(255, 223, 27, 27),
                     ),
                   ),
                 ],
@@ -875,39 +984,37 @@ class DashboardPageState extends State<DashboardPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Expanded(
-              child: GestureDetector(
+              child: _buildPieChart(
+                tasksPercent,
+                title: S.of(context).tasks,
+                size: 120,
                 onTap: () {
                   Navigator.push(
                     context,
                     MaterialPageRoute(builder: (_) => const ToDoListPage()),
                   );
                 },
-                child: _buildPieChart(
-                  tasksPercent,
-                  title: S.of(context).tasks,
-                  size: 120,
-                ),
               ),
             ),
             const SizedBox(width: 16),
             Expanded(
-              child: GestureDetector(
+              child: _buildPieChart(
+                _calculateHabitsPercent(),
+                title: S.of(context).habits,
+                size: 120,
                 onTap: () {
-                  final isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
+                  final isPremium = Hive.box('settings')
+                      .get('isPremium', defaultValue: false);
                   if (!isPremium) {
                     _showPaywallDialog();
                   } else {
                     Navigator.push(
                       context,
-                      MaterialPageRoute(builder: (_) => const HabitTrackerPage()),
+                      MaterialPageRoute(
+                          builder: (_) => const HabitTrackerPage()),
                     );
                   }
                 },
-                child: _buildPieChart(
-                  _calculateHabitsPercent(),
-                  title: S.of(context).habits,
-                  size: 120,
-                ),
               ),
             ),
           ],
@@ -916,9 +1023,6 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // -----------------------------------------
-  // HABIT PERCENT
-  // -----------------------------------------
   double _calculateHabitsPercent() {
     final habitBox = _dbService.getHabitsBox();
     final habits = _boxToHabitList(habitBox);
@@ -935,9 +1039,6 @@ class DashboardPageState extends State<DashboardPage> {
     return (totalHabits == 0) ? 0.0 : (doneHabits / totalHabits);
   }
 
-  // -----------------------------------------
-  // PAYWALL
-  // -----------------------------------------
   void _showPaywallDialog() {
     showDialog(
       context: context,
@@ -956,142 +1057,179 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // -----------------------------------------
-  // TODAY TASKS
-  // -----------------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  Today’s Tasks
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildTodaysTaskCard(List<Task> tasks) {
-    if (tasks.isEmpty) {
-      return Container(
-        decoration: BoxDecoration(
-          color: Colors.grey[800],
-          borderRadius: BorderRadius.circular(8),
-        ),
-        padding: const EdgeInsets.all(12),
-        child: Center(
-          child: Text(
-            S.of(context).noTasksToday,
-            style: const TextStyle(color: Colors.white),
-          ),
-        ),
-      );
-    }
     return Container(
       decoration: BoxDecoration(
-        color: Colors.grey[800],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      padding: const EdgeInsets.all(12),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            S.of(context).todaysTasks,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+        gradient: const LinearGradient(
+          colors: [
+            Color(0xFF2A2A2A),
+            Color(0xFF1A1A1A),
+          ],
+          begin: Alignment.topLeft,
+          end: Alignment.bottomRight,
+        ),
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.4),
+            offset: const Offset(0, 2),
+            blurRadius: 6,
           ),
-          const Divider(color: Colors.grey),
-          ...tasks.map((task) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              decoration: BoxDecoration(
-                color: Colors.grey[700]?.withOpacity(0.2),
-                borderRadius: BorderRadius.circular(6),
-              ),
-              child: ListTile(
-                leading: IconButton(
-                  icon: Icon(
-                    task.completed ? Icons.check_circle : Icons.radio_button_unchecked,
-                    color: task.completed ? Colors.green : Colors.white,
-                  ),
-                  onPressed: () => _toggleTask(task),
-                ),
-                title: Text(
-                  task.title,
-                  style: TextStyle(
-                    color: task.completed ? Colors.grey[400] : Colors.white,
-                    decoration: task.completed
-                        ? TextDecoration.lineThrough
-                        : TextDecoration.none,
-                  ),
-                ),
-                onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(builder: (_) => const ToDoListPage()),
-                  );
-                },
-              ),
-            );
-          }).toList(),
         ],
       ),
+      padding: const EdgeInsets.all(12),
+      child: tasks.isEmpty
+          ? Center(
+              child: Text(
+                S.of(context).noTasksToday,
+                style: const TextStyle(color: Colors.white),
+              ),
+            )
+          : Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(
+                  S.of(context).todaysTasks,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                const Divider(color: Colors.grey),
+                ...tasks.map((task) {
+                  return Container(
+                    margin: const EdgeInsets.only(bottom: 8),
+                    decoration: BoxDecoration(
+                      color: Colors.grey[700]?.withOpacity(0.2),
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                    child: ListTile(
+                      leading: IconButton(
+                        icon: Icon(
+                          task.completed
+                              ? Icons.check_circle
+                              : Icons.radio_button_unchecked,
+                          color: task.completed ? Colors.green : Colors.white,
+                        ),
+                        onPressed: () => _toggleTask(task),
+                      ),
+                      title: Text(
+                        task.title,
+                        style: TextStyle(
+                          color: task.completed ? Colors.grey[400] : Colors.white,
+                          decoration: task.completed
+                              ? TextDecoration.lineThrough
+                              : TextDecoration.none,
+                        ),
+                      ),
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => const ToDoListPage(),
+                          ),
+                        );
+                      },
+                    ),
+                  );
+                }).toList(),
+              ],
+            ),
     );
   }
 
-  // -----------------------------------------
-  // PIE CHART
-  // -----------------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  PIE CHART
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildPieChart(
     double completionPercent, {
     required String title,
-    double size = 100,
+    required double size,
+    required VoidCallback onTap,
   }) {
     final percentage = (completionPercent * 100).toStringAsFixed(0);
+    final primaryColor =
+        (completionPercent >= 1.0) ? Colors.green : const Color.fromARGB(255, 223, 27, 27);
 
-    return Container(
-      decoration: BoxDecoration(
-        color: Colors.grey[800],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      padding: const EdgeInsets.all(8),
-      child: Column(
-        children: [
-          Text(
-            title,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+    return GestureDetector(
+      onTap: onTap,
+      child: Container(
+        decoration: BoxDecoration(
+          gradient: const LinearGradient(
+            colors: [
+              Color(0xFF2A2A2A),
+              Color(0xFF1A1A1A),
+            ],
+            begin: Alignment.topLeft,
+            end: Alignment.bottomRight,
           ),
-          const SizedBox(height: 8),
-          SizedBox(
-            height: size,
-            width: size,
-            child: Stack(
-              children: [
-                PieChart(
-                  PieChartData(
-                    sectionsSpace: 0,
-                    centerSpaceRadius: 28,
-                    sections: [
-                      PieChartSectionData(
-                        value: completionPercent * 100,
-                        color: Colors.redAccent,
-                        radius: 22,
-                        showTitle: false,
-                      ),
-                      PieChartSectionData(
-                        value: (1 - completionPercent) * 100,
-                        color: Colors.grey,
-                        radius: 22,
-                        showTitle: false,
-                      ),
-                    ],
-                  ),
-                ),
-                Center(
-                  child: Text(
-                    '$percentage%',
-                    style: const TextStyle(color: Colors.white, fontSize: 15),
-                  ),
-                ),
-              ],
+          borderRadius: BorderRadius.circular(12),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.4),
+              offset: const Offset(0, 2),
+              blurRadius: 6,
             ),
-          ),
-        ],
+          ],
+        ),
+        padding: const EdgeInsets.all(8),
+        child: Column(
+          children: [
+            Text(
+              title,
+              style: const TextStyle(
+                color: Colors.white,
+                fontWeight: FontWeight.bold,
+              ),
+            ),
+            const SizedBox(height: 8),
+            SizedBox(
+              height: size,
+              width: size,
+              child: Stack(
+                children: [
+                  PieChart(
+                    PieChartData(
+                      sectionsSpace: 0,
+                      centerSpaceRadius: 28,
+                      sections: [
+                        PieChartSectionData(
+                          value: completionPercent * 100,
+                          color: primaryColor,
+                          radius: 22,
+                          showTitle: false,
+                        ),
+                        PieChartSectionData(
+                          value: (1 - completionPercent) * 100,
+                          color: Colors.grey,
+                          radius: 22,
+                          showTitle: false,
+                        ),
+                      ],
+                    ),
+                  ),
+                  Center(
+                    child: Text(
+                      '$percentage%',
+                      style:
+                          const TextStyle(color: Colors.white, fontSize: 15),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
 
-  // -----------------------------------------
-  // WEEKLY BAR CHART
-  // -----------------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  WEEKLY BAR CHART
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildWeeklyProgressChart(List<double> dailyPercents) {
     final days = ['M', 'T', 'W', 'T', 'F', 'S', 'S'];
 
@@ -1135,7 +1273,8 @@ class DashboardPageState extends State<DashboardPage> {
                     getTitlesWidget: (value, meta) {
                       return Text(
                         value.toInt().toString(),
-                        style: const TextStyle(color: Colors.white, fontSize: 10),
+                        style:
+                            const TextStyle(color: Colors.white, fontSize: 10),
                       );
                     },
                   ),
@@ -1149,9 +1288,7 @@ class DashboardPageState extends State<DashboardPage> {
                         return Text(
                           days[idx],
                           style: const TextStyle(
-                            color: Colors.white,
-                            fontSize: 10,
-                          ),
+                              color: Colors.white, fontSize: 10),
                         );
                       }
                       return const SizedBox();
@@ -1161,12 +1298,13 @@ class DashboardPageState extends State<DashboardPage> {
               ),
               barGroups: List.generate(7, (index) {
                 final val = dailyPercents[index];
+                final barColor = val >= 100.0 ? Colors.green : const Color.fromARGB(255, 223, 27, 27);
                 return BarChartGroupData(
                   x: index,
                   barRods: [
                     BarChartRodData(
                       toY: val,
-                      color: Colors.redAccent,
+                      color: barColor,
                       width: 14,
                       borderRadius: BorderRadius.circular(4),
                     ),
@@ -1180,9 +1318,9 @@ class DashboardPageState extends State<DashboardPage> {
     );
   }
 
-  // -----------------------------------------
-  // CHEER MSG
-  // -----------------------------------------
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  CHEER MSG
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   String? _calculateCheerMessage(List<Habit> habits) {
     final todayWd = DateTime.now().weekday;
     final dayKey = _formatDateKey(DateTime.now());
@@ -1206,17 +1344,15 @@ class DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  // -----------------------------------------
-  // UTILS
-  // -----------------------------------------
-  /// z. B. 1800 Sek => "00:30"
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  UTILS
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   String _formatWeeklyFlowTime(int totalSeconds) {
     final hours = totalSeconds ~/ 3600;
     final minutes = (totalSeconds % 3600) ~/ 60;
     return "${hours.toString().padLeft(2, '0')}:${minutes.toString().padLeft(2, '0')}";
   }
 
-  /// FLOW-Sessions aus Box
   List<FlowSession> _boxToFlowSessions(Box<Map> box) {
     final List<FlowSession> result = [];
     for (int i = 0; i < box.length; i++) {
@@ -1233,7 +1369,6 @@ class DashboardPageState extends State<DashboardPage> {
 
   DateTime _startOfDay(DateTime d) => DateTime(d.year, d.month, d.day);
 
-  /// Tasks
   List<Task> _boxToTaskList(Box box) {
     final List<Task> tasks = [];
     for (int i = 0; i < box.length; i++) {
@@ -1258,7 +1393,6 @@ class DashboardPageState extends State<DashboardPage> {
     return tasks;
   }
 
-  /// Habits
   List<Habit> _boxToHabitList(Box box) {
     final List<Habit> habits = [];
     for (int i = 0; i < box.length; i++) {
@@ -1284,17 +1418,16 @@ class DashboardPageState extends State<DashboardPage> {
     return d1.year == d2.year && d1.month == d2.month && d1.day == d2.day;
   }
 
-  /// z. B. "2025-02-06"
   String _formatDateKey(DateTime date) {
     return '${date.year}-${date.month.toString().padLeft(2, '0')}-${date.day.toString().padLeft(2, '0')}';
   }
 
-  /// Weekly Task-Fortschritte
   List<double> _calculateWeeklyPercents(List<Task> tasks) {
     final results = <double>[];
     for (int i = 0; i < 7; i++) {
       final dayDate = _weekDates[i];
-      final tasksForDay = tasks.where((t) => _isSameDay(t.deadline, dayDate)).toList();
+      final tasksForDay =
+          tasks.where((t) => _isSameDay(t.deadline, dayDate)).toList();
       if (tasksForDay.isEmpty) {
         results.add(0.0);
       } else {
@@ -1305,7 +1438,6 @@ class DashboardPageState extends State<DashboardPage> {
     return results;
   }
 
-  /// Task toggeln
   Future<void> _toggleTask(Task task) async {
     final box = await Hive.openBox<Map>(DBService.tasksBoxName);
     final allTasks = _boxToTaskList(box);
@@ -1326,4 +1458,5 @@ class DashboardPageState extends State<DashboardPage> {
 
     setState(() {});
   }
+
 }

@@ -184,7 +184,7 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                       focusedBorder: OutlineInputBorder(
-                        borderSide: const BorderSide(color: Colors.redAccent),
+                        borderSide: const BorderSide(color: Color.fromARGB(255, 223, 27, 27)),
                         borderRadius: BorderRadius.circular(12.0),
                       ),
                     ),
@@ -194,7 +194,7 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
                 const SizedBox(width: 12),
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.redAccent,
+                    backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                     padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
@@ -239,7 +239,7 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
                               style: const TextStyle(color: Colors.white70),
                             ),
                             trailing: IconButton(
-                              icon: const Icon(Icons.delete, color: Colors.redAccent),
+                              icon: const Icon(Icons.delete, color: Color.fromARGB(255, 223, 27, 27)),
                               onPressed: () => _removeTodo(index),
                             ),
                             onTap: () => _pickDeadline(index),
@@ -251,7 +251,7 @@ class _OnboardingTodosPageState extends State<OnboardingTodosPage> {
             const SizedBox(height: 24),
             ElevatedButton(
               style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.redAccent,
+                backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                 padding: const EdgeInsets.symmetric(horizontal: 32, vertical: 14),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
