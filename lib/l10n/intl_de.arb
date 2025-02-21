@@ -272,5 +272,16 @@
   "subscription_failed": "Abo konnte nicht aktiviert werden.",
   "premium_not_available": "Premium-Paket nicht verfügbar.",
   "feedbackButtonLabel": "Feedback senden",
-  "noEmailClientFound": "Kein E-Mail-Client auf diesem Gerät gefunden."
+  "noEmailClientFound": "Kein E-Mail-Client auf diesem Gerät gefunden.",
+  "habitReminderTitle": "Gewohnheits-Erinnerung",
+  "habitReminderChannelName": "Gewohnheits-Reminder",
+  "habitReminderChannelDescription": "Erinnert dich täglich an deine Gewohnheit.",
+  "dailyTodoChannelName": "Täglicher To-Do Reminder",
+  "dailyTodoChannelDesc": "Erinnert dich jeden Tag um 20:00 an deine Aufgaben.",
+  "todoReminderTitleNormal": "Check deine Aufgaben!",
+  "todoReminderBodyNormal": "Kleine Schritte bringen dich ans Ziel. Fang jetzt an!",
+  "todoReminderTitleHard": "Zeit, deine To-Dos anzugehen!",
+  "todoReminderBodyHard": "Zeig Disziplin und arbeite an deiner Vision. Keine Ausreden!",
+  "todoReminderTitleBrutal": "Was machst du eigentlich?!",
+  "todoReminderBodyBrutal": "Deine Aufgaben warten! Zeit zu liefern!"
 }

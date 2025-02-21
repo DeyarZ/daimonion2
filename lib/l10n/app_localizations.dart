@@ -1624,6 +1624,72 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'No email client found on this device.'**
   String get noEmailClientFound;
+
+  /// No description provided for @habitReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit Reminder'**
+  String get habitReminderTitle;
+
+  /// No description provided for @habitReminderChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit Reminders'**
+  String get habitReminderChannelName;
+
+  /// No description provided for @habitReminderChannelDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminds you about your habit daily.'**
+  String get habitReminderChannelDescription;
+
+  /// No description provided for @dailyTodoChannelName.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Todo Reminder'**
+  String get dailyTodoChannelName;
+
+  /// No description provided for @dailyTodoChannelDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Reminds you to check your tasks daily at 20:00'**
+  String get dailyTodoChannelDesc;
+
+  /// No description provided for @todoReminderTitleNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Check your tasks!'**
+  String get todoReminderTitleNormal;
+
+  /// No description provided for @todoReminderBodyNormal.
+  ///
+  /// In en, this message translates to:
+  /// **'Small steps lead you to your goal. Start now!'**
+  String get todoReminderBodyNormal;
+
+  /// No description provided for @todoReminderTitleHard.
+  ///
+  /// In en, this message translates to:
+  /// **'Time to tackle your tasks!'**
+  String get todoReminderTitleHard;
+
+  /// No description provided for @todoReminderBodyHard.
+  ///
+  /// In en, this message translates to:
+  /// **'Show discipline and work on your vision. No excuses!'**
+  String get todoReminderBodyHard;
+
+  /// No description provided for @todoReminderTitleBrutal.
+  ///
+  /// In en, this message translates to:
+  /// **'What the hell are you doing?!'**
+  String get todoReminderTitleBrutal;
+
+  /// No description provided for @todoReminderBodyBrutal.
+  ///
+  /// In en, this message translates to:
+  /// **'Your tasks are waiting! Time to grind!'**
+  String get todoReminderBodyBrutal;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

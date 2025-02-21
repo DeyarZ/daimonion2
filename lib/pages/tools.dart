@@ -54,7 +54,7 @@ class ToolsPage extends StatelessWidget {
     ];
 
     // Check, ob der User Premium hat
-    final isPremium = Hive.box('settings').get('isPremium', defaultValue: true); // WICHTIG: UNBEDINGT WIEDER AUF FALSE SETZEN VOR RELEASE
+    final isPremium = Hive.box('settings').get('isPremium', defaultValue: false); // WICHTIG: UNBEDINGT WIEDER AUF FALSE SETZEN VOR RELEASE
 
     return AdWrapper(
       child: Scaffold(

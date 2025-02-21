@@ -2599,6 +2599,116 @@ class S {
       args: [],
     );
   }
+
+  /// `Habit Reminder`
+  String get habitReminderTitle {
+    return Intl.message(
+      'Habit Reminder',
+      name: 'habitReminderTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Habit Reminders`
+  String get habitReminderChannelName {
+    return Intl.message(
+      'Habit Reminders',
+      name: 'habitReminderChannelName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reminds you about your habit daily.`
+  String get habitReminderChannelDescription {
+    return Intl.message(
+      'Reminds you about your habit daily.',
+      name: 'habitReminderChannelDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Daily Todo Reminder`
+  String get dailyTodoChannelName {
+    return Intl.message(
+      'Daily Todo Reminder',
+      name: 'dailyTodoChannelName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reminds you to check your tasks daily at 20:00`
+  String get dailyTodoChannelDesc {
+    return Intl.message(
+      'Reminds you to check your tasks daily at 20:00',
+      name: 'dailyTodoChannelDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Check your tasks!`
+  String get todoReminderTitleNormal {
+    return Intl.message(
+      'Check your tasks!',
+      name: 'todoReminderTitleNormal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Small steps lead you to your goal. Start now!`
+  String get todoReminderBodyNormal {
+    return Intl.message(
+      'Small steps lead you to your goal. Start now!',
+      name: 'todoReminderBodyNormal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Time to tackle your tasks!`
+  String get todoReminderTitleHard {
+    return Intl.message(
+      'Time to tackle your tasks!',
+      name: 'todoReminderTitleHard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show discipline and work on your vision. No excuses!`
+  String get todoReminderBodyHard {
+    return Intl.message(
+      'Show discipline and work on your vision. No excuses!',
+      name: 'todoReminderBodyHard',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What the hell are you doing?!`
+  String get todoReminderTitleBrutal {
+    return Intl.message(
+      'What the hell are you doing?!',
+      name: 'todoReminderTitleBrutal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your tasks are waiting! Time to grind!`
+  String get todoReminderBodyBrutal {
+    return Intl.message(
+      'Your tasks are waiting! Time to grind!',
+      name: 'todoReminderBodyBrutal',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -632,7 +632,7 @@ class _HaertegradPageState extends State<HaertegradPage> {
                 children: [
                   RadioListTile<Haertegrad>(
                     title: Text(loc.hardnessNormal,
-                        style: const TextStyle(color: Colors.white)),
+                        style: const TextStyle(color: Colors.white)), 
                     value: Haertegrad.normal,
                     groupValue: _currentSelection,
                     activeColor: const Color.fromARGB(255, 223, 27, 27),

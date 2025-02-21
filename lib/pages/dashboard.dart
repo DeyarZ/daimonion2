@@ -9,6 +9,9 @@ import 'package:uuid/uuid.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:timezone/timezone.dart' as tz;
 
+// Google Mobile Ads
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+
 // Services & Pages (anpassen an deine Ordnerstruktur)
 import '../services/db_service.dart';
 import '../services/flow_timer_service.dart';
@@ -16,7 +19,7 @@ import '../pages/todo_list.dart';
 import '../pages/habit_tracker.dart';
 import 'flow_stats_page.dart';
 import '../widgets/ad_wrapper.dart';
-import 'streak_info_page.dart';  // <--- NEU: Hier importierst du die separate StreakInfoPage
+import 'streak_info_page.dart';  // <--- NEU: StreakInfoPage
 
 // Importiere Lokalisierung
 import '../l10n/generated/l10n.dart';
@@ -177,6 +180,12 @@ class DashboardPageState extends State<DashboardPage> {
   // Daily Checks
   DailyCheckModel _todayCheck = DailyCheckModel();
 
+  // ------------------------------------------------
+  // NEU: NativeAd
+  // ------------------------------------------------
+  NativeAd? _nativeAd;
+  bool _isNativeAdLoaded = false;
+
   @override
   void initState() {
     super.initState();
@@ -190,7 +199,33 @@ class DashboardPageState extends State<DashboardPage> {
       // Neuer Tag => verpasste Checks => Notification
       _handleNewDayAndScheduleInsult();
     });
+
+    // Native Ad laden
+    _loadNativeAd();
   }
+
+  // Lädt die erweiterte native Anzeige
+void _loadNativeAd() {
+  _nativeAd = NativeAd(
+    adUnitId: 'ca-app-pub-2524075415669673/6403722860', // Deine echte ID!
+    factoryId: 'listTile',
+    request: const AdRequest(),
+    listener: NativeAdListener(
+      onAdLoaded: (ad) {
+        setState(() {
+          _isNativeAdLoaded = true;
+        });
+      },
+      onAdFailedToLoad: (ad, error) {
+        ad.dispose();
+        debugPrint('⚠️ Native Ad konnte nicht geladen werden: ${error.message}');
+      },
+    ),
+  );
+
+  _nativeAd!.load();
+}
+
 
   @override
   void didChangeDependencies() {
@@ -431,6 +466,11 @@ class DashboardPageState extends State<DashboardPage> {
                         ),
                         const SizedBox(height: 16),
 
+                        // // NEU: Native Ad Section
+                        // _buildNativeAdSection(),
+
+                        const SizedBox(height: 16),
+
                         // TASKS & WEEKLY CHART
                         ValueListenableBuilder(
                           valueListenable: _dbService.listenableTasks(),
@@ -565,7 +605,9 @@ class DashboardPageState extends State<DashboardPage> {
         ),
       ),
     );
-  }// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //  FUNDAMENTALS: NEUE SECTION (Horizontal Scroller)
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildFundamentalsSection() {
@@ -602,11 +644,12 @@ class DashboardPageState extends State<DashboardPage> {
             ),
           ),
           const SizedBox(height: 4),
-          //Text(
-          //  S.of(context).dailyFundamentalsDescription, // <- Du könntest in der .arb/.json ein kurzen Text definieren
-          //  style: const TextStyle(color: Colors.white70, fontSize: 12),
-          //),
-          //const SizedBox(height: 8),
+          // Optional: Kurzbeschreibung, falls du in .arb .json hast
+          // Text(
+          //   S.of(context).dailyFundamentalsDescription,
+          //   style: const TextStyle(color: Colors.white70, fontSize: 12),
+          // ),
+          // const SizedBox(height: 8),
 
           // Horizontal scroller mit den 6 Fundamentals
           SingleChildScrollView(
@@ -675,79 +718,79 @@ class DashboardPageState extends State<DashboardPage> {
   //  FUNDAMENTAL CHIP (Circle Toggle + Label + Info)
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildFundamentalChip({
-  required String label,
-  required String explanation,
-  required bool isDone,
-  required ValueChanged<bool> onToggle,
-  required IconData icon,
-}) {
-  final circleColor = isDone ? Colors.green : Colors.grey;
-  return Padding(
-    padding: const EdgeInsets.only(right: 8.0),
-    child: GestureDetector(
-      onTap: () => onToggle(!isDone),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          Stack(
-            // Wichtig, damit nichts abgeschnitten wird:
-            clipBehavior: Clip.none,
-            children: [
-              Container(
-                height: 48,
-                width: 48,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: circleColor.withOpacity(0.2),
-                  border: Border.all(color: circleColor, width: 2),
+    required String label,
+    required String explanation,
+    required bool isDone,
+    required ValueChanged<bool> onToggle,
+    required IconData icon,
+  }) {
+    final circleColor = isDone ? Colors.green : Colors.grey;
+    return Padding(
+      padding: const EdgeInsets.only(right: 8.0),
+      child: GestureDetector(
+        onTap: () => onToggle(!isDone),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            Stack(
+              // Wichtig, damit nichts abgeschnitten wird:
+              clipBehavior: Clip.none,
+              children: [
+                Container(
+                  height: 48,
+                  width: 48,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: circleColor.withOpacity(0.2),
+                    border: Border.all(color: circleColor, width: 2),
+                  ),
+                  child: Icon(
+                    isDone ? Icons.check : icon,
+                    color: isDone ? Colors.green : Colors.white70,
+                    size: 24,
+                  ),
                 ),
-                child: Icon(
-                  isDone ? Icons.check : icon,
-                  color: isDone ? Colors.green : Colors.white70,
-                  size: 24,
-                ),
-              ),
-              // Den Info-Button knapp am Rand statt außerhalb
-              Positioned(
-                right: -5,
-                top: 0,
-                child: InkWell(
-                  onTap: () {
-                    // separate Info-Dialog
-                    _showExplanationDialog(label, explanation);
-                  },
-                  child: Container(
-                    decoration: const BoxDecoration(
-                      color: Colors.grey,
-                      shape: BoxShape.circle,
-                    ),
-                    padding: const EdgeInsets.all(4),
-                    child: const Icon(
-                      Icons.info_outline,
-                      color: Colors.white70,
-                      size: 12,
+                // Den Info-Button knapp am Rand
+                Positioned(
+                  right: -5,
+                  top: 0,
+                  child: InkWell(
+                    onTap: () {
+                      // separate Info-Dialog
+                      _showExplanationDialog(label, explanation);
+                    },
+                    child: Container(
+                      decoration: const BoxDecoration(
+                        color: Colors.grey,
+                        shape: BoxShape.circle,
+                      ),
+                      padding: const EdgeInsets.all(4),
+                      child: const Icon(
+                        Icons.info_outline,
+                        color: Colors.white70,
+                        size: 12,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-          const SizedBox(height: 6),
-          SizedBox(
-            width: 60,
-            child: Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(color: Colors.white, fontSize: 12),
-              maxLines: 2,
-              overflow: TextOverflow.ellipsis,
+              ],
             ),
-          ),
-        ],
+            const SizedBox(height: 6),
+            SizedBox(
+              width: 60,
+              child: Text(
+                label,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.white, fontSize: 12),
+                maxLines: 2,
+                overflow: TextOverflow.ellipsis,
+              ),
+            ),
+          ],
+        ),
       ),
-    ),
-  );
-}
+    );
+  }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   //  Info-Dialog
@@ -764,8 +807,10 @@ class DashboardPageState extends State<DashboardPage> {
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child:
-                  const Text("OK", style: TextStyle(color: Color.fromARGB(255, 223, 27, 27))),
+              child: const Text(
+                "OK",
+                style: TextStyle(color: Color.fromARGB(255, 223, 27, 27)),
+              ),
             ),
           ],
         );
@@ -969,6 +1014,40 @@ class DashboardPageState extends State<DashboardPage> {
 
   void _pickRandomImage() {
     _randomImage = _motivationImages[Random().nextInt(_motivationImages.length)];
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  //  NativeAd Section
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  Widget _buildNativeAdSection() {
+    // Wenn die Ad noch nicht geladen ist, einfach nix oder "Loading..."
+    if (!_isNativeAdLoaded || _nativeAd == null) {
+      return Container(
+        alignment: Alignment.center,
+        width: double.infinity,
+        height: 100,
+        decoration: BoxDecoration(
+          color: Colors.grey[850],
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Text(
+          'Upgrade to Premium for no ads',
+          style: const TextStyle(color: Colors.white),
+        ),
+      );
+    }
+
+    // Ad ist da => zeig sie
+    return Container(
+      alignment: Alignment.center,
+      // Höhe anpassen je nach Layout
+      height: 200,
+      decoration: BoxDecoration(
+        color: Colors.grey[900],
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: AdWidget(ad: _nativeAd!),
+    );
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -1298,7 +1377,8 @@ class DashboardPageState extends State<DashboardPage> {
               ),
               barGroups: List.generate(7, (index) {
                 final val = dailyPercents[index];
-                final barColor = val >= 100.0 ? Colors.green : const Color.fromARGB(255, 223, 27, 27);
+                final barColor =
+                    val >= 100.0 ? Colors.green : const Color.fromARGB(255, 223, 27, 27);
                 return BarChartGroupData(
                   x: index,
                   barRods: [
@@ -1458,5 +1538,4 @@ class DashboardPageState extends State<DashboardPage> {
 
     setState(() {});
   }
-
 }

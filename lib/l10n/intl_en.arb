@@ -273,5 +273,16 @@
   "subscription_failed": "Subscription could not be activated.",
   "premium_not_available": "Premium package not available.",
   "feedbackButtonLabel": "Send Feedback",
-  "noEmailClientFound": "No email client found on this device."
+  "noEmailClientFound": "No email client found on this device.",
+  "habitReminderTitle": "Habit Reminder",
+  "habitReminderChannelName": "Habit Reminders",
+  "habitReminderChannelDescription": "Reminds you about your habit daily.",
+  "dailyTodoChannelName": "Daily Todo Reminder",
+  "dailyTodoChannelDesc": "Reminds you to check your tasks daily at 20:00",
+  "todoReminderTitleNormal": "Check your tasks!",
+  "todoReminderBodyNormal": "Small steps lead you to your goal. Start now!",
+  "todoReminderTitleHard": "Time to tackle your tasks!",
+  "todoReminderBodyHard": "Show discipline and work on your vision. No excuses!",
+  "todoReminderTitleBrutal": "What the hell are you doing?!",
+  "todoReminderBodyBrutal": "Your tasks are waiting! Time to grind!"
 }

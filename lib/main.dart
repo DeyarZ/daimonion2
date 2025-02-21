@@ -16,7 +16,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/generated/l10n.dart';
 
-// DEIN Haertegrad-Enum (Pfad anpassen, wenn woanders)
+// DEIN Härtegrad-Enum (Pfad anpassen, wenn woanders)
 import 'package:daimonion_app/haertegrad_enum.dart';
 
 // Services (anpassen an deine Struktur)
@@ -36,6 +36,26 @@ import 'pages/profile.dart';
 // Globale Notification-Plugin Instanz
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
+
+// ----------------------------------------------------------
+// CUSTOM SCROLL BEHAVIOR, damit beim Overscroll kein helles
+// Overlay auftaucht
+// ----------------------------------------------------------
+class MyCustomScrollBehavior extends MaterialScrollBehavior {
+  @override
+  Widget buildOverscrollIndicator(
+    BuildContext context,
+    Widget child,
+    ScrollableDetails details,
+  ) {
+    // Schwarze Overscroll-Farbe statt hellgrauem Glow
+    return GlowingOverscrollIndicator(
+      axisDirection: details.direction,
+      color: Colors.black,
+      child: child,
+    );
+  }
+}
 
 // ----------------------------------------------------------
 // 1) Timezone-Helfer-Funktion (Weekly Habit Reminder)
@@ -75,10 +95,10 @@ Future<void> scheduleHabitNotifications({
     final notifId = habitId.hashCode + wday;
     final scheduleTime = _nextInstanceOfWeekday(wday, hour, minute);
 
-    const androidDetails = AndroidNotificationDetails(
+    final androidDetails = AndroidNotificationDetails(
       'habit_channel_id',
-      'Habit Reminders',
-      channelDescription: 'Erinnert dich an deine Habit',
+      S.current.habitReminderChannelName,
+      channelDescription: S.current.habitReminderChannelDescription,
       importance: Importance.high,
       priority: Priority.high,
     );
@@ -92,7 +112,7 @@ Future<void> scheduleHabitNotifications({
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       notifId,
-      'Habit Reminder',
+      S.current.habitReminderTitle,
       habitName,
       scheduleTime,
       details,
@@ -135,24 +155,24 @@ Haertegrad _getCurrentHaertegrad() {
   }
 }
 
-// Returns (title, body) je nach Härtegrad
+// Returns (title, body) je nach Härtegrad unter Nutzung der Internationalisierung
 Map<String, String> _getTodoReminderText(Haertegrad grad) {
   switch (grad) {
     case Haertegrad.hart:
       return {
-        'title': 'Zeit, deine To-Dos anzugehen!',
-        'body': 'Zeig Disziplin und arbeite an deiner Vision. Kein Platz für Ausreden!',
+        'title': S.current.todoReminderTitleHard,
+        'body': S.current.todoReminderBodyHard,
       };
     case Haertegrad.brutalEhrlich:
       return {
-        'title': 'Was machst du eigentlich?',
-        'body': 'Deine To-Dos warten, Bitch! Zeit zu liefern!',
+        'title': S.current.todoReminderTitleBrutal,
+        'body': S.current.todoReminderBodyBrutal,
       };
     case Haertegrad.normal:
     default:
       return {
-        'title': 'Check deine To-Dos!',
-        'body': 'Kleine Schritte bringen dich ans Ziel. Fang jetzt an!',
+        'title': S.current.todoReminderTitleNormal,
+        'body': S.current.todoReminderBodyNormal,
       };
   }
 }
@@ -163,11 +183,10 @@ Future<void> scheduleDailyTodoReminder() async {
   final grad = _getCurrentHaertegrad();
   final textMap = _getTodoReminderText(grad);
 
-  // 2) NotificationDetails
-  const androidDetails = AndroidNotificationDetails(
+  final androidDetails = AndroidNotificationDetails(
     'daily_todo_channel',
-    'Tägliche ToDo Erinnerung',
-    channelDescription: 'Erinnerung, deine Aufgaben zu checken.',
+    S.current.dailyTodoChannelName,
+    channelDescription: S.current.dailyTodoChannelDesc,
     importance: Importance.high,
     priority: Priority.high,
   );
@@ -198,7 +217,7 @@ Future<void> scheduleDailyTodoReminder() async {
 
   await flutterLocalNotificationsPlugin.zonedSchedule(
     notificationId,
-    textMap['title'], // aus dem Härtegrad-Text
+    textMap['title'],
     textMap['body'],
     scheduledTime,
     details,
@@ -227,6 +246,20 @@ Future<void> main() async {
 
   // AdMob initialisieren
   await MobileAds.instance.initialize();
+
+  // ------------------------------------------
+  // OPTIONAL: Test-Device-IDs hinterlegen
+  // ------------------------------------------
+  // Wenn du auf echten Geräten testest und
+  // Testanzeigen sehen willst, pack hier deine
+  // Test-Device-IDs rein.
+  await MobileAds.instance.updateRequestConfiguration(
+    RequestConfiguration(
+      testDeviceIds: <String>[
+        // 'ABCDEF012345', // z.B. Emulator / echtes Gerät
+      ],
+    ),
+  );
 
   // Hive init
   await Hive.initFlutter();
@@ -337,7 +370,10 @@ class DaimonionApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Daimonion',
-      theme: ThemeData.dark(),
+      // Theme: Alles schön dunkel
+      theme: ThemeData.dark().copyWith(
+        scaffoldBackgroundColor: Colors.black,
+      ),
       debugShowCheckedModeBanner: false,
       // Lokalisierungs-Setup:
       localizationsDelegates: const [
@@ -347,6 +383,8 @@ class DaimonionApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
+      // Unser Custom ScrollBehavior gegen helles Overscroll-Geflacker
+      scrollBehavior: MyCustomScrollBehavior(),
       home: const AuthGate(),
     );
   }
@@ -413,27 +451,25 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      // Scaffold ebenfalls schwarz
+      backgroundColor: Colors.black,
       body: _pages[_currentIndex],
       bottomNavigationBar: Container(
-        decoration: BoxDecoration(
-          color: Colors.black,
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.3),
-              blurRadius: 8,
-              offset: const Offset(0, -2),
+        color: Colors.black,
+        child: SafeArea(
+          top: false,
+          child: Padding(
+            padding: const EdgeInsets.symmetric(vertical: 10),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              children: [
+                _buildNavItem(iconPath: 'assets/icon/home.png', index: 0),
+                _buildNavItem(iconPath: 'assets/icon/chat.png', index: 1),
+                _buildNavItem(iconPath: 'assets/icon/tools.png', index: 2),
+                _buildNavItem(iconPath: 'assets/icon/profile.png', index: 3),
+              ],
             ),
-          ],
-        ),
-        padding: const EdgeInsets.symmetric(vertical: 10),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceAround,
-          children: [
-            _buildNavItem(iconPath: 'assets/icon/home.png', index: 0),
-            _buildNavItem(iconPath: 'assets/icon/chat.png', index: 1),
-            _buildNavItem(iconPath: 'assets/icon/tools.png', index: 2),
-            _buildNavItem(iconPath: 'assets/icon/profile.png', index: 3),
-          ],
+          ),
         ),
       ),
       bottomSheet: _isAdLoaded
@@ -460,9 +496,9 @@ class MainScreenState extends State<MainScreen> {
           ImageIcon(
             AssetImage(iconPath),
             size: 32,
-            color: isSelected ? const Color.fromARGB(255, 223, 27, 27) : Colors.white54,
+            color:
+                isSelected ? const Color.fromARGB(255, 223, 27, 27) : Colors.white54,
           ),
-          // Dezent: kleine Linie, nur wenn ausgewählt
           if (isSelected)
             Container(
               margin: const EdgeInsets.only(top: 4),
@@ -475,4 +511,3 @@ class MainScreenState extends State<MainScreen> {
     );
   }
 }
-

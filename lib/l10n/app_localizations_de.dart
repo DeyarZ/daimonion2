@@ -804,4 +804,37 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get noEmailClientFound => 'Kein E-Mail-Client auf diesem Gerät gefunden.';
+
+  @override
+  String get habitReminderTitle => 'Gewohnheits-Erinnerung';
+
+  @override
+  String get habitReminderChannelName => 'Gewohnheits-Reminder';
+
+  @override
+  String get habitReminderChannelDescription => 'Erinnert dich täglich an deine Gewohnheit.';
+
+  @override
+  String get dailyTodoChannelName => 'Täglicher To-Do Reminder';
+
+  @override
+  String get dailyTodoChannelDesc => 'Erinnert dich jeden Tag um 20:00 an deine Aufgaben.';
+
+  @override
+  String get todoReminderTitleNormal => 'Check deine Aufgaben!';
+
+  @override
+  String get todoReminderBodyNormal => 'Kleine Schritte bringen dich ans Ziel. Fang jetzt an!';
+
+  @override
+  String get todoReminderTitleHard => 'Zeit, deine To-Dos anzugehen!';
+
+  @override
+  String get todoReminderBodyHard => 'Zeig Disziplin und arbeite an deiner Vision. Keine Ausreden!';
+
+  @override
+  String get todoReminderTitleBrutal => 'Was machst du eigentlich?!';
+
+  @override
+  String get todoReminderBodyBrutal => 'Deine Aufgaben warten! Zeit zu liefern!';
 }

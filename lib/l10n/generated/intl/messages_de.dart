@@ -128,6 +128,10 @@ class MessageLookup extends MessageLookupByLibrary {
             "Täglicher Reminder um 20:00 aktiviert!"),
         "dailyReminderDeactivated": MessageLookupByLibrary.simpleMessage(
             "Täglicher Reminder wurde deaktiviert."),
+        "dailyTodoChannelDesc": MessageLookupByLibrary.simpleMessage(
+            "Erinnert dich jeden Tag um 20:00 an deine Aufgaben."),
+        "dailyTodoChannelName":
+            MessageLookupByLibrary.simpleMessage("Täglicher To-Do Reminder"),
         "daimonion_warlord":
             MessageLookupByLibrary.simpleMessage("Daimonion-Warlord"),
         "dashboardTitle": MessageLookupByLibrary.simpleMessage("Dashboard"),
@@ -203,6 +207,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "goalSaveMoney":
             MessageLookupByLibrary.simpleMessage("Mehr Geld sparen"),
         "habitHeader": MessageLookupByLibrary.simpleMessage("Habit"),
+        "habitReminderChannelDescription": MessageLookupByLibrary.simpleMessage(
+            "Erinnert dich täglich an deine Gewohnheit."),
+        "habitReminderChannelName":
+            MessageLookupByLibrary.simpleMessage("Gewohnheits-Reminder"),
+        "habitReminderTitle":
+            MessageLookupByLibrary.simpleMessage("Gewohnheits-Erinnerung"),
         "habitTrackerTitle":
             MessageLookupByLibrary.simpleMessage("Habit Tracker"),
         "habitTrackerToolTitle":
@@ -420,6 +430,18 @@ class MessageLookup extends MessageLookupByLibrary {
         "todayLabel": MessageLookupByLibrary.simpleMessage("Heute:"),
         "todaysTasks": MessageLookupByLibrary.simpleMessage("HEUTIGE TASKS"),
         "todoListTitle": MessageLookupByLibrary.simpleMessage("To-Do-Liste"),
+        "todoReminderBodyBrutal": MessageLookupByLibrary.simpleMessage(
+            "Deine Aufgaben warten! Zeit zu liefern!"),
+        "todoReminderBodyHard": MessageLookupByLibrary.simpleMessage(
+            "Zeig Disziplin und arbeite an deiner Vision. Keine Ausreden!"),
+        "todoReminderBodyNormal": MessageLookupByLibrary.simpleMessage(
+            "Kleine Schritte bringen dich ans Ziel. Fang jetzt an!"),
+        "todoReminderTitleBrutal":
+            MessageLookupByLibrary.simpleMessage("Was machst du eigentlich?!"),
+        "todoReminderTitleHard": MessageLookupByLibrary.simpleMessage(
+            "Zeit, deine To-Dos anzugehen!"),
+        "todoReminderTitleNormal":
+            MessageLookupByLibrary.simpleMessage("Check deine Aufgaben!"),
         "toolsPageTitle":
             MessageLookupByLibrary.simpleMessage("Deine Werkzeuge zum Sieg"),
         "trainingPlanToolTitle":
