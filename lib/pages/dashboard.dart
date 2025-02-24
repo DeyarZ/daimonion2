@@ -207,7 +207,7 @@ class DashboardPageState extends State<DashboardPage> {
   // Lädt die erweiterte native Anzeige
 void _loadNativeAd() {
   _nativeAd = NativeAd(
-    adUnitId: 'ca-app-pub-2524075415669673/6403722860', // Deine echte ID!
+    adUnitId: 'ca-app-pub-3940256099942544/2247696110', // Deine echte ID!
     factoryId: 'listTile',
     request: const AdRequest(),
     listener: NativeAdListener(
@@ -466,8 +466,8 @@ void _loadNativeAd() {
                         ),
                         const SizedBox(height: 16),
 
-                        // // NEU: Native Ad Section
-                        // _buildNativeAdSection(),
+                        // NEU: Native Ad Section
+                        _buildNativeAdSection(),
 
                         const SizedBox(height: 16),
 
