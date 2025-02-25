@@ -1,6 +1,7 @@
 // lib/pages/dashboard.dart
 
 import 'dart:math';
+import 'package:daimonion_app/pages/subscription_page.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:fl_chart/fl_chart.dart';
@@ -19,7 +20,7 @@ import '../pages/todo_list.dart';
 import '../pages/habit_tracker.dart';
 import 'flow_stats_page.dart';
 import '../widgets/ad_wrapper.dart';
-import 'streak_info_page.dart';  // <--- NEU: StreakInfoPage
+import 'streak_info_page.dart'; // <--- NEU: StreakInfoPage
 
 // Importiere Lokalisierung
 import '../l10n/generated/l10n.dart';
@@ -205,27 +206,27 @@ class DashboardPageState extends State<DashboardPage> {
   }
 
   // Lädt die erweiterte native Anzeige
-void _loadNativeAd() {
-  _nativeAd = NativeAd(
-    adUnitId: 'ca-app-pub-3940256099942544/2247696110', // Deine echte ID!
-    factoryId: 'listTile',
-    request: const AdRequest(),
-    listener: NativeAdListener(
-      onAdLoaded: (ad) {
-        setState(() {
-          _isNativeAdLoaded = true;
-        });
-      },
-      onAdFailedToLoad: (ad, error) {
-        ad.dispose();
-        debugPrint('⚠️ Native Ad konnte nicht geladen werden: ${error.message}');
-      },
-    ),
-  );
+  void _loadNativeAd() {
+    _nativeAd = NativeAd(
+      adUnitId: 'ca-app-pub-2524075415669673/6403722860', // Deine echte ID!
+      factoryId: 'listTile',
+      request: const AdRequest(),
+      listener: NativeAdListener(
+        onAdLoaded: (ad) {
+          setState(() {
+            _isNativeAdLoaded = true;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          ad.dispose();
+          debugPrint(
+              '⚠️ Native Ad konnte nicht geladen werden: ${error.message}');
+        },
+      ),
+    );
 
-  _nativeAd!.load();
-}
-
+    _nativeAd!.load();
+  }
 
   @override
   void didChangeDependencies() {
@@ -543,16 +544,15 @@ void _loadNativeAd() {
                                       borderRadius: BorderRadius.circular(16),
                                       boxShadow: [
                                         BoxShadow(
-                                          color:
-                                              Colors.black.withOpacity(0.4),
+                                          color: Colors.black.withOpacity(0.4),
                                           offset: const Offset(0, 2),
                                           blurRadius: 6,
                                         ),
                                       ],
                                     ),
                                     padding: const EdgeInsets.all(12),
-                                    child:
-                                        _buildWeeklyProgressChart(dailyPercents),
+                                    child: _buildWeeklyProgressChart(
+                                        dailyPercents),
                                   ),
                                 ),
                               ],
@@ -644,12 +644,6 @@ void _loadNativeAd() {
             ),
           ),
           const SizedBox(height: 4),
-          // Optional: Kurzbeschreibung, falls du in .arb .json hast
-          // Text(
-          //   S.of(context).dailyFundamentalsDescription,
-          //   style: const TextStyle(color: Colors.white70, fontSize: 12),
-          // ),
-          // const SizedBox(height: 8),
 
           // Horizontal scroller mit den 6 Fundamentals
           SingleChildScrollView(
@@ -1013,11 +1007,12 @@ void _loadNativeAd() {
   }
 
   void _pickRandomImage() {
-    _randomImage = _motivationImages[Random().nextInt(_motivationImages.length)];
+    _randomImage =
+        _motivationImages[Random().nextInt(_motivationImages.length)];
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  //  NativeAd Section
+  //  NativeAd Section (Hier: "No more ads. Get Premium")
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildNativeAdSection() {
     // Wenn die Ad noch nicht geladen ist, einfach nix oder "Loading..."
@@ -1037,16 +1032,52 @@ void _loadNativeAd() {
       );
     }
 
-    // Ad ist da => zeig sie
-    return Container(
-      alignment: Alignment.center,
-      // Höhe anpassen je nach Layout
-      height: 200,
-      decoration: BoxDecoration(
-        color: Colors.grey[900],
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: AdWidget(ad: _nativeAd!),
+    // Ad ist da => zeig sie + dein kleiner Text drunter
+    return Column(
+      children: [
+        Container(
+          alignment: Alignment.center,
+          // Höhe anpassen je nach Layout
+          height: 200,
+          decoration: BoxDecoration(
+            color: Colors.grey[900],
+            borderRadius: BorderRadius.circular(8),
+          ),
+          child: AdWidget(ad: _nativeAd!),
+        ),
+        const SizedBox(height: 4),
+        GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) =>
+                    SubscriptionPage(), // <-- Deine SubscriptionPage
+              ),
+            );
+          },
+          child: Text.rich(
+            TextSpan(
+              text: 'No more ads. ',
+              style: const TextStyle(
+                fontSize: 12,
+                color: Colors.white70,
+              ),
+              children: [
+                TextSpan(
+                  text: 'Get Premium',
+                  style: const TextStyle(
+                    fontSize: 12,
+                    color: Colors.blueAccent,
+                    // decoration: TextDecoration.underline,
+                  ),
+                ),
+              ],
+            ),
+            textAlign: TextAlign.center,
+          ),
+        ),
+      ],
     );
   }
 
@@ -1198,7 +1229,8 @@ void _loadNativeAd() {
                       title: Text(
                         task.title,
                         style: TextStyle(
-                          color: task.completed ? Colors.grey[400] : Colors.white,
+                          color:
+                              task.completed ? Colors.grey[400] : Colors.white,
                           decoration: task.completed
                               ? TextDecoration.lineThrough
                               : TextDecoration.none,
@@ -1230,8 +1262,9 @@ void _loadNativeAd() {
     required VoidCallback onTap,
   }) {
     final percentage = (completionPercent * 100).toStringAsFixed(0);
-    final primaryColor =
-        (completionPercent >= 1.0) ? Colors.green : const Color.fromARGB(255, 223, 27, 27);
+    final primaryColor = (completionPercent >= 1.0)
+        ? Colors.green
+        : const Color.fromARGB(255, 223, 27, 27);
 
     return GestureDetector(
       onTap: onTap,
@@ -1293,8 +1326,7 @@ void _loadNativeAd() {
                   Center(
                     child: Text(
                       '$percentage%',
-                      style:
-                          const TextStyle(color: Colors.white, fontSize: 15),
+                      style: const TextStyle(color: Colors.white, fontSize: 15),
                     ),
                   ),
                 ],
@@ -1316,7 +1348,8 @@ void _loadNativeAd() {
       children: [
         Text(
           S.of(context).weeklyProgress,
-          style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+          style:
+              const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
         ),
         const SizedBox(height: 8),
         SizedBox(
@@ -1377,8 +1410,9 @@ void _loadNativeAd() {
               ),
               barGroups: List.generate(7, (index) {
                 final val = dailyPercents[index];
-                final barColor =
-                    val >= 100.0 ? Colors.green : const Color.fromARGB(255, 223, 27, 27);
+                final barColor = val >= 100.0
+                    ? Colors.green
+                    : const Color.fromARGB(255, 223, 27, 27);
                 return BarChartGroupData(
                   x: index,
                   barRods: [

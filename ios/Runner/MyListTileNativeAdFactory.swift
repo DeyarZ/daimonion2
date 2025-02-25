@@ -1,6 +1,6 @@
 import UIKit
 import GoogleMobileAds
-import flutter_google_mobile_ads // <- Brauchen wir für FLTNativeAdFactory
+import google_mobile_ads
 
 class MyListTileNativeAdFactory: NSObject, FLTNativeAdFactory {
     

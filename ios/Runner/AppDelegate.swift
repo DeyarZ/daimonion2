@@ -1,7 +1,6 @@
 import UIKit
 import Flutter
-import GoogleMobileAds
-import flutter_google_mobile_ads // Für FLTGoogleMobileAdsPlugin
+import google_mobile_ads  // Für FLTGoogleMobileAdsPlugin
 
 @main
 @objc class AppDelegate: FlutterAppDelegate {
@@ -20,18 +19,21 @@ import flutter_google_mobile_ads // Für FLTGoogleMobileAdsPlugin
         let factory = MyListTileNativeAdFactory()
         
         // Factory registrieren
-        FLTGoogleMobileAdsPlugin.registerNativeAdFactory(
-            controller.binaryMessenger,
-            factoryId: "listTile",
-            nativeAdFactory: factory
-        )
+       FLTGoogleMobileAdsPlugin.registerNativeAdFactory(
+    self,
+    factoryId: "listTile",
+    nativeAdFactory: factory
+)
+
 
         return super.application(application, didFinishLaunchingWithOptions: launchOptions)
     }
 
     override func applicationWillTerminate(_ application: UIApplication) {
         // Hier unregistern wir 
-        FLTGoogleMobileAdsPlugin.unregisterNativeAdFactory(self.binaryMessenger, factoryId: "listTile")
+     //   FLTGoogleMobileAdsPlugin.unregisterNativeAdFactory(self.binaryMessenger, factoryId: "listTile")
+        FLTGoogleMobileAdsPlugin.unregisterNativeAdFactory(self, factoryId: "listTile")
+
         return super.applicationWillTerminate(application)
     }
 }
