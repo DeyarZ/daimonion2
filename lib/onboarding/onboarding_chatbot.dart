@@ -43,7 +43,8 @@ class _OnboardingChatbotPageState extends State<OnboardingChatbotPage> {
     // Weiter zur nächsten Onboarding-Seite
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => const OnboardingNotificationPage()),
+      MaterialPageRoute(
+          builder: (context) => const OnboardingNotificationPage()),
     );
   }
 
@@ -63,7 +64,8 @@ class _OnboardingChatbotPageState extends State<OnboardingChatbotPage> {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
+            padding:
+                const EdgeInsets.symmetric(horizontal: 24.0, vertical: 40.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
@@ -82,7 +84,8 @@ class _OnboardingChatbotPageState extends State<OnboardingChatbotPage> {
                 // 3 Buttons: normal/hart/brutal
                 _buildModeButton(0, loc.chatbotModeNormal, Colors.blue),
                 _buildModeButton(1, loc.chatbotModeHard, Colors.blue),
-                _buildModeButton(2, loc.chatbotModeBrutal, const Color.fromARGB(255, 223, 27, 27)),
+                _buildModeButton(2, loc.chatbotModeBrutal,
+                    const Color.fromARGB(255, 223, 27, 27)),
 
                 if (_warningMessage.isNotEmpty) ...[
                   const SizedBox(height: 24),

@@ -11,6 +11,7 @@ class FirstTimePage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final loc = S.of(context);
+
     return Scaffold(
       body: Stack(
         fit: StackFit.expand,
@@ -24,11 +25,16 @@ class FirstTimePage extends StatelessWidget {
           Container(
             color: Colors.black.withOpacity(0.6),
           ),
-          // Inhalt
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 24.0),
-            child: Center(
+          // Inhalt mit Scroll & Zentrierung
+          SingleChildScrollView(
+            child: Container(
+              // Stellt sicher, dass mindestens die Höhe des Screens eingenommen wird
+              constraints: BoxConstraints(
+                minHeight: MediaQuery.of(context).size.height,
+              ),
+              padding: const EdgeInsets.symmetric(horizontal: 24.0),
               child: Column(
+                // Zentriert vertikal, wenn genug Platz da ist
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Text(

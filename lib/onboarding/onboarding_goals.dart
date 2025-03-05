@@ -33,7 +33,8 @@ class _OnboardingGoalsPageState extends State<OnboardingGoalsPage> {
   void initState() {
     super.initState();
     final settingsBox = Hive.box('settings');
-    final existingGoals = settingsBox.get('userGoals', defaultValue: <String>[]);
+    final existingGoals =
+        settingsBox.get('userGoals', defaultValue: <String>[]);
     _selectedGoals = List<String>.from(existingGoals);
   }
 
@@ -87,12 +88,15 @@ class _OnboardingGoalsPageState extends State<OnboardingGoalsPage> {
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
-                    color: isSelected ? Colors.red.shade50 : Colors.grey.shade200,
+                    color:
+                        isSelected ? Colors.red.shade50 : Colors.grey.shade200,
                     child: ListTile(
                       title: Text(
                         goal,
                         style: TextStyle(
-                          color: isSelected ? const Color.fromARGB(255, 223, 27, 27) : Colors.black87,
+                          color: isSelected
+                              ? const Color.fromARGB(255, 223, 27, 27)
+                              : Colors.black87,
                           fontWeight:
                               isSelected ? FontWeight.bold : FontWeight.normal,
                         ),
