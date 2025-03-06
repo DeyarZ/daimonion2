@@ -1,17 +1,21 @@
-import 'dart:async'; // Für Timer/Future
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as flutterWidgets;
 import 'package:hive_flutter/hive_flutter.dart';
 
 // Für RevenueCat
-import 'package:purchases_flutter/purchases_flutter.dart';
-// für firstWhereOrNull
+import 'package:purchases_flutter/purchases_flutter.dart'; // für firstWhereOrNull
 
-import 'package:speech_to_text/speech_to_text.dart' as stt; // A) Import STT
-import 'package:flutter_tts/flutter_tts.dart';             // B) Import TTS
+// Speech-To-Text
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+
+// ElevenLabs + Audio
+import 'package:audioplayers/audioplayers.dart';
+import '../services/elevenlabs_service.dart';
 
 import '../services/openai_service.dart';
 import '../haertegrad_enum.dart';
+// Importiere deine generierte Lokalisierung (Pfad ggf. anpassen)
 import '../l10n/generated/l10n.dart';
 
 class ChatbotPage extends StatefulWidget {
@@ -27,15 +31,17 @@ class _ChatbotPageState extends State<ChatbotPage> {
   final ScrollController _scrollController = ScrollController();
 
   // Speech-To-Text
-  late stt.SpeechToText _speech;         // STT Instanz
-  bool _isListening = false;             // Ob wir gerade lauschen
+  late stt.SpeechToText _speech;
+  bool _isListening = false;
 
-  // Text-To-Speech
-  final FlutterTts _flutterTts = FlutterTts();
+  // ElevenLabs
+  late ElevenLabsService _elevenLabsService;
+  final AudioPlayer _audioPlayer = AudioPlayer();
 
-  // Scroll-Down-Button
+  bool _ttsEnabled = true;      // TTS default an
+  String _selectedVoiceId = 'EXAVITQu4vr4xnSDxMaL'; // Deine Default-Voice (z.B. "Rachel" in ElevenLabs)
+
   bool _showScrollDownButton = false;
-
   final List<Map<String, String>> _messages = [];
 
   late Haertegrad _currentMode;
@@ -47,14 +53,18 @@ class _ChatbotPageState extends State<ChatbotPage> {
     // 1) STT initialisieren
     _speech = stt.SpeechToText();
 
-    // 2) Härtegrad aus Hive laden
+    // 2) ElevenLabsService init
+    //    Default Voice: "EXAVITQu4vr4xnSDxMaL" – diese ID kannst du ändern
+    _elevenLabsService = ElevenLabsService(voiceId: _selectedVoiceId);
+
+    // 3) Härtegrad aus Hive laden
     final int index = Hive.box('settings').get('haertegrad', defaultValue: 1);
     _currentMode = Haertegrad.values[index];
 
-    // 3) Check, ob 7 Tage seit dem Start der Free Prompts abgelaufen sind
+    // 4) Check 7-Tage-Prompts
     _checkAndResetPromptsIfNeeded();
 
-    // 4) Scroll-Listener
+    // 5) Scroll-Listener
     _scrollController.addListener(() {
       if (_scrollController.offset <
           _scrollController.position.maxScrollExtent - 100) {
@@ -78,16 +88,18 @@ class _ChatbotPageState extends State<ChatbotPage> {
   void dispose() {
     _scrollController.dispose();
     _controller.dispose();
-    _speech.stop();      // STT aufräumen
-    _flutterTts.stop();  // TTS ggf. stoppen
+    _speech.stop();
+
+    // AudioPlayer und ElevenLabsService aufräumen (optional)
+    _audioPlayer.dispose();
+
     super.dispose();
   }
 
-  // --------------------------------------------------------------------------------
-  // A) Speech-to-Text
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
+  // A) Speech-To-Text Logic
+  // ----------------------------------------------------
   Future<void> _startListening() async {
-    // Schau, ob SpeechToText bereit ist
     bool available = await _speech.initialize(
       onStatus: (status) => debugPrint('STT onStatus: $status'),
       onError: (error) => debugPrint('STT onError: $error'),
@@ -97,7 +109,6 @@ class _ChatbotPageState extends State<ChatbotPage> {
       setState(() => _isListening = true);
       _speech.listen(
         onResult: (result) {
-          // Alles, was reinkommt, in den _controller schreiben
           setState(() {
             _controller.text = result.recognizedWords;
           });
@@ -113,21 +124,30 @@ class _ChatbotPageState extends State<ChatbotPage> {
     setState(() => _isListening = false);
   }
 
-  // --------------------------------------------------------------------------------
-  // B) Text-to-Speech
-  // --------------------------------------------------------------------------------
-  Future<void> _speak(String text) async {
-    // Optional: TTS-Parameter setzen (Sprache, Sprechgeschwindigkeit etc.)
-    // await _flutterTts.setLanguage("de-DE");
-    // await _flutterTts.setPitch(1.0);
-    // await _flutterTts.setSpeechRate(0.95);
+  // ----------------------------------------------------
+  // B) ElevenLabs TTS
+  // ----------------------------------------------------
+  Future<void> _speakWithElevenLabs(String text) async {
+    // Nur abfeuern, wenn TTS aktiviert
+    if (!_ttsEnabled) return;
 
-    await _flutterTts.speak(text);
+    // 1) Voice in Service anpassen, falls sich _selectedVoiceId geändert hat
+    _elevenLabsService = ElevenLabsService(voiceId: _selectedVoiceId);
+
+    // 2) Audio generieren
+    final audioBytes = await _elevenLabsService.generateSpeechAudio(text);
+    if (audioBytes == null) {
+      debugPrint("Fehler: Audio kam leer zurück.");
+      return;
+    }
+
+    // 3) Audio abspielen
+    await _audioPlayer.play(BytesSource(audioBytes));
   }
 
-  // --------------------------------------------------------------------------------
-  // C) Prompt-Reset-Logik
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
+  // C) 7-Tage-Check
+  // ----------------------------------------------------
   void _checkAndResetPromptsIfNeeded() {
     final settings = Hive.box('settings');
     final startMillis = settings.get('freePromptStart', defaultValue: 0);
@@ -146,14 +166,14 @@ class _ChatbotPageState extends State<ChatbotPage> {
     }
   }
 
-  // --------------------------------------------------------------------------------
-  // D) Nachricht senden (Text)
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
+  // D) Nachricht senden (Chat)
+  // ----------------------------------------------------
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
-    // Falls Mikro an: wir stoppen es, wenn man manuell sendet
+    // Falls wir gerade lauschen, stoppen
     if (_isListening) {
       await _stopListening();
     }
@@ -162,16 +182,14 @@ class _ChatbotPageState extends State<ChatbotPage> {
     final isPremium = settingsBox.get('isPremium', defaultValue: false);
     int usedPrompts = settingsBox.get('chatPromptsUsed', defaultValue: 0);
 
-    // Paywall-Check
-    if (!isPremium && usedPrompts >= 5) {
+    // => Hier z.B. 50 Prompt-Limit
+    if (!isPremium && usedPrompts >= 50) {
       _showPaywallDialog();
       return;
     }
-
-    // Prompt-Counter +1
     settingsBox.put('chatPromptsUsed', usedPrompts + 1);
 
-    // User-Message einfügen
+    // User-Message hinzufügen
     setState(() {
       _messages.add({'role': 'user', 'content': text});
     });
@@ -179,16 +197,16 @@ class _ChatbotPageState extends State<ChatbotPage> {
     _scrollToBottom();
 
     try {
-      // Bot-Antwort holen
+      // OpenAI holen
       final response = await _openAIService.sendMessage(text, _currentMode);
 
-      // Leeren Bot-Reply erstmal hinzufügen
+      // Leere Bot-Meldung
       setState(() {
         _messages.add({'role': 'bot', 'content': ''});
       });
       _scrollToBottom();
 
-      // Typewriter-Animation
+      // Typewriter
       for (int i = 0; i < response.length; i++) {
         await Future.delayed(const Duration(milliseconds: 3));
         setState(() {
@@ -198,12 +216,10 @@ class _ChatbotPageState extends State<ChatbotPage> {
       }
       _scrollToBottom();
 
-      // Am Ende: Bot-Antwort vorlesen (falls gewünscht)
-      // Optional: Kannst du an eine Setting knüpfen oder so
-      await _speak(response);
+      // => ElevenLabs TTS
+      await _speakWithElevenLabs(response);
 
     } catch (e) {
-      // Fehler
       setState(() {
         _messages.add({
           'role': 'bot',
@@ -214,9 +230,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
     }
   }
 
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
   // E) Scroll
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
   void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 100), () {
       if (_scrollController.hasClients) {
@@ -229,9 +245,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
     });
   }
 
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
   // F) Paywall / Kauf
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
   Future<Package?> _getPremiumPackage() async {
     try {
       final offerings = await Purchases.getOfferings();
@@ -328,9 +344,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
     );
   }
 
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
   // G) Build
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
   @override
   Widget build(BuildContext context) {
     final settingsBox = Hive.box('settings');
@@ -338,13 +354,33 @@ class _ChatbotPageState extends State<ChatbotPage> {
     final isPremium = settingsBox.get('isPremium', defaultValue: false);
 
     return Scaffold(
-      resizeToAvoidBottomInset: true,
       appBar: AppBar(
-        title: Text(S.of(context).appBarTitle),
-        backgroundColor: Colors.transparent,
+        title: const Text('Daimonion Chat'),
+        centerTitle: true,
+        backgroundColor: Colors.black,
         elevation: 0,
+        actions: [
+          // TTS-Toggle Button
+          IconButton(
+            onPressed: () {
+              setState(() {
+                _ttsEnabled = !_ttsEnabled;
+              });
+            },
+            icon: Icon(
+              _ttsEnabled ? Icons.volume_up : Icons.volume_off,
+              color: _ttsEnabled ? Colors.redAccent : Colors.white,
+            ),
+            tooltip: 'ElevenLabs TTS ${_ttsEnabled ? 'ON' : 'OFF'}',
+          ),
+          // Voice-Auswahl
+          IconButton(
+            onPressed: _showVoiceSelectionSheet,
+            icon: const Icon(Icons.more_vert),
+            tooltip: 'ElevenLabs-Stimme auswählen',
+          ),
+        ],
       ),
-      extendBodyBehindAppBar: true,
       body: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Container(
@@ -357,7 +393,6 @@ class _ChatbotPageState extends State<ChatbotPage> {
           ),
           child: Column(
             children: [
-              SizedBox(height: kToolbarHeight + 20),
               Expanded(
                 child: Stack(
                   children: [
@@ -400,9 +435,97 @@ class _ChatbotPageState extends State<ChatbotPage> {
     );
   }
 
-  // --------------------------------------------------------------------------------
-  // H) Animated Suggestions
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
+  // H) BottomSheet für Voice-Auswahl
+  // ----------------------------------------------------
+  void _showVoiceSelectionSheet() {
+    // Beispiel: 2-3 Voice-IDs, die du in ElevenLabs angelegt hast
+    final possibleVoices = [
+      {
+        "name": "Rachel (en)",
+        "id": "EXAVITQu4vr4xnSDxMaL", // Standard ID
+      },
+      {
+        "name": "Domi (de)",
+        "id": "MFeD0UqfTS12Ckz3863A", // Beispiel, anpassen
+      },
+    ];
+
+    showModalBottomSheet(
+      context: context,
+      backgroundColor: Colors.grey.shade900,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.vertical(top: Radius.circular(16)),
+      ),
+      isScrollControlled: true,
+      builder: (ctx) {
+        return StatefulBuilder(
+          builder: (ctx, setStateSheet) {
+            return Container(
+              padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 16),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Text(
+                    "Select ElevenLabs Voice",
+                    style: TextStyle(
+                      fontSize: 18,
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 16),
+                  ListView.builder(
+                    shrinkWrap: true,
+                    itemCount: possibleVoices.length,
+                    itemBuilder: (context, index) {
+                      final voice = possibleVoices[index];
+                      final voiceId = voice["id"]!;
+                      final isSelected = (voiceId == _selectedVoiceId);
+
+                      return ListTile(
+                        title: Text(
+                          voice["name"]!,
+                          style: const TextStyle(color: Colors.white),
+                        ),
+                        trailing: isSelected
+                            ? const Icon(Icons.check, color: Colors.redAccent)
+                            : null,
+                        onTap: () {
+                          setStateSheet(() {
+                            _selectedVoiceId = voiceId;
+                          });
+                        },
+                      );
+                    },
+                  ),
+                  const SizedBox(height: 16),
+                  ElevatedButton.icon(
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: const Color.fromARGB(255, 223, 27, 27),
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 24, vertical: 12),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                    ),
+                    onPressed: () => Navigator.of(ctx).pop(),
+                    icon: const Icon(Icons.save),
+                    label: const Text("Save"),
+                  ),
+                  const SizedBox(height: 16),
+                ],
+              ),
+            );
+          },
+        );
+      },
+    );
+  }
+
+  // ----------------------------------------------------
+  // I) Animated Suggestions
+  // ----------------------------------------------------
   Widget _buildAnimatedSuggestionsArea() {
     final suggestions = [
       S.of(context).suggestion1,
@@ -425,9 +548,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
     );
   }
 
-  // --------------------------------------------------------------------------------
-  // I) Messages List
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
+  // J) Messages List
+  // ----------------------------------------------------
   Widget _buildMessagesList() {
     return ListView.builder(
       controller: _scrollController,
@@ -472,9 +595,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
     );
   }
 
-  // --------------------------------------------------------------------------------
-  // J) Input Bar (inkl. Mic-Button)
-  // --------------------------------------------------------------------------------
+  // ----------------------------------------------------
+  // K) Input Bar (inkl. Mic-Button)
+  // ----------------------------------------------------
   Widget _buildInputBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -484,18 +607,17 @@ class _ChatbotPageState extends State<ChatbotPage> {
           InkWell(
             onTap: () async {
               if (_isListening) {
-                // Wenn wir schon lauschen, stoppen
                 await _stopListening();
               } else {
-                // Ansonsten starten
                 await _startListening();
               }
             },
             child: Container(
-              padding: const EdgeInsets.all(8),
-              decoration: const BoxDecoration(
+              padding: const EdgeInsets.all(10),
+              decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 color: Colors.white10,
+                border: Border.all(color: Colors.white54),
               ),
               child: Icon(
                 _isListening ? Icons.mic : Icons.mic_none,
@@ -531,9 +653,16 @@ class _ChatbotPageState extends State<ChatbotPage> {
 
           // Send-Button
           Container(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               shape: BoxShape.circle,
-              color: Color.fromARGB(255, 223, 27, 27),
+              color: const Color.fromARGB(255, 223, 27, 27),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.red.withOpacity(0.5),
+                  blurRadius: 4,
+                  offset: const Offset(0, 2),
+                ),
+              ],
             ),
             child: IconButton(
               icon: const Icon(Icons.send, color: Colors.white),
@@ -548,7 +677,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
 
 // --------------------------------------------------------
 // EXTRA: Eigenes Widget für animiertes Anzeigen
-//        der Vorschläge nacheinander (unverändert).
+//        der Vorschläge nacheinander.
 // --------------------------------------------------------
 class _AnimatedSuggestions extends StatefulWidget {
   final List<String> suggestions;
@@ -588,7 +717,7 @@ class _AnimatedSuggestionsState extends State<_AnimatedSuggestions> {
   Future<void> _cycle() async {
     while (mounted) {
       final suggestion = widget.suggestions[_currentIndex];
-      // Rein
+      // 1) Rein
       for (int i = 0; i <= suggestion.length; i++) {
         if (!mounted) return;
         setState(() {
@@ -596,10 +725,10 @@ class _AnimatedSuggestionsState extends State<_AnimatedSuggestions> {
         });
         await Future.delayed(const Duration(milliseconds: 50));
       }
-      // Stehenlassen
+      // 2) Stehenlassen
       await Future.delayed(const Duration(seconds: 2));
       if (!mounted) return;
-      // Raus
+      // 3) Raus
       for (int i = suggestion.length; i >= 0; i--) {
         if (!mounted) return;
         setState(() {
@@ -607,7 +736,7 @@ class _AnimatedSuggestionsState extends State<_AnimatedSuggestions> {
         });
         await Future.delayed(const Duration(milliseconds: 20));
       }
-      // Weiter
+      // 4) Weiter
       _currentIndex = (_currentIndex + 1) % widget.suggestions.length;
       await Future.delayed(const Duration(milliseconds: 500));
     }
