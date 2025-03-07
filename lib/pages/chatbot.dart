@@ -1,21 +1,21 @@
 import 'dart:async';
+import 'dart:io';                          // Für File
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart' as flutterWidgets;
 import 'package:hive_flutter/hive_flutter.dart';
 
+import 'package:path_provider/path_provider.dart'; // Für getTemporaryDirectory
+
 // Für RevenueCat
-import 'package:purchases_flutter/purchases_flutter.dart'; // für firstWhereOrNull
-
-// Speech-To-Text
-import 'package:speech_to_text/speech_to_text.dart' as stt;
-
-// ElevenLabs + Audio
+import 'package:purchases_flutter/purchases_flutter.dart';
+// Audio
 import 'package:audioplayers/audioplayers.dart';
-import '../services/elevenlabs_service.dart';
 
+// Deine Services
+import '../services/elevenlabs_service.dart';
 import '../services/openai_service.dart';
 import '../haertegrad_enum.dart';
-// Importiere deine generierte Lokalisierung (Pfad ggf. anpassen)
+// Lokalisierung
 import '../l10n/generated/l10n.dart';
 
 class ChatbotPage extends StatefulWidget {
@@ -30,41 +30,36 @@ class _ChatbotPageState extends State<ChatbotPage> {
   final OpenAIService _openAIService = OpenAIService();
   final ScrollController _scrollController = ScrollController();
 
-  // Speech-To-Text
-  late stt.SpeechToText _speech;
-  bool _isListening = false;
-
   // ElevenLabs
   late ElevenLabsService _elevenLabsService;
   final AudioPlayer _audioPlayer = AudioPlayer();
 
-  bool _ttsEnabled = true;      // TTS default an
-  String _selectedVoiceId = 'EXAVITQu4vr4xnSDxMaL'; // Deine Default-Voice (z.B. "Rachel" in ElevenLabs)
+  // Voice ON/OFF
+  bool _voiceEnabled = true;    
+  // Default Voice
+  String _selectedVoiceId = '29vD33N1CtxCmqQRPOHJ';  // Clyde (en, deep)
 
   bool _showScrollDownButton = false;
   final List<Map<String, String>> _messages = [];
 
+  // Härtegrad
   late Haertegrad _currentMode;
 
   @override
   void initState() {
     super.initState();
 
-    // 1) STT initialisieren
-    _speech = stt.SpeechToText();
-
-    // 2) ElevenLabsService init
-    //    Default Voice: "EXAVITQu4vr4xnSDxMaL" – diese ID kannst du ändern
+    // ElevenLabsService init
     _elevenLabsService = ElevenLabsService(voiceId: _selectedVoiceId);
 
-    // 3) Härtegrad aus Hive laden
+    // Härtegrad laden
     final int index = Hive.box('settings').get('haertegrad', defaultValue: 1);
     _currentMode = Haertegrad.values[index];
 
-    // 4) Check 7-Tage-Prompts
+    // 7-Tage-Check
     _checkAndResetPromptsIfNeeded();
 
-    // 5) Scroll-Listener
+    // Scroll-Listener
     _scrollController.addListener(() {
       if (_scrollController.offset <
           _scrollController.position.maxScrollExtent - 100) {
@@ -77,7 +72,6 @@ class _ChatbotPageState extends State<ChatbotPage> {
         }
       }
 
-      // Tastatur wegkicken beim Scrollen nach oben
       if (_scrollController.position.userScrollDirection == AxisDirection.up) {
         FocusScope.of(context).unfocus();
       }
@@ -88,65 +82,45 @@ class _ChatbotPageState extends State<ChatbotPage> {
   void dispose() {
     _scrollController.dispose();
     _controller.dispose();
-    _speech.stop();
-
-    // AudioPlayer und ElevenLabsService aufräumen (optional)
     _audioPlayer.dispose();
-
     super.dispose();
   }
 
   // ----------------------------------------------------
-  // A) Speech-To-Text Logic
-  // ----------------------------------------------------
-  Future<void> _startListening() async {
-    bool available = await _speech.initialize(
-      onStatus: (status) => debugPrint('STT onStatus: $status'),
-      onError: (error) => debugPrint('STT onError: $error'),
-    );
-
-    if (available) {
-      setState(() => _isListening = true);
-      _speech.listen(
-        onResult: (result) {
-          setState(() {
-            _controller.text = result.recognizedWords;
-          });
-        },
-      );
-    } else {
-      debugPrint("Speech Recognition ist nicht verfügbar.");
-    }
-  }
-
-  Future<void> _stopListening() async {
-    await _speech.stop();
-    setState(() => _isListening = false);
-  }
-
-  // ----------------------------------------------------
-  // B) ElevenLabs TTS
+  // A) ElevenLabs VOICE (Audio abspielen via Temp-File)
   // ----------------------------------------------------
   Future<void> _speakWithElevenLabs(String text) async {
-    // Nur abfeuern, wenn TTS aktiviert
-    if (!_ttsEnabled) return;
+    // Falls Voice off: abbruch => keine API-Kosten
+    if (!_voiceEnabled) return;
 
-    // 1) Voice in Service anpassen, falls sich _selectedVoiceId geändert hat
+    // Voice anpassen, falls geändert
     _elevenLabsService = ElevenLabsService(voiceId: _selectedVoiceId);
 
-    // 2) Audio generieren
+    // Audio-Bytes
     final audioBytes = await _elevenLabsService.generateSpeechAudio(text);
-    if (audioBytes == null) {
-      debugPrint("Fehler: Audio kam leer zurück.");
+    if (audioBytes == null || audioBytes.isEmpty) {
+      debugPrint("Fehler: Leere Audio-Daten");
       return;
     }
 
-    // 3) Audio abspielen
-    await _audioPlayer.play(BytesSource(audioBytes));
+    // In Temp-Datei
+    final tempDir = await getTemporaryDirectory();
+    final tempFile = File(
+      '${tempDir.path}/elevenlabs_${DateTime.now().millisecondsSinceEpoch}.mp3',
+    );
+    await tempFile.writeAsBytes(audioBytes, flush: true);
+
+    // Abspielen
+    try {
+      await _audioPlayer.setSourceDeviceFile(tempFile.path);
+      await _audioPlayer.resume();
+    } catch (e) {
+      debugPrint('Audio Playback Error: $e');
+    }
   }
 
   // ----------------------------------------------------
-  // C) 7-Tage-Check
+  // B) 7-Tage-Check
   // ----------------------------------------------------
   void _checkAndResetPromptsIfNeeded() {
     final settings = Hive.box('settings');
@@ -167,29 +141,24 @@ class _ChatbotPageState extends State<ChatbotPage> {
   }
 
   // ----------------------------------------------------
-  // D) Nachricht senden (Chat)
+  // C) Nachricht senden
   // ----------------------------------------------------
   Future<void> _sendMessage() async {
     final text = _controller.text.trim();
     if (text.isEmpty) return;
 
-    // Falls wir gerade lauschen, stoppen
-    if (_isListening) {
-      await _stopListening();
-    }
-
     final settingsBox = Hive.box('settings');
     final isPremium = settingsBox.get('isPremium', defaultValue: false);
     int usedPrompts = settingsBox.get('chatPromptsUsed', defaultValue: 0);
 
-    // => Hier z.B. 50 Prompt-Limit
-    if (!isPremium && usedPrompts >= 50) {
+    // Limit 5 Prompts
+    if (!isPremium && usedPrompts >= 5) {
       _showPaywallDialog();
       return;
     }
     settingsBox.put('chatPromptsUsed', usedPrompts + 1);
 
-    // User-Message hinzufügen
+    // User-Message in Liste
     setState(() {
       _messages.add({'role': 'user', 'content': text});
     });
@@ -197,10 +166,9 @@ class _ChatbotPageState extends State<ChatbotPage> {
     _scrollToBottom();
 
     try {
-      // OpenAI holen
       final response = await _openAIService.sendMessage(text, _currentMode);
 
-      // Leere Bot-Meldung
+      // Bot-Message
       setState(() {
         _messages.add({'role': 'bot', 'content': ''});
       });
@@ -216,7 +184,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
       }
       _scrollToBottom();
 
-      // => ElevenLabs TTS
+      // Voice
       await _speakWithElevenLabs(response);
 
     } catch (e) {
@@ -231,7 +199,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   }
 
   // ----------------------------------------------------
-  // E) Scroll
+  // D) Scroll
   // ----------------------------------------------------
   void _scrollToBottom() {
     Future.delayed(const Duration(milliseconds: 100), () {
@@ -246,7 +214,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   }
 
   // ----------------------------------------------------
-  // F) Paywall / Kauf
+  // E) Paywall / Kauf
   // ----------------------------------------------------
   Future<Package?> _getPremiumPackage() async {
     try {
@@ -345,7 +313,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   }
 
   // ----------------------------------------------------
-  // G) Build
+  // F) Build
   // ----------------------------------------------------
   @override
   Widget build(BuildContext context) {
@@ -360,24 +328,43 @@ class _ChatbotPageState extends State<ChatbotPage> {
         backgroundColor: Colors.black,
         elevation: 0,
         actions: [
-          // TTS-Toggle Button
-          IconButton(
-            onPressed: () {
-              setState(() {
-                _ttsEnabled = !_ttsEnabled;
-              });
-            },
-            icon: Icon(
-              _ttsEnabled ? Icons.volume_up : Icons.volume_off,
-              color: _ttsEnabled ? Colors.redAccent : Colors.white,
+          // Voice-Button
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 8),
+            child: GestureDetector(
+              onTap: () {
+                setState(() {
+                  _voiceEnabled = !_voiceEnabled;
+                });
+              },
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                decoration: BoxDecoration(
+                  color: _voiceEnabled ? const Color.fromARGB(255, 223, 27, 27) : Colors.grey.shade700,
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Row(
+                  children: [
+                    Icon(
+                      _voiceEnabled ? Icons.volume_up : Icons.volume_off,
+                      color: Colors.white,
+                      size: 18,
+                    ),
+                    const SizedBox(width: 6),
+                    Text(
+                      _voiceEnabled ? 'VOICE ON' : 'VOICE OFF',
+                      style: const TextStyle(color: Colors.white),
+                    ),
+                  ],
+                ),
+              ),
             ),
-            tooltip: 'ElevenLabs TTS ${_ttsEnabled ? 'ON' : 'OFF'}',
           ),
           // Voice-Auswahl
           IconButton(
             onPressed: _showVoiceSelectionSheet,
             icon: const Icon(Icons.more_vert),
-            tooltip: 'ElevenLabs-Stimme auswählen',
+            tooltip: 'Voice auswählen',
           ),
         ],
       ),
@@ -405,8 +392,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
                         right: 16,
                         child: FloatingActionButton(
                           mini: true,
-                          backgroundColor:
-                              const Color.fromARGB(255, 223, 27, 27),
+                          backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                           onPressed: _scrollToBottom,
                           child: const Icon(Icons.arrow_downward, size: 20),
                         ),
@@ -436,18 +422,21 @@ class _ChatbotPageState extends State<ChatbotPage> {
   }
 
   // ----------------------------------------------------
-  // H) BottomSheet für Voice-Auswahl
+  // G) Voice-Auswahl
   // ----------------------------------------------------
   void _showVoiceSelectionSheet() {
-    // Beispiel: 2-3 Voice-IDs, die du in ElevenLabs angelegt hast
     final possibleVoices = [
+      // {
+      //   "name": "Antoni (en, deep/male)",
+      //   "id": "ErXwobaYiN019PkyyX3X",
+      // },
+      // {
+      //   "name": "Elias (de, male)",
+      //   "id": "21m00Tcm4TlvDq8ikWAM",
+      // },
       {
-        "name": "Rachel (en)",
-        "id": "EXAVITQu4vr4xnSDxMaL", // Standard ID
-      },
-      {
-        "name": "Domi (de)",
-        "id": "MFeD0UqfTS12Ckz3863A", // Beispiel, anpassen
+        "name": "Clyde (en, deep/male)",
+        "id": "29vD33N1CtxCmqQRPOHJ",
       },
     ];
 
@@ -467,7 +456,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   const Text(
-                    "Select ElevenLabs Voice",
+                    "Select Voice",
                     style: TextStyle(
                       fontSize: 18,
                       color: Colors.white,
@@ -524,7 +513,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   }
 
   // ----------------------------------------------------
-  // I) Animated Suggestions
+  // H) Animated Suggestions - Bubbles
   // ----------------------------------------------------
   Widget _buildAnimatedSuggestionsArea() {
     final suggestions = [
@@ -549,7 +538,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
   }
 
   // ----------------------------------------------------
-  // J) Messages List
+  // I) Messages List
   // ----------------------------------------------------
   Widget _buildMessagesList() {
     return ListView.builder(
@@ -596,37 +585,13 @@ class _ChatbotPageState extends State<ChatbotPage> {
   }
 
   // ----------------------------------------------------
-  // K) Input Bar (inkl. Mic-Button)
+  // J) Input Bar
   // ----------------------------------------------------
   Widget _buildInputBar() {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       child: Row(
         children: [
-          // Mikro-Button
-          InkWell(
-            onTap: () async {
-              if (_isListening) {
-                await _stopListening();
-              } else {
-                await _startListening();
-              }
-            },
-            child: Container(
-              padding: const EdgeInsets.all(10),
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: Colors.white10,
-                border: Border.all(color: Colors.white54),
-              ),
-              child: Icon(
-                _isListening ? Icons.mic : Icons.mic_none,
-                color: _isListening ? Colors.red : Colors.white,
-              ),
-            ),
-          ),
-          const SizedBox(width: 8),
-
           // TextField
           Expanded(
             child: TextField(
@@ -650,7 +615,6 @@ class _ChatbotPageState extends State<ChatbotPage> {
             ),
           ),
           const SizedBox(width: 8),
-
           // Send-Button
           Container(
             decoration: BoxDecoration(
@@ -676,8 +640,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
 }
 
 // --------------------------------------------------------
-// EXTRA: Eigenes Widget für animiertes Anzeigen
-//        der Vorschläge nacheinander.
+// EXTRA: Animierte Vorschläge als Bubbles
 // --------------------------------------------------------
 class _AnimatedSuggestions extends StatefulWidget {
   final List<String> suggestions;
@@ -717,7 +680,7 @@ class _AnimatedSuggestionsState extends State<_AnimatedSuggestions> {
   Future<void> _cycle() async {
     while (mounted) {
       final suggestion = widget.suggestions[_currentIndex];
-      // 1) Rein
+      // Buchstabe für Buchstabe rein
       for (int i = 0; i <= suggestion.length; i++) {
         if (!mounted) return;
         setState(() {
@@ -725,10 +688,10 @@ class _AnimatedSuggestionsState extends State<_AnimatedSuggestions> {
         });
         await Future.delayed(const Duration(milliseconds: 50));
       }
-      // 2) Stehenlassen
+      // kurz warten
       await Future.delayed(const Duration(seconds: 2));
       if (!mounted) return;
-      // 3) Raus
+      // raustippen
       for (int i = suggestion.length; i >= 0; i--) {
         if (!mounted) return;
         setState(() {
@@ -736,7 +699,7 @@ class _AnimatedSuggestionsState extends State<_AnimatedSuggestions> {
         });
         await Future.delayed(const Duration(milliseconds: 20));
       }
-      // 4) Weiter
+      // Nächster
       _currentIndex = (_currentIndex + 1) % widget.suggestions.length;
       await Future.delayed(const Duration(milliseconds: 500));
     }
@@ -749,10 +712,25 @@ class _AnimatedSuggestionsState extends State<_AnimatedSuggestions> {
         final fullSuggestion = widget.suggestions[_currentIndex];
         widget.onSuggestionTap(fullSuggestion);
       },
-      child: Text(
-        _currentText,
-        style: const TextStyle(color: Colors.white, fontSize: 18),
-        textAlign: TextAlign.center,
+      child: Container(
+        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+        margin: const EdgeInsets.symmetric(horizontal: 16),
+        decoration: BoxDecoration(
+          color: Colors.grey.shade800,
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black45,
+              offset: const Offset(2, 2),
+              blurRadius: 4,
+            ),
+          ],
+        ),
+        child: Text(
+          _currentText,
+          textAlign: TextAlign.center,
+          style: const TextStyle(color: Colors.white, fontSize: 18),
+        ),
       ),
     );
   }
