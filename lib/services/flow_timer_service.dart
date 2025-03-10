@@ -107,8 +107,26 @@ class FlowTimerService extends ChangeNotifier {
   }
 
   // ------------------------------------------------
+  // Aktuellen Flow überspringen
+  // (Keine Teil-XP, einfach nur weiter zum nächsten Flow)
+  // ------------------------------------------------
+  void skipToNextFlow() {
+    // Nur ausführen, wenn es noch einen Flow gibt
+    if (_flowIndex < _flows - 1) {
+      // Laufenden Timer stoppen
+      _timer?.cancel();
+      _isRunning = false;
+
+      // Nächsten Flow beginnen
+      _flowIndex++;
+      _secondsLeft = _minutes * 60;
+      notifyListeners();
+    }
+  }
+
+  // ------------------------------------------------
   // Speichern der Flow-Session in Hive
-  // Hier bauen wir die XP-Vergabe ein
+  // + XP-Vergabe
   // ------------------------------------------------
   Future<void> _storeFlowSession(int durationMinutes) async {
     final box = await Hive.openBox<Map>('flow_sessions');
@@ -120,16 +138,10 @@ class FlowTimerService extends ChangeNotifier {
       'minutes': durationMinutes,
     });
 
-    // Jetzt XP vergeben: 1 XP pro 10 Minuten, abgerundet
-    final int xpToAward = durationMinutes ~/ 10; 
-    // => 25 Min => 2 XP, 30 => 3 XP, etc.
-
+    // XP vergeben: 1 XP pro 10 Minuten (abgerundet)
+    final int xpToAward = durationMinutes ~/ 10;
     if (xpToAward > 0) {
       GamificationService().addXPWithStreak(xpToAward);
-
-      // Wenn du z.B. eine UI-Nachricht willst, musst du das
-      // im Widget machen, das FlowTimerService benutzt:
-      // z.B. in einem Listener oder via Callback
     }
   }
 }

@@ -1,18 +1,14 @@
 import 'package:flutter/foundation.dart';
 import 'package:hive_flutter/hive_flutter.dart';
-import 'package:uuid/uuid.dart'; // Falls noch nicht importiert
+import 'package:uuid/uuid.dart';
 
 class DBService {
-  // Tasks
+  // Name der Hive-Boxen
   static const String tasksBoxName = 'tasksBox';
-
-  // Journal
   static const String journalBoxName = 'journalBox';
-
-  // Habit Tracker
   static const String habitsBoxName = 'habitsBox';
 
-  final Uuid _uuid = const Uuid(); // Initialisiere eine Uuid-Instanz
+  final Uuid _uuid = const Uuid();
 
   // ---------- TASKS --------------------
   Box<Map> get _tasksBox => Hive.box<Map>(tasksBoxName);
@@ -52,7 +48,7 @@ class DBService {
     await _journalBox.deleteAt(index);
   }
 
-  // ---------- HABITS --------------------
+  // ---------- HABIT TRACKER --------------------
   Box<Map> get _habitsBox => Hive.box<Map>(habitsBoxName);
 
   ValueListenable<Box<Map>> listenableHabits() {
@@ -63,26 +59,54 @@ class DBService {
     await _habitsBox.add(habitData);
   }
 
-  Future<void> updateHabit(int index, Map<String, dynamic> newData) async {
-    await _habitsBox.putAt(index, newData);
+  Future<void> updateHabit(String id, Map<String, dynamic> newData) async {
+    int index = _habitsBox.values.toList().indexWhere((habit) => habit['id'] == id);
+    if (index != -1) {
+      await _habitsBox.putAt(index, newData);
+    }
   }
 
-  Future<void> deleteHabit(int index) async {
-    await _habitsBox.deleteAt(index);
+  Future<void> deleteHabit(String id) async {
+    int index = _habitsBox.values.toList().indexWhere((habit) => habit['id'] == id);
+    if (index != -1) {
+      await _habitsBox.deleteAt(index);
+    }
   }
 
-  // **Neue Methode hinzugefügt**
+  /// **Neu: `saveHabit()`**
+  /// Diese Methode überprüft, ob das Habit bereits existiert.
+  /// - Falls ja, wird es aktualisiert.
+  /// - Falls nein, wird es neu gespeichert.
+  Future<void> saveHabit({
+    required String id,
+    required String name,
+    required Map<String, bool?> dailyStatus,
+    required List<int> weekdays,
+    int? reminderHour,
+    int? reminderMinute,
+    String? category,
+    int? colorValue,
+  }) async {
+    final existingIndex = _habitsBox.values.toList().indexWhere((habit) => habit['id'] == id);
+
+    final habitData = {
+      'id': id,
+      'name': name,
+      'dailyStatus': dailyStatus,
+      'weekdays': weekdays,
+      'reminderHour': reminderHour,
+      'reminderMinute': reminderMinute,
+      'category': category,
+      'colorValue': colorValue,
+    };
+
+    if (existingIndex != -1) {
+      await updateHabit(id, habitData);
+    } else {
+      await addHabit(habitData);
+    }
+  }
+
+  // Methode zum Abrufen der Habit-Box (optional)
   Box<Map> getHabitsBox() => _habitsBox;
-
-  // ... (Weitere Methoden nach Bedarf) ...
 }
-
-
-
-/*
-Warum Map<String,dynamic> statt Task-Objekt?
-Damit du keine Hive-Adapter-Schreiberei brauchst. 
-Du kannst gerne später einen Hive-Adapter für dein 
-Task-Model definieren und die Instanzen direkt speichern. 
-Aber für dein MVP reicht’s, Tasks als Map reinzuwerfen.
-*/

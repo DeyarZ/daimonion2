@@ -82,17 +82,18 @@ tz.TZDateTime _nextInstanceOfWeekday(int weekday, int hour, int minute) {
 }
 
 // ----------------------------------------------------------
-// 2) Functions: Weekly Habit Reminders
+// 2) Notifications: Weekly Habit Reminders
+//    EXAKT angepasst an habit_tracker.dart
 // ----------------------------------------------------------
 Future<void> scheduleHabitNotifications({
-  required String habitId,
-  required String habitName,
+  required String id,
+  required String title,
+  required List<int> weekdays,
   required int hour,
   required int minute,
-  required Set<int> weekdays,
 }) async {
   for (final wday in weekdays) {
-    final notifId = habitId.hashCode + wday;
+    final notifId = id.hashCode + wday;
     final scheduleTime = _nextInstanceOfWeekday(wday, hour, minute);
 
     final androidDetails = AndroidNotificationDetails(
@@ -110,10 +111,12 @@ Future<void> scheduleHabitNotifications({
       iOS: iosDetails,
     );
 
+    // Notification-Title: z.B. "Habit Reminder"
+    // Notification-Body: Name des Habits, also "title"
     await flutterLocalNotificationsPlugin.zonedSchedule(
       notifId,
       S.current.habitReminderTitle,
-      habitName,
+      title,
       scheduleTime,
       details,
       androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
@@ -124,13 +127,14 @@ Future<void> scheduleHabitNotifications({
   }
 }
 
-// Cancelt Habit-Notifications (wenn User Habit löscht)
-Future<void> cancelHabitNotifications(
-  String habitId,
-  Set<int> weekdays,
-) async {
-  for (final wday in weekdays) {
-    final notifId = habitId.hashCode + wday;
+// Cancelt Notifications für ALLE Wochentage (Mo-So).
+// Dein habit_tracker ruft nur: cancelHabitNotifications(habit.id);
+// Also nehmen wir KEINE weekdays als Parameter.
+Future<void> cancelHabitNotifications(String id) async {
+  // Theoretisch wüssten wir nicht, welche Wochentage das Habit hatte.
+  // Wir canceln deswegen einfach alle 7 IDs (Mo=1..So=7).
+  for (int wday = 1; wday <= 7; wday++) {
+    final notifId = id.hashCode + wday;
     await flutterLocalNotificationsPlugin.cancel(notifId);
   }
 }
@@ -250,9 +254,6 @@ Future<void> main() async {
   // ------------------------------------------
   // OPTIONAL: Test-Device-IDs hinterlegen
   // ------------------------------------------
-  // Wenn du auf echten Geräten testest und
-  // Testanzeigen sehen willst, pack hier deine
-  // Test-Device-IDs rein.
   await MobileAds.instance.updateRequestConfiguration(
     RequestConfiguration(
       testDeviceIds: <String>[
@@ -270,12 +271,13 @@ Future<void> main() async {
   // *** NEU: GamificationService initialisieren ***
   await GamificationService().init();
 
-  // Deine anderen Boxen öffnen
+  // Deine Boxen öffnen
   await Hive.openBox<Map>(DBService.tasksBoxName);
   await Hive.openBox<Map>(DBService.habitsBoxName);
   await Hive.openBox<Map>(DBService.journalBoxName);
   await Hive.openBox('settings');
   await Hive.openBox('trainingPlanBox');
+
   // ----------------------------------------------------------
   // RevenueCat konfigurieren
   // ----------------------------------------------------------
@@ -297,7 +299,7 @@ Future<void> main() async {
   }
 
   // ----------------------------------------------------------
-  // STREAK handling (Bsp.: tägliche App-Nutzung)
+  // STREAK handling (Beispiel: tägliche App-Nutzung)
   // ----------------------------------------------------------
   final settingsBox = Hive.box('settings');
   final now = DateTime.now();
@@ -496,8 +498,9 @@ class MainScreenState extends State<MainScreen> {
           ImageIcon(
             AssetImage(iconPath),
             size: 32,
-            color:
-                isSelected ? const Color.fromARGB(255, 223, 27, 27) : Colors.white54,
+            color: isSelected
+                ? const Color.fromARGB(255, 223, 27, 27)
+                : Colors.white54,
           ),
           if (isSelected)
             Container(

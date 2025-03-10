@@ -95,7 +95,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get weeklyProgress => 'WEEKLY PROGRESS';
 
   @override
-  String get premiumRequired => 'Premium Required';
+  String get premiumRequired => 'Premium required';
 
   @override
   String get premiumSectionUnavailable => 'This section is available for premium users only.';
@@ -172,28 +172,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get habitTrackerTitle => 'Habit Tracker';
 
   @override
-  String get todayLabel => 'Today:';
+  String get todayLabel => 'Today';
 
   @override
-  String get noHabitsMessage => 'No habits yet';
+  String get noHabitsMessage => 'No habits added yet.';
 
   @override
   String get habitHeader => 'Habit';
 
   @override
-  String get newHabitTitle => 'New Habit';
+  String get newHabitTitle => 'Create New Habit';
 
   @override
   String get newHabitNameHint => 'Name';
 
   @override
-  String get reminderLabel => 'Reminder (optional):';
+  String get reminderLabel => 'Set Reminder';
 
   @override
   String get noReminder => 'None';
 
   @override
-  String get deleteHabitTitle => 'Delete?';
+  String get deleteHabitTitle => 'Delete Habit';
 
   @override
   String deleteHabitMessage(Object habitName) {
@@ -248,28 +248,28 @@ class AppLocalizationsEn extends AppLocalizations {
   String get profileTitle => 'Profile';
 
   @override
-  String get profileHeader => 'WHO COULD YOU BE?';
+  String get profileHeader => 'Your Profile';
 
   @override
   String get unknownUser => 'Unknown User';
 
   @override
-  String get editProfile => 'Edit';
+  String get editProfile => 'Edit Profile';
 
   @override
-  String get editProfileTitle => 'Edit Name';
+  String get editProfileTitle => 'Edit Your Name';
 
   @override
-  String get editProfileHint => 'Your Name';
+  String get editProfileHint => 'Enter your name...';
 
   @override
   String get save => 'Save';
 
   @override
-  String get settingsTitle => 'SETTINGS';
+  String get settingsTitle => 'Settings';
 
   @override
-  String get hardnessTitle => 'Hardness';
+  String get hardnessTitle => 'Hardness Level';
 
   @override
   String get hardnessNormal => 'Normal';
@@ -281,16 +281,16 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hardnessBrutal => 'Brutally Honest';
 
   @override
-  String get legalAndAppInfoTitle => 'LEGAL & APP INFO';
+  String get legalAndAppInfoTitle => 'Legal & App Info';
 
   @override
-  String get privacyAndTerms => 'Privacy & Terms of Use';
+  String get privacyAndTerms => 'Privacy & Terms';
 
   @override
   String get version => 'Version';
 
   @override
-  String get accountTitle => 'ACCOUNT';
+  String get accountTitle => 'Account';
 
   @override
   String get upgradeToPremium => 'Upgrade to Premium';
@@ -313,21 +313,21 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get premiumRestored => 'Premium restored!';
+  String get premiumRestored => 'Premium subscription restored successfully.';
 
   @override
   String get noActivePurchases => 'No active purchases found.';
 
   @override
   String restoreError(Object error) {
-    return 'Restore error: $error';
+    return 'Error restoring purchases: $error';
   }
 
   @override
-  String get selectHardness => 'Select Hardness';
+  String get selectHardness => 'Select Hardness Level';
 
   @override
-  String get hardnessQuestion => 'HOW HARD SHOULD I BE TO YOU?';
+  String get hardnessQuestion => 'How tough do you want your Daimonion to be?';
 
   @override
   String get todoListTitle => 'To-Do List';
@@ -387,13 +387,13 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get toolsPageTitle => 'Your Tools for Victory';
+  String get toolsPageTitle => 'Tools';
 
   @override
   String get flowTimerToolTitle => 'Flow Timer';
 
   @override
-  String get tasksToolTitle => 'Tasks';
+  String get tasksToolTitle => 'To-Do List';
 
   @override
   String get journalToolTitle => 'Journal';
@@ -402,10 +402,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get habitTrackerToolTitle => 'Habit Tracker';
 
   @override
-  String get paywallTitle => 'Premium Required';
+  String get paywallTitle => 'Unlock Premium Tools';
 
   @override
-  String get paywallContent => 'This tool is only available for premium members.';
+  String get paywallContent => 'Get access to all premium features and tools to maximize your productivity and growth.';
 
   @override
   String get flowTimerBreakLabel => 'Break';
@@ -575,10 +575,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get workoutNameLabel => 'Workout Name';
 
   @override
-  String get noExercisesMessage => 'No exercises added.\nStart building your workout!';
+  String get noExercisesMessage => 'No exercises added yet.';
 
   @override
-  String get newExerciseHint => 'Enter new exercise...';
+  String get newExerciseHint => 'Enter new exercise';
 
   @override
   String get addExerciseSnackbar => 'Enter an exercise!';
@@ -593,7 +593,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get repsLabel => 'Reps';
 
   @override
-  String get weightLabel => 'Weight (kg)';
+  String get weightLabel => 'Weight';
 
   @override
   String get cancelButton => 'Cancel';
@@ -837,4 +837,300 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get todoReminderBodyBrutal => 'Your tasks are waiting! Time to grind!';
+
+  @override
+  String get tasksForDay => 'Test';
+
+  @override
+  String get trainingPlan => 'Training Plan';
+
+  @override
+  String get workoutNameHint => 'Workout Name';
+
+  @override
+  String get kg => 'kg';
+
+  @override
+  String get sets => 'sets';
+
+  @override
+  String get reps => 'reps';
+
+  @override
+  String get tapToAddExercises => 'Tap to add exercises';
+
+  @override
+  String get exerciseName => 'Exercise Name';
+
+  @override
+  String get exerciseDetails => 'Exercise Details';
+
+  @override
+  String get notes => 'Notes';
+
+  @override
+  String get close => 'Close';
+
+  @override
+  String get delete => 'Delete';
+
+  @override
+  String get quickAdd => 'Quick Add';
+
+  @override
+  String get addExercise => 'Add Exercise';
+
+  @override
+  String get tapToAddDetails => 'Tap to add details';
+
+  @override
+  String get chooseWorkoutColor => 'Choose Workout Color';
+
+  @override
+  String get editWorkoutName => 'Edit Workout Name';
+
+  @override
+  String get exercises => 'exercises';
+
+  @override
+  String get upgradeForMoreFeatures => 'Upgrade for more features';
+
+  @override
+  String get upgradeNow => 'Upgrade Now';
+
+  @override
+  String get monday => 'Monday';
+
+  @override
+  String get tuesday => 'Tuesday';
+
+  @override
+  String get wednesday => 'Wednesday';
+
+  @override
+  String get thursday => 'Thursday';
+
+  @override
+  String get friday => 'Friday';
+
+  @override
+  String get saturday => 'Saturday';
+
+  @override
+  String get sunday => 'Sunday';
+
+  @override
+  String get editDayTitle => 'Edit Day';
+
+  @override
+  String get newDayNameHint => 'New day name';
+
+  @override
+  String get noWorkoutName => 'No Workout Name';
+
+  @override
+  String get atLeastOneWorkoutDay => 'You need at least one workout day. Do something for your body!';
+
+  @override
+  String get newDay => 'New Day';
+
+  @override
+  String day(Object number) {
+    return 'Day $number';
+  }
+
+  @override
+  String get premium_label => 'PREMIUM';
+
+  @override
+  String get features_label => 'What\'s included:';
+
+  @override
+  String get weekly_label => 'Weekly';
+
+  @override
+  String get weekly_description => 'Try it out cheaply';
+
+  @override
+  String get monthly_label => 'Monthly';
+
+  @override
+  String get monthly_description => 'Save over 30%';
+
+  @override
+  String get yearly_label => 'Yearly';
+
+  @override
+  String get yearly_description => 'Save over 40%';
+
+  @override
+  String get most_popular_label => 'Popular';
+
+  @override
+  String get start_free_week_label => 'Start free week';
+
+  @override
+  String get error_title => 'Error';
+
+  @override
+  String get nameLabel => 'Your Name';
+
+  @override
+  String get restoringPurchases => 'Restoring purchases...';
+
+  @override
+  String get purchasesRestoredSuccess => 'Your purchases have been restored successfully!';
+
+  @override
+  String get noPurchasesToRestore => 'No previous purchases found to restore.';
+
+  @override
+  String get purchasesRestoredError => 'Could not restore purchases.';
+
+  @override
+  String get emailAppNotFound => 'No email client found on this device.';
+
+  @override
+  String get couldNotSendFeedback => 'Could not send feedback.';
+
+  @override
+  String get comingSoon => 'Coming Soon';
+
+  @override
+  String get comingSoonDescription => 'This feature will be available soon!';
+
+  @override
+  String get productivityCategory => 'Productivity';
+
+  @override
+  String get wellnessCategory => 'Wellness & Growth';
+
+  @override
+  String get flowTimerDescription => 'Stay focused with deep work sessions.';
+
+  @override
+  String get flowTimerHelp => 'Use the Flow Timer to break tasks into deep focus periods.';
+
+  @override
+  String get tasksDescription => 'Manage your tasks effectively.';
+
+  @override
+  String get tasksHelp => 'Plan your day with a simple and effective task list.';
+
+  @override
+  String get journalDescription => 'Track your thoughts and progress.';
+
+  @override
+  String get journalHelp => 'Write daily reflections and structure your thoughts in the journal.';
+
+  @override
+  String get habitTrackerDescription => 'Build and maintain strong habits.';
+
+  @override
+  String get habitTrackerHelp => 'Stay consistent with habit tracking for long-term success.';
+
+  @override
+  String get trainingPlanDescription => 'Optimize your workouts and track progress.';
+
+  @override
+  String get trainingPlanHelp => 'Use the Training Plan to follow a structured fitness routine.';
+
+  @override
+  String get maybeLater => 'Maybe later';
+
+  @override
+  String get helpDialogTitle => 'How to Use These Tools';
+
+  @override
+  String get gotIt => 'Got it!';
+
+  @override
+  String get allHabits => 'All Habits';
+
+  @override
+  String get byCategory => 'By Category';
+
+  @override
+  String get addNewHabit => 'Add a New Habit';
+
+  @override
+  String get habitDeleted => 'Habit deleted';
+
+  @override
+  String get edit => 'Edit';
+
+  @override
+  String get undo => 'Undo';
+
+  @override
+  String get editHabitTitle => 'Edit Habit';
+
+  @override
+  String get habitNameLabel => 'Habit Name';
+
+  @override
+  String get repeatLabel => 'Repeat On';
+
+  @override
+  String get categoryLabel => 'Category';
+
+  @override
+  String get colorLabel => 'Choose a Color';
+
+  @override
+  String get setTime => 'Set Time';
+
+  @override
+  String get noReminderSet => 'No reminder set';
+
+  @override
+  String get update => 'Update';
+
+  @override
+  String get deleteHabitConfirmation => 'Are you sure you want to delete';
+
+  @override
+  String get emptyNameError => 'Please enter a habit name.';
+
+  @override
+  String get noDaysSelectedError => 'Please select at least one day.';
+
+  @override
+  String get uncategorized => 'Uncategorized';
+
+  @override
+  String get health => 'Health';
+
+  @override
+  String get productivity => 'Productivity';
+
+  @override
+  String get learning => 'Learning';
+
+  @override
+  String get personal => 'Personal';
+
+  @override
+  String get selectCategory => 'Select a category';
+
+  @override
+  String get mondayShort => 'M';
+
+  @override
+  String get tuesdayShort => 'T';
+
+  @override
+  String get wednesdayShort => 'W';
+
+  @override
+  String get thursdayShort => 'T';
+
+  @override
+  String get fridayShort => 'F';
+
+  @override
+  String get saturdayShort => 'S';
+
+  @override
+  String get sundayShort => 'S';
 }

@@ -266,7 +266,7 @@ abstract class AppLocalizations {
   /// No description provided for @premiumRequired.
   ///
   /// In en, this message translates to:
-  /// **'Premium Required'**
+  /// **'Premium required'**
   String get premiumRequired;
 
   /// No description provided for @premiumSectionUnavailable.
@@ -416,13 +416,13 @@ abstract class AppLocalizations {
   /// No description provided for @todayLabel.
   ///
   /// In en, this message translates to:
-  /// **'Today:'**
+  /// **'Today'**
   String get todayLabel;
 
   /// No description provided for @noHabitsMessage.
   ///
   /// In en, this message translates to:
-  /// **'No habits yet'**
+  /// **'No habits added yet.'**
   String get noHabitsMessage;
 
   /// No description provided for @habitHeader.
@@ -434,7 +434,7 @@ abstract class AppLocalizations {
   /// No description provided for @newHabitTitle.
   ///
   /// In en, this message translates to:
-  /// **'New Habit'**
+  /// **'Create New Habit'**
   String get newHabitTitle;
 
   /// No description provided for @newHabitNameHint.
@@ -446,7 +446,7 @@ abstract class AppLocalizations {
   /// No description provided for @reminderLabel.
   ///
   /// In en, this message translates to:
-  /// **'Reminder (optional):'**
+  /// **'Set Reminder'**
   String get reminderLabel;
 
   /// No description provided for @noReminder.
@@ -458,7 +458,7 @@ abstract class AppLocalizations {
   /// No description provided for @deleteHabitTitle.
   ///
   /// In en, this message translates to:
-  /// **'Delete?'**
+  /// **'Delete Habit'**
   String get deleteHabitTitle;
 
   /// No description provided for @deleteHabitMessage.
@@ -560,7 +560,7 @@ abstract class AppLocalizations {
   /// No description provided for @profileHeader.
   ///
   /// In en, this message translates to:
-  /// **'WHO COULD YOU BE?'**
+  /// **'Your Profile'**
   String get profileHeader;
 
   /// No description provided for @unknownUser.
@@ -572,19 +572,19 @@ abstract class AppLocalizations {
   /// No description provided for @editProfile.
   ///
   /// In en, this message translates to:
-  /// **'Edit'**
+  /// **'Edit Profile'**
   String get editProfile;
 
   /// No description provided for @editProfileTitle.
   ///
   /// In en, this message translates to:
-  /// **'Edit Name'**
+  /// **'Edit Your Name'**
   String get editProfileTitle;
 
   /// No description provided for @editProfileHint.
   ///
   /// In en, this message translates to:
-  /// **'Your Name'**
+  /// **'Enter your name...'**
   String get editProfileHint;
 
   /// No description provided for @save.
@@ -596,13 +596,13 @@ abstract class AppLocalizations {
   /// No description provided for @settingsTitle.
   ///
   /// In en, this message translates to:
-  /// **'SETTINGS'**
+  /// **'Settings'**
   String get settingsTitle;
 
   /// No description provided for @hardnessTitle.
   ///
   /// In en, this message translates to:
-  /// **'Hardness'**
+  /// **'Hardness Level'**
   String get hardnessTitle;
 
   /// No description provided for @hardnessNormal.
@@ -626,13 +626,13 @@ abstract class AppLocalizations {
   /// No description provided for @legalAndAppInfoTitle.
   ///
   /// In en, this message translates to:
-  /// **'LEGAL & APP INFO'**
+  /// **'Legal & App Info'**
   String get legalAndAppInfoTitle;
 
   /// No description provided for @privacyAndTerms.
   ///
   /// In en, this message translates to:
-  /// **'Privacy & Terms of Use'**
+  /// **'Privacy & Terms'**
   String get privacyAndTerms;
 
   /// No description provided for @version.
@@ -644,7 +644,7 @@ abstract class AppLocalizations {
   /// No description provided for @accountTitle.
   ///
   /// In en, this message translates to:
-  /// **'ACCOUNT'**
+  /// **'Account'**
   String get accountTitle;
 
   /// No description provided for @upgradeToPremium.
@@ -686,7 +686,7 @@ abstract class AppLocalizations {
   /// No description provided for @premiumRestored.
   ///
   /// In en, this message translates to:
-  /// **'Premium restored!'**
+  /// **'Premium subscription restored successfully.'**
   String get premiumRestored;
 
   /// No description provided for @noActivePurchases.
@@ -698,19 +698,19 @@ abstract class AppLocalizations {
   /// No description provided for @restoreError.
   ///
   /// In en, this message translates to:
-  /// **'Restore error: {error}'**
+  /// **'Error restoring purchases: {error}'**
   String restoreError(Object error);
 
   /// No description provided for @selectHardness.
   ///
   /// In en, this message translates to:
-  /// **'Select Hardness'**
+  /// **'Select Hardness Level'**
   String get selectHardness;
 
   /// No description provided for @hardnessQuestion.
   ///
   /// In en, this message translates to:
-  /// **'HOW HARD SHOULD I BE TO YOU?'**
+  /// **'How tough do you want your Daimonion to be?'**
   String get hardnessQuestion;
 
   /// No description provided for @todoListTitle.
@@ -818,7 +818,7 @@ abstract class AppLocalizations {
   /// No description provided for @toolsPageTitle.
   ///
   /// In en, this message translates to:
-  /// **'Your Tools for Victory'**
+  /// **'Tools'**
   String get toolsPageTitle;
 
   /// No description provided for @flowTimerToolTitle.
@@ -830,7 +830,7 @@ abstract class AppLocalizations {
   /// No description provided for @tasksToolTitle.
   ///
   /// In en, this message translates to:
-  /// **'Tasks'**
+  /// **'To-Do List'**
   String get tasksToolTitle;
 
   /// No description provided for @journalToolTitle.
@@ -848,13 +848,13 @@ abstract class AppLocalizations {
   /// No description provided for @paywallTitle.
   ///
   /// In en, this message translates to:
-  /// **'Premium Required'**
+  /// **'Unlock Premium Tools'**
   String get paywallTitle;
 
   /// No description provided for @paywallContent.
   ///
   /// In en, this message translates to:
-  /// **'This tool is only available for premium members.'**
+  /// **'Get access to all premium features and tools to maximize your productivity and growth.'**
   String get paywallContent;
 
   /// No description provided for @flowTimerBreakLabel.
@@ -1190,13 +1190,13 @@ abstract class AppLocalizations {
   /// No description provided for @noExercisesMessage.
   ///
   /// In en, this message translates to:
-  /// **'No exercises added.\nStart building your workout!'**
+  /// **'No exercises added yet.'**
   String get noExercisesMessage;
 
   /// No description provided for @newExerciseHint.
   ///
   /// In en, this message translates to:
-  /// **'Enter new exercise...'**
+  /// **'Enter new exercise'**
   String get newExerciseHint;
 
   /// No description provided for @addExerciseSnackbar.
@@ -1226,7 +1226,7 @@ abstract class AppLocalizations {
   /// No description provided for @weightLabel.
   ///
   /// In en, this message translates to:
-  /// **'Weight (kg)'**
+  /// **'Weight'**
   String get weightLabel;
 
   /// No description provided for @cancelButton.
@@ -1690,6 +1690,594 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your tasks are waiting! Time to grind!'**
   String get todoReminderBodyBrutal;
+
+  /// No description provided for @tasksForDay.
+  ///
+  /// In en, this message translates to:
+  /// **'Test'**
+  String get tasksForDay;
+
+  /// No description provided for @trainingPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Training Plan'**
+  String get trainingPlan;
+
+  /// No description provided for @workoutNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Workout Name'**
+  String get workoutNameHint;
+
+  /// No description provided for @kg.
+  ///
+  /// In en, this message translates to:
+  /// **'kg'**
+  String get kg;
+
+  /// No description provided for @sets.
+  ///
+  /// In en, this message translates to:
+  /// **'sets'**
+  String get sets;
+
+  /// No description provided for @reps.
+  ///
+  /// In en, this message translates to:
+  /// **'reps'**
+  String get reps;
+
+  /// No description provided for @tapToAddExercises.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to add exercises'**
+  String get tapToAddExercises;
+
+  /// No description provided for @exerciseName.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Name'**
+  String get exerciseName;
+
+  /// No description provided for @exerciseDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Exercise Details'**
+  String get exerciseDetails;
+
+  /// No description provided for @notes.
+  ///
+  /// In en, this message translates to:
+  /// **'Notes'**
+  String get notes;
+
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
+  /// No description provided for @delete.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete'**
+  String get delete;
+
+  /// No description provided for @quickAdd.
+  ///
+  /// In en, this message translates to:
+  /// **'Quick Add'**
+  String get quickAdd;
+
+  /// No description provided for @addExercise.
+  ///
+  /// In en, this message translates to:
+  /// **'Add Exercise'**
+  String get addExercise;
+
+  /// No description provided for @tapToAddDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to add details'**
+  String get tapToAddDetails;
+
+  /// No description provided for @chooseWorkoutColor.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Workout Color'**
+  String get chooseWorkoutColor;
+
+  /// No description provided for @editWorkoutName.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Workout Name'**
+  String get editWorkoutName;
+
+  /// No description provided for @exercises.
+  ///
+  /// In en, this message translates to:
+  /// **'exercises'**
+  String get exercises;
+
+  /// No description provided for @upgradeForMoreFeatures.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade for more features'**
+  String get upgradeForMoreFeatures;
+
+  /// No description provided for @upgradeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade Now'**
+  String get upgradeNow;
+
+  /// No description provided for @monday.
+  ///
+  /// In en, this message translates to:
+  /// **'Monday'**
+  String get monday;
+
+  /// No description provided for @tuesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Tuesday'**
+  String get tuesday;
+
+  /// No description provided for @wednesday.
+  ///
+  /// In en, this message translates to:
+  /// **'Wednesday'**
+  String get wednesday;
+
+  /// No description provided for @thursday.
+  ///
+  /// In en, this message translates to:
+  /// **'Thursday'**
+  String get thursday;
+
+  /// No description provided for @friday.
+  ///
+  /// In en, this message translates to:
+  /// **'Friday'**
+  String get friday;
+
+  /// No description provided for @saturday.
+  ///
+  /// In en, this message translates to:
+  /// **'Saturday'**
+  String get saturday;
+
+  /// No description provided for @sunday.
+  ///
+  /// In en, this message translates to:
+  /// **'Sunday'**
+  String get sunday;
+
+  /// No description provided for @editDayTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Day'**
+  String get editDayTitle;
+
+  /// No description provided for @newDayNameHint.
+  ///
+  /// In en, this message translates to:
+  /// **'New day name'**
+  String get newDayNameHint;
+
+  /// No description provided for @noWorkoutName.
+  ///
+  /// In en, this message translates to:
+  /// **'No Workout Name'**
+  String get noWorkoutName;
+
+  /// No description provided for @atLeastOneWorkoutDay.
+  ///
+  /// In en, this message translates to:
+  /// **'You need at least one workout day. Do something for your body!'**
+  String get atLeastOneWorkoutDay;
+
+  /// No description provided for @newDay.
+  ///
+  /// In en, this message translates to:
+  /// **'New Day'**
+  String get newDay;
+
+  /// No description provided for @day.
+  ///
+  /// In en, this message translates to:
+  /// **'Day {number}'**
+  String day(Object number);
+
+  /// No description provided for @premium_label.
+  ///
+  /// In en, this message translates to:
+  /// **'PREMIUM'**
+  String get premium_label;
+
+  /// No description provided for @features_label.
+  ///
+  /// In en, this message translates to:
+  /// **'What\'s included:'**
+  String get features_label;
+
+  /// No description provided for @weekly_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Weekly'**
+  String get weekly_label;
+
+  /// No description provided for @weekly_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Try it out cheaply'**
+  String get weekly_description;
+
+  /// No description provided for @monthly_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly_label;
+
+  /// No description provided for @monthly_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Save over 30%'**
+  String get monthly_description;
+
+  /// No description provided for @yearly_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get yearly_label;
+
+  /// No description provided for @yearly_description.
+  ///
+  /// In en, this message translates to:
+  /// **'Save over 40%'**
+  String get yearly_description;
+
+  /// No description provided for @most_popular_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Popular'**
+  String get most_popular_label;
+
+  /// No description provided for @start_free_week_label.
+  ///
+  /// In en, this message translates to:
+  /// **'Start free week'**
+  String get start_free_week_label;
+
+  /// No description provided for @error_title.
+  ///
+  /// In en, this message translates to:
+  /// **'Error'**
+  String get error_title;
+
+  /// No description provided for @nameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Name'**
+  String get nameLabel;
+
+  /// No description provided for @restoringPurchases.
+  ///
+  /// In en, this message translates to:
+  /// **'Restoring purchases...'**
+  String get restoringPurchases;
+
+  /// No description provided for @purchasesRestoredSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Your purchases have been restored successfully!'**
+  String get purchasesRestoredSuccess;
+
+  /// No description provided for @noPurchasesToRestore.
+  ///
+  /// In en, this message translates to:
+  /// **'No previous purchases found to restore.'**
+  String get noPurchasesToRestore;
+
+  /// No description provided for @purchasesRestoredError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not restore purchases.'**
+  String get purchasesRestoredError;
+
+  /// No description provided for @emailAppNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No email client found on this device.'**
+  String get emailAppNotFound;
+
+  /// No description provided for @couldNotSendFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not send feedback.'**
+  String get couldNotSendFeedback;
+
+  /// No description provided for @comingSoon.
+  ///
+  /// In en, this message translates to:
+  /// **'Coming Soon'**
+  String get comingSoon;
+
+  /// No description provided for @comingSoonDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'This feature will be available soon!'**
+  String get comingSoonDescription;
+
+  /// No description provided for @productivityCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Productivity'**
+  String get productivityCategory;
+
+  /// No description provided for @wellnessCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Wellness & Growth'**
+  String get wellnessCategory;
+
+  /// No description provided for @flowTimerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay focused with deep work sessions.'**
+  String get flowTimerDescription;
+
+  /// No description provided for @flowTimerHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the Flow Timer to break tasks into deep focus periods.'**
+  String get flowTimerHelp;
+
+  /// No description provided for @tasksDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Manage your tasks effectively.'**
+  String get tasksDescription;
+
+  /// No description provided for @tasksHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan your day with a simple and effective task list.'**
+  String get tasksHelp;
+
+  /// No description provided for @journalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Track your thoughts and progress.'**
+  String get journalDescription;
+
+  /// No description provided for @journalHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Write daily reflections and structure your thoughts in the journal.'**
+  String get journalHelp;
+
+  /// No description provided for @habitTrackerDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Build and maintain strong habits.'**
+  String get habitTrackerDescription;
+
+  /// No description provided for @habitTrackerHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay consistent with habit tracking for long-term success.'**
+  String get habitTrackerHelp;
+
+  /// No description provided for @trainingPlanDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Optimize your workouts and track progress.'**
+  String get trainingPlanDescription;
+
+  /// No description provided for @trainingPlanHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Use the Training Plan to follow a structured fitness routine.'**
+  String get trainingPlanHelp;
+
+  /// No description provided for @maybeLater.
+  ///
+  /// In en, this message translates to:
+  /// **'Maybe later'**
+  String get maybeLater;
+
+  /// No description provided for @helpDialogTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How to Use These Tools'**
+  String get helpDialogTitle;
+
+  /// No description provided for @gotIt.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it!'**
+  String get gotIt;
+
+  /// No description provided for @allHabits.
+  ///
+  /// In en, this message translates to:
+  /// **'All Habits'**
+  String get allHabits;
+
+  /// No description provided for @byCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'By Category'**
+  String get byCategory;
+
+  /// No description provided for @addNewHabit.
+  ///
+  /// In en, this message translates to:
+  /// **'Add a New Habit'**
+  String get addNewHabit;
+
+  /// No description provided for @habitDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit deleted'**
+  String get habitDeleted;
+
+  /// No description provided for @edit.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit'**
+  String get edit;
+
+  /// No description provided for @undo.
+  ///
+  /// In en, this message translates to:
+  /// **'Undo'**
+  String get undo;
+
+  /// No description provided for @editHabitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Edit Habit'**
+  String get editHabitTitle;
+
+  /// No description provided for @habitNameLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Habit Name'**
+  String get habitNameLabel;
+
+  /// No description provided for @repeatLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Repeat On'**
+  String get repeatLabel;
+
+  /// No description provided for @categoryLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Category'**
+  String get categoryLabel;
+
+  /// No description provided for @colorLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a Color'**
+  String get colorLabel;
+
+  /// No description provided for @setTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Time'**
+  String get setTime;
+
+  /// No description provided for @noReminderSet.
+  ///
+  /// In en, this message translates to:
+  /// **'No reminder set'**
+  String get noReminderSet;
+
+  /// No description provided for @update.
+  ///
+  /// In en, this message translates to:
+  /// **'Update'**
+  String get update;
+
+  /// No description provided for @deleteHabitConfirmation.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to delete'**
+  String get deleteHabitConfirmation;
+
+  /// No description provided for @emptyNameError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a habit name.'**
+  String get emptyNameError;
+
+  /// No description provided for @noDaysSelectedError.
+  ///
+  /// In en, this message translates to:
+  /// **'Please select at least one day.'**
+  String get noDaysSelectedError;
+
+  /// No description provided for @uncategorized.
+  ///
+  /// In en, this message translates to:
+  /// **'Uncategorized'**
+  String get uncategorized;
+
+  /// No description provided for @health.
+  ///
+  /// In en, this message translates to:
+  /// **'Health'**
+  String get health;
+
+  /// No description provided for @productivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Productivity'**
+  String get productivity;
+
+  /// No description provided for @learning.
+  ///
+  /// In en, this message translates to:
+  /// **'Learning'**
+  String get learning;
+
+  /// No description provided for @personal.
+  ///
+  /// In en, this message translates to:
+  /// **'Personal'**
+  String get personal;
+
+  /// No description provided for @selectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select a category'**
+  String get selectCategory;
+
+  /// No description provided for @mondayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'M'**
+  String get mondayShort;
+
+  /// No description provided for @tuesdayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'T'**
+  String get tuesdayShort;
+
+  /// No description provided for @wednesdayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'W'**
+  String get wednesdayShort;
+
+  /// No description provided for @thursdayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'T'**
+  String get thursdayShort;
+
+  /// No description provided for @fridayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'F'**
+  String get fridayShort;
+
+  /// No description provided for @saturdayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'S'**
+  String get saturdayShort;
+
+  /// No description provided for @sundayShort.
+  ///
+  /// In en, this message translates to:
+  /// **'S'**
+  String get sundayShort;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

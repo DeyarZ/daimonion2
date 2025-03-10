@@ -95,7 +95,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get weeklyProgress => 'WOCHENFORTSCHRITT';
 
   @override
-  String get premiumRequired => 'Premium benötigt';
+  String get premiumRequired => 'Premium erforderlich';
 
   @override
   String get premiumSectionUnavailable => 'Dieser Bereich ist nur für Premium-Nutzer verfügbar.';
@@ -169,31 +169,31 @@ class AppLocalizationsDe extends AppLocalizations {
   String get flowTimerSetFlowsHint => 'Anzahl der Flows';
 
   @override
-  String get habitTrackerTitle => 'Habit Tracker';
+  String get habitTrackerTitle => 'Gewohnheitstracker';
 
   @override
-  String get todayLabel => 'Heute:';
+  String get todayLabel => 'Heute';
 
   @override
-  String get noHabitsMessage => 'Noch keine Gewohnheiten';
+  String get noHabitsMessage => 'Noch keine Gewohnheiten hinzugefügt.';
 
   @override
   String get habitHeader => 'Habit';
 
   @override
-  String get newHabitTitle => 'Neue Gewohnheit';
+  String get newHabitTitle => 'Neue Gewohnheit erstellen';
 
   @override
   String get newHabitNameHint => 'Name';
 
   @override
-  String get reminderLabel => 'Reminder (optional):';
+  String get reminderLabel => 'Erinnerung setzen';
 
   @override
   String get noReminder => 'Keine';
 
   @override
-  String get deleteHabitTitle => 'Löschen?';
+  String get deleteHabitTitle => 'Gewohnheit löschen';
 
   @override
   String deleteHabitMessage(Object habitName) {
@@ -248,25 +248,25 @@ class AppLocalizationsDe extends AppLocalizations {
   String get profileTitle => 'Profil';
 
   @override
-  String get profileHeader => 'WHO COULD YOU BE?';
+  String get profileHeader => 'Dein Profil';
 
   @override
   String get unknownUser => 'Unbekannter Nutzer';
 
   @override
-  String get editProfile => 'Bearbeiten';
+  String get editProfile => 'Profil bearbeiten';
 
   @override
-  String get editProfileTitle => 'Name bearbeiten';
+  String get editProfileTitle => 'Deinen Namen bearbeiten';
 
   @override
-  String get editProfileHint => 'Dein Name';
+  String get editProfileHint => 'Gib deinen Namen ein...';
 
   @override
   String get save => 'Speichern';
 
   @override
-  String get settingsTitle => 'EINSTELLUNGEN';
+  String get settingsTitle => 'Einstellungen';
 
   @override
   String get hardnessTitle => 'Härtegrad';
@@ -278,10 +278,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get hardnessHard => 'Hart';
 
   @override
-  String get hardnessBrutal => 'Brutal ehrlich';
+  String get hardnessBrutal => 'Brutal Ehrlich';
 
   @override
-  String get legalAndAppInfoTitle => 'RECHTLICHES & APP-INFOS';
+  String get legalAndAppInfoTitle => 'Rechtliches & App-Info';
 
   @override
   String get privacyAndTerms => 'Datenschutz & Nutzungsbedingungen';
@@ -290,13 +290,13 @@ class AppLocalizationsDe extends AppLocalizations {
   String get version => 'Version';
 
   @override
-  String get accountTitle => 'ACCOUNT';
+  String get accountTitle => 'Konto';
 
   @override
-  String get upgradeToPremium => 'Upgrade zu Premium';
+  String get upgradeToPremium => 'Upgrade auf Premium';
 
   @override
-  String get restorePurchases => 'Restore Purchases';
+  String get restorePurchases => 'Käufe wiederherstellen';
 
   @override
   String get premiumPackageNotFound => 'Premium-Paket nicht gefunden';
@@ -313,21 +313,21 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get premiumRestored => 'Premium wiederhergestellt!';
+  String get premiumRestored => 'Premium-Abonnement erfolgreich wiederhergestellt.';
 
   @override
   String get noActivePurchases => 'Keine aktiven Käufe gefunden.';
 
   @override
   String restoreError(Object error) {
-    return 'Fehler beim Wiederherstellen: $error';
+    return 'Fehler beim Wiederherstellen der Käufe: $error';
   }
 
   @override
-  String get selectHardness => 'Härtegrad wählen';
+  String get selectHardness => 'Härtegrad auswählen';
 
   @override
-  String get hardnessQuestion => 'WIE HART SOLL ICH ZU DIR SEIN?';
+  String get hardnessQuestion => 'Wie hart soll dein Daimonion sein?';
 
   @override
   String get todoListTitle => 'To-Do-Liste';
@@ -387,25 +387,25 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get toolsPageTitle => 'Deine Werkzeuge zum Sieg';
+  String get toolsPageTitle => 'Tools';
 
   @override
-  String get flowTimerToolTitle => 'Flow Timer';
+  String get flowTimerToolTitle => 'Flow-Timer';
 
   @override
-  String get tasksToolTitle => 'Tasks';
+  String get tasksToolTitle => 'To-Do-Liste';
 
   @override
-  String get journalToolTitle => 'Journal';
+  String get journalToolTitle => 'Tagebuch';
 
   @override
   String get habitTrackerToolTitle => 'Gewohnheitstracker';
 
   @override
-  String get paywallTitle => 'Premium benötigt';
+  String get paywallTitle => 'Premium-Tools freischalten';
 
   @override
-  String get paywallContent => 'Dieses Tool ist nur für Premium-Mitglieder verfügbar.';
+  String get paywallContent => 'Erhalte Zugriff auf alle Premium-Features und Tools, um deine Produktivität und dein Wachstum zu maximieren.';
 
   @override
   String get flowTimerBreakLabel => 'Pause';
@@ -575,10 +575,10 @@ class AppLocalizationsDe extends AppLocalizations {
   String get workoutNameLabel => 'Workout-Name';
 
   @override
-  String get noExercisesMessage => 'Keine Übungen hinzugefügt.\nFang an, dein Workout zu erstellen!';
+  String get noExercisesMessage => 'Noch keine Übungen hinzugefügt.';
 
   @override
-  String get newExerciseHint => 'Neue Übung eingeben...';
+  String get newExerciseHint => 'Neue Übung eingeben';
 
   @override
   String get addExerciseSnackbar => 'Gib eine Übung ein!';
@@ -593,7 +593,7 @@ class AppLocalizationsDe extends AppLocalizations {
   String get repsLabel => 'Wiederholungen';
 
   @override
-  String get weightLabel => 'Gewicht (kg)';
+  String get weightLabel => 'Gewicht';
 
   @override
   String get cancelButton => 'Abbrechen';
@@ -837,4 +837,300 @@ class AppLocalizationsDe extends AppLocalizations {
 
   @override
   String get todoReminderBodyBrutal => 'Deine Aufgaben warten! Zeit zu liefern!';
+
+  @override
+  String get tasksForDay => 'Test';
+
+  @override
+  String get trainingPlan => 'Trainingsplan';
+
+  @override
+  String get workoutNameHint => 'Trainingsname';
+
+  @override
+  String get kg => 'kg';
+
+  @override
+  String get sets => 'Sätze';
+
+  @override
+  String get reps => 'Wdh.';
+
+  @override
+  String get tapToAddExercises => 'Tippe, um Übungen hinzuzufügen';
+
+  @override
+  String get exerciseName => 'Übungsname';
+
+  @override
+  String get exerciseDetails => 'Übungsdetails';
+
+  @override
+  String get notes => 'Notizen';
+
+  @override
+  String get close => 'Schließen';
+
+  @override
+  String get delete => 'Löschen';
+
+  @override
+  String get quickAdd => 'Schnell hinzufügen';
+
+  @override
+  String get addExercise => 'Übung hinzufügen';
+
+  @override
+  String get tapToAddDetails => 'Tippe, um Details hinzuzufügen';
+
+  @override
+  String get chooseWorkoutColor => 'Wähle Trainingsfarbe';
+
+  @override
+  String get editWorkoutName => 'Workout-Namen bearbeiten';
+
+  @override
+  String get exercises => 'Übungen';
+
+  @override
+  String get upgradeForMoreFeatures => 'Für mehr Funktionen upgraden';
+
+  @override
+  String get upgradeNow => 'Jetzt upgraden';
+
+  @override
+  String get monday => 'Montag';
+
+  @override
+  String get tuesday => 'Dienstag';
+
+  @override
+  String get wednesday => 'Mittwoch';
+
+  @override
+  String get thursday => 'Donnerstag';
+
+  @override
+  String get friday => 'Freitag';
+
+  @override
+  String get saturday => 'Samstag';
+
+  @override
+  String get sunday => 'Sonntag';
+
+  @override
+  String get editDayTitle => 'Tag bearbeiten';
+
+  @override
+  String get newDayNameHint => 'Neuer Tagname';
+
+  @override
+  String get noWorkoutName => 'Kein Trainingsname';
+
+  @override
+  String get atLeastOneWorkoutDay => 'Du brauchst mindestens einen verdammten Trainingstag! Tu was für deinen Körper!';
+
+  @override
+  String get newDay => 'Neuer Tag';
+
+  @override
+  String day(Object number) {
+    return 'Tag $number';
+  }
+
+  @override
+  String get premium_label => 'PREMIUM';
+
+  @override
+  String get features_label => 'Was ist enthalten:';
+
+  @override
+  String get weekly_label => 'Wöchentlich';
+
+  @override
+  String get weekly_description => 'Probier\'s günstig aus';
+
+  @override
+  String get monthly_label => 'Monatlich';
+
+  @override
+  String get monthly_description => 'Spare über 30%';
+
+  @override
+  String get yearly_label => 'Jährlich';
+
+  @override
+  String get yearly_description => 'Spare über 40%';
+
+  @override
+  String get most_popular_label => 'Beliebt';
+
+  @override
+  String get start_free_week_label => 'Kostenlose Woche starten';
+
+  @override
+  String get error_title => 'Fehler';
+
+  @override
+  String get nameLabel => 'Dein Name';
+
+  @override
+  String get restoringPurchases => 'Käufe werden wiederhergestellt...';
+
+  @override
+  String get purchasesRestoredSuccess => 'Deine Käufe wurden erfolgreich wiederhergestellt!';
+
+  @override
+  String get noPurchasesToRestore => 'Keine vorherigen Käufe zum Wiederherstellen gefunden.';
+
+  @override
+  String get purchasesRestoredError => 'Käufe konnten nicht wiederhergestellt werden.';
+
+  @override
+  String get emailAppNotFound => 'Kein E-Mail-Client auf diesem Gerät gefunden.';
+
+  @override
+  String get couldNotSendFeedback => 'Feedback konnte nicht gesendet werden.';
+
+  @override
+  String get comingSoon => 'Bald verfügbar';
+
+  @override
+  String get comingSoonDescription => 'Diese Funktion wird bald verfügbar sein!';
+
+  @override
+  String get productivityCategory => 'Produktivität';
+
+  @override
+  String get wellnessCategory => 'Wellness & Wachstum';
+
+  @override
+  String get flowTimerDescription => 'Bleibe fokussiert mit Deep-Work-Sessions.';
+
+  @override
+  String get flowTimerHelp => 'Nutze den Flow-Timer, um Aufgaben in fokussierte Arbeitseinheiten zu unterteilen.';
+
+  @override
+  String get tasksDescription => 'Organisiere deine Aufgaben effizient.';
+
+  @override
+  String get tasksHelp => 'Plane deinen Tag mit einer einfachen und effektiven Aufgabenliste.';
+
+  @override
+  String get journalDescription => 'Verfolge deine Gedanken und Fortschritte.';
+
+  @override
+  String get journalHelp => 'Schreibe tägliche Reflexionen und strukturiere deine Gedanken im Tagebuch.';
+
+  @override
+  String get habitTrackerDescription => 'Baue starke Gewohnheiten auf und halte sie durch.';
+
+  @override
+  String get habitTrackerHelp => 'Bleibe konsequent, indem du deine Gewohnheiten regelmäßig nachverfolgst.';
+
+  @override
+  String get trainingPlanDescription => 'Optimiere deine Workouts und verfolge deine Fortschritte.';
+
+  @override
+  String get trainingPlanHelp => 'Nutze den Trainingsplan, um eine strukturierte Fitnessroutine zu verfolgen.';
+
+  @override
+  String get maybeLater => 'Vielleicht später';
+
+  @override
+  String get helpDialogTitle => 'So nutzt du die Tools';
+
+  @override
+  String get gotIt => 'Verstanden!';
+
+  @override
+  String get allHabits => 'Alle Gewohnheiten';
+
+  @override
+  String get byCategory => 'Nach Kategorie';
+
+  @override
+  String get addNewHabit => 'Neue Gewohnheit hinzufügen';
+
+  @override
+  String get habitDeleted => 'Gewohnheit gelöscht';
+
+  @override
+  String get edit => 'Bearbeiten';
+
+  @override
+  String get undo => 'Rückgängig';
+
+  @override
+  String get editHabitTitle => 'Gewohnheit bearbeiten';
+
+  @override
+  String get habitNameLabel => 'Name der Gewohnheit';
+
+  @override
+  String get repeatLabel => 'Wiederholen am';
+
+  @override
+  String get categoryLabel => 'Kategorie';
+
+  @override
+  String get colorLabel => 'Farbe wählen';
+
+  @override
+  String get setTime => 'Zeit festlegen';
+
+  @override
+  String get noReminderSet => 'Keine Erinnerung gesetzt';
+
+  @override
+  String get update => 'Aktualisieren';
+
+  @override
+  String get deleteHabitConfirmation => 'Bist du sicher, dass du die Gewohnheit löschen möchtest?';
+
+  @override
+  String get emptyNameError => 'Bitte gib einen Namen für die Gewohnheit ein.';
+
+  @override
+  String get noDaysSelectedError => 'Bitte wähle mindestens einen Tag aus.';
+
+  @override
+  String get uncategorized => 'Unkategorisiert';
+
+  @override
+  String get health => 'Gesundheit';
+
+  @override
+  String get productivity => 'Produktivität';
+
+  @override
+  String get learning => 'Lernen';
+
+  @override
+  String get personal => 'Persönlich';
+
+  @override
+  String get selectCategory => 'Kategorie auswählen';
+
+  @override
+  String get mondayShort => 'M';
+
+  @override
+  String get tuesdayShort => 'D';
+
+  @override
+  String get wednesdayShort => 'M';
+
+  @override
+  String get thursdayShort => 'D';
+
+  @override
+  String get fridayShort => 'F';
+
+  @override
+  String get saturdayShort => 'S';
+
+  @override
+  String get sundayShort => 'S';
 }

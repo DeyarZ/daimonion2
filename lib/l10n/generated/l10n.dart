@@ -330,10 +330,10 @@ class S {
     );
   }
 
-  /// `Premium Required`
+  /// `Premium required`
   String get premiumRequired {
     return Intl.message(
-      'Premium Required',
+      'Premium required',
       name: 'premiumRequired',
       desc: '',
       args: [],
@@ -580,20 +580,20 @@ class S {
     );
   }
 
-  /// `Today:`
+  /// `Today`
   String get todayLabel {
     return Intl.message(
-      'Today:',
+      'Today',
       name: 'todayLabel',
       desc: '',
       args: [],
     );
   }
 
-  /// `No habits yet`
+  /// `No habits added yet.`
   String get noHabitsMessage {
     return Intl.message(
-      'No habits yet',
+      'No habits added yet.',
       name: 'noHabitsMessage',
       desc: '',
       args: [],
@@ -610,10 +610,10 @@ class S {
     );
   }
 
-  /// `New Habit`
+  /// `Create New Habit`
   String get newHabitTitle {
     return Intl.message(
-      'New Habit',
+      'Create New Habit',
       name: 'newHabitTitle',
       desc: '',
       args: [],
@@ -630,10 +630,10 @@ class S {
     );
   }
 
-  /// `Reminder (optional):`
+  /// `Set Reminder`
   String get reminderLabel {
     return Intl.message(
-      'Reminder (optional):',
+      'Set Reminder',
       name: 'reminderLabel',
       desc: '',
       args: [],
@@ -650,10 +650,10 @@ class S {
     );
   }
 
-  /// `Delete?`
+  /// `Delete Habit`
   String get deleteHabitTitle {
     return Intl.message(
-      'Delete?',
+      'Delete Habit',
       name: 'deleteHabitTitle',
       desc: '',
       args: [],
@@ -820,10 +820,10 @@ class S {
     );
   }
 
-  /// `WHO COULD YOU BE?`
+  /// `Your Profile`
   String get profileHeader {
     return Intl.message(
-      'WHO COULD YOU BE?',
+      'Your Profile',
       name: 'profileHeader',
       desc: '',
       args: [],
@@ -840,30 +840,30 @@ class S {
     );
   }
 
-  /// `Edit`
+  /// `Edit Profile`
   String get editProfile {
     return Intl.message(
-      'Edit',
+      'Edit Profile',
       name: 'editProfile',
       desc: '',
       args: [],
     );
   }
 
-  /// `Edit Name`
+  /// `Edit Your Name`
   String get editProfileTitle {
     return Intl.message(
-      'Edit Name',
+      'Edit Your Name',
       name: 'editProfileTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Your Name`
+  /// `Enter your name...`
   String get editProfileHint {
     return Intl.message(
-      'Your Name',
+      'Enter your name...',
       name: 'editProfileHint',
       desc: '',
       args: [],
@@ -880,20 +880,20 @@ class S {
     );
   }
 
-  /// `SETTINGS`
+  /// `Settings`
   String get settingsTitle {
     return Intl.message(
-      'SETTINGS',
+      'Settings',
       name: 'settingsTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Hardness`
+  /// `Hardness Level`
   String get hardnessTitle {
     return Intl.message(
-      'Hardness',
+      'Hardness Level',
       name: 'hardnessTitle',
       desc: '',
       args: [],
@@ -930,20 +930,20 @@ class S {
     );
   }
 
-  /// `LEGAL & APP INFO`
+  /// `Legal & App Info`
   String get legalAndAppInfoTitle {
     return Intl.message(
-      'LEGAL & APP INFO',
+      'Legal & App Info',
       name: 'legalAndAppInfoTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Privacy & Terms of Use`
+  /// `Privacy & Terms`
   String get privacyAndTerms {
     return Intl.message(
-      'Privacy & Terms of Use',
+      'Privacy & Terms',
       name: 'privacyAndTerms',
       desc: '',
       args: [],
@@ -960,10 +960,10 @@ class S {
     );
   }
 
-  /// `ACCOUNT`
+  /// `Account`
   String get accountTitle {
     return Intl.message(
-      'ACCOUNT',
+      'Account',
       name: 'accountTitle',
       desc: '',
       args: [],
@@ -1030,10 +1030,10 @@ class S {
     );
   }
 
-  /// `Premium restored!`
+  /// `Premium subscription restored successfully.`
   String get premiumRestored {
     return Intl.message(
-      'Premium restored!',
+      'Premium subscription restored successfully.',
       name: 'premiumRestored',
       desc: '',
       args: [],
@@ -1050,30 +1050,30 @@ class S {
     );
   }
 
-  /// `Restore error: {error}`
+  /// `Error restoring purchases: {error}`
   String restoreError(Object error) {
     return Intl.message(
-      'Restore error: $error',
+      'Error restoring purchases: $error',
       name: 'restoreError',
       desc: '',
       args: [error],
     );
   }
 
-  /// `Select Hardness`
+  /// `Select Hardness Level`
   String get selectHardness {
     return Intl.message(
-      'Select Hardness',
+      'Select Hardness Level',
       name: 'selectHardness',
       desc: '',
       args: [],
     );
   }
 
-  /// `HOW HARD SHOULD I BE TO YOU?`
+  /// `How tough do you want your Daimonion to be?`
   String get hardnessQuestion {
     return Intl.message(
-      'HOW HARD SHOULD I BE TO YOU?',
+      'How tough do you want your Daimonion to be?',
       name: 'hardnessQuestion',
       desc: '',
       args: [],
@@ -1250,10 +1250,10 @@ class S {
     );
   }
 
-  /// `Your Tools for Victory`
+  /// `Tools`
   String get toolsPageTitle {
     return Intl.message(
-      'Your Tools for Victory',
+      'Tools',
       name: 'toolsPageTitle',
       desc: '',
       args: [],
@@ -1270,10 +1270,10 @@ class S {
     );
   }
 
-  /// `Tasks`
+  /// `To-Do List`
   String get tasksToolTitle {
     return Intl.message(
-      'Tasks',
+      'To-Do List',
       name: 'tasksToolTitle',
       desc: '',
       args: [],
@@ -1300,20 +1300,20 @@ class S {
     );
   }
 
-  /// `Premium Required`
+  /// `Unlock Premium Tools`
   String get paywallTitle {
     return Intl.message(
-      'Premium Required',
+      'Unlock Premium Tools',
       name: 'paywallTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `This tool is only available for premium members.`
+  /// `Get access to all premium features and tools to maximize your productivity and growth.`
   String get paywallContent {
     return Intl.message(
-      'This tool is only available for premium members.',
+      'Get access to all premium features and tools to maximize your productivity and growth.',
       name: 'paywallContent',
       desc: '',
       args: [],
@@ -1870,20 +1870,20 @@ class S {
     );
   }
 
-  /// `No exercises added.\nStart building your workout!`
+  /// `No exercises added yet.`
   String get noExercisesMessage {
     return Intl.message(
-      'No exercises added.\nStart building your workout!',
+      'No exercises added yet.',
       name: 'noExercisesMessage',
       desc: '',
       args: [],
     );
   }
 
-  /// `Enter new exercise...`
+  /// `Enter new exercise`
   String get newExerciseHint {
     return Intl.message(
-      'Enter new exercise...',
+      'Enter new exercise',
       name: 'newExerciseHint',
       desc: '',
       args: [],
@@ -1930,10 +1930,10 @@ class S {
     );
   }
 
-  /// `Weight (kg)`
+  /// `Weight`
   String get weightLabel {
     return Intl.message(
-      'Weight (kg)',
+      'Weight',
       name: 'weightLabel',
       desc: '',
       args: [],
@@ -2705,6 +2705,986 @@ class S {
     return Intl.message(
       'Your tasks are waiting! Time to grind!',
       name: 'todoReminderBodyBrutal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Test`
+  String get tasksForDay {
+    return Intl.message(
+      'Test',
+      name: 'tasksForDay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Training Plan`
+  String get trainingPlan {
+    return Intl.message(
+      'Training Plan',
+      name: 'trainingPlan',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Workout Name`
+  String get workoutNameHint {
+    return Intl.message(
+      'Workout Name',
+      name: 'workoutNameHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `kg`
+  String get kg {
+    return Intl.message(
+      'kg',
+      name: 'kg',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `sets`
+  String get sets {
+    return Intl.message(
+      'sets',
+      name: 'sets',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `reps`
+  String get reps {
+    return Intl.message(
+      'reps',
+      name: 'reps',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to add exercises`
+  String get tapToAddExercises {
+    return Intl.message(
+      'Tap to add exercises',
+      name: 'tapToAddExercises',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exercise Name`
+  String get exerciseName {
+    return Intl.message(
+      'Exercise Name',
+      name: 'exerciseName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Exercise Details`
+  String get exerciseDetails {
+    return Intl.message(
+      'Exercise Details',
+      name: 'exerciseDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Notes`
+  String get notes {
+    return Intl.message(
+      'Notes',
+      name: 'notes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close`
+  String get close {
+    return Intl.message(
+      'Close',
+      name: 'close',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete`
+  String get delete {
+    return Intl.message(
+      'Delete',
+      name: 'delete',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Quick Add`
+  String get quickAdd {
+    return Intl.message(
+      'Quick Add',
+      name: 'quickAdd',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add Exercise`
+  String get addExercise {
+    return Intl.message(
+      'Add Exercise',
+      name: 'addExercise',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to add details`
+  String get tapToAddDetails {
+    return Intl.message(
+      'Tap to add details',
+      name: 'tapToAddDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose Workout Color`
+  String get chooseWorkoutColor {
+    return Intl.message(
+      'Choose Workout Color',
+      name: 'chooseWorkoutColor',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit Workout Name`
+  String get editWorkoutName {
+    return Intl.message(
+      'Edit Workout Name',
+      name: 'editWorkoutName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `exercises`
+  String get exercises {
+    return Intl.message(
+      'exercises',
+      name: 'exercises',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upgrade for more features`
+  String get upgradeForMoreFeatures {
+    return Intl.message(
+      'Upgrade for more features',
+      name: 'upgradeForMoreFeatures',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upgrade Now`
+  String get upgradeNow {
+    return Intl.message(
+      'Upgrade Now',
+      name: 'upgradeNow',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Monday`
+  String get monday {
+    return Intl.message(
+      'Monday',
+      name: 'monday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tuesday`
+  String get tuesday {
+    return Intl.message(
+      'Tuesday',
+      name: 'tuesday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Wednesday`
+  String get wednesday {
+    return Intl.message(
+      'Wednesday',
+      name: 'wednesday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thursday`
+  String get thursday {
+    return Intl.message(
+      'Thursday',
+      name: 'thursday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Friday`
+  String get friday {
+    return Intl.message(
+      'Friday',
+      name: 'friday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Saturday`
+  String get saturday {
+    return Intl.message(
+      'Saturday',
+      name: 'saturday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sunday`
+  String get sunday {
+    return Intl.message(
+      'Sunday',
+      name: 'sunday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit Day`
+  String get editDayTitle {
+    return Intl.message(
+      'Edit Day',
+      name: 'editDayTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New day name`
+  String get newDayNameHint {
+    return Intl.message(
+      'New day name',
+      name: 'newDayNameHint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Workout Name`
+  String get noWorkoutName {
+    return Intl.message(
+      'No Workout Name',
+      name: 'noWorkoutName',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You need at least one workout day. Do something for your body!`
+  String get atLeastOneWorkoutDay {
+    return Intl.message(
+      'You need at least one workout day. Do something for your body!',
+      name: 'atLeastOneWorkoutDay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `New Day`
+  String get newDay {
+    return Intl.message(
+      'New Day',
+      name: 'newDay',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Day {number}`
+  String day(Object number) {
+    return Intl.message(
+      'Day $number',
+      name: 'day',
+      desc: '',
+      args: [number],
+    );
+  }
+
+  /// `PREMIUM`
+  String get premium_label {
+    return Intl.message(
+      'PREMIUM',
+      name: 'premium_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What's included:`
+  String get features_label {
+    return Intl.message(
+      'What\'s included:',
+      name: 'features_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Weekly`
+  String get weekly_label {
+    return Intl.message(
+      'Weekly',
+      name: 'weekly_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try it out cheaply`
+  String get weekly_description {
+    return Intl.message(
+      'Try it out cheaply',
+      name: 'weekly_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Monthly`
+  String get monthly_label {
+    return Intl.message(
+      'Monthly',
+      name: 'monthly_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save over 30%`
+  String get monthly_description {
+    return Intl.message(
+      'Save over 30%',
+      name: 'monthly_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Yearly`
+  String get yearly_label {
+    return Intl.message(
+      'Yearly',
+      name: 'yearly_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save over 40%`
+  String get yearly_description {
+    return Intl.message(
+      'Save over 40%',
+      name: 'yearly_description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Popular`
+  String get most_popular_label {
+    return Intl.message(
+      'Popular',
+      name: 'most_popular_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start free week`
+  String get start_free_week_label {
+    return Intl.message(
+      'Start free week',
+      name: 'start_free_week_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Error`
+  String get error_title {
+    return Intl.message(
+      'Error',
+      name: 'error_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your Name`
+  String get nameLabel {
+    return Intl.message(
+      'Your Name',
+      name: 'nameLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restoring purchases...`
+  String get restoringPurchases {
+    return Intl.message(
+      'Restoring purchases...',
+      name: 'restoringPurchases',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your purchases have been restored successfully!`
+  String get purchasesRestoredSuccess {
+    return Intl.message(
+      'Your purchases have been restored successfully!',
+      name: 'purchasesRestoredSuccess',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No previous purchases found to restore.`
+  String get noPurchasesToRestore {
+    return Intl.message(
+      'No previous purchases found to restore.',
+      name: 'noPurchasesToRestore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not restore purchases.`
+  String get purchasesRestoredError {
+    return Intl.message(
+      'Could not restore purchases.',
+      name: 'purchasesRestoredError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No email client found on this device.`
+  String get emailAppNotFound {
+    return Intl.message(
+      'No email client found on this device.',
+      name: 'emailAppNotFound',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not send feedback.`
+  String get couldNotSendFeedback {
+    return Intl.message(
+      'Could not send feedback.',
+      name: 'couldNotSendFeedback',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Coming Soon`
+  String get comingSoon {
+    return Intl.message(
+      'Coming Soon',
+      name: 'comingSoon',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This feature will be available soon!`
+  String get comingSoonDescription {
+    return Intl.message(
+      'This feature will be available soon!',
+      name: 'comingSoonDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Productivity`
+  String get productivityCategory {
+    return Intl.message(
+      'Productivity',
+      name: 'productivityCategory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Wellness & Growth`
+  String get wellnessCategory {
+    return Intl.message(
+      'Wellness & Growth',
+      name: 'wellnessCategory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stay focused with deep work sessions.`
+  String get flowTimerDescription {
+    return Intl.message(
+      'Stay focused with deep work sessions.',
+      name: 'flowTimerDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use the Flow Timer to break tasks into deep focus periods.`
+  String get flowTimerHelp {
+    return Intl.message(
+      'Use the Flow Timer to break tasks into deep focus periods.',
+      name: 'flowTimerHelp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Manage your tasks effectively.`
+  String get tasksDescription {
+    return Intl.message(
+      'Manage your tasks effectively.',
+      name: 'tasksDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Plan your day with a simple and effective task list.`
+  String get tasksHelp {
+    return Intl.message(
+      'Plan your day with a simple and effective task list.',
+      name: 'tasksHelp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Track your thoughts and progress.`
+  String get journalDescription {
+    return Intl.message(
+      'Track your thoughts and progress.',
+      name: 'journalDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Write daily reflections and structure your thoughts in the journal.`
+  String get journalHelp {
+    return Intl.message(
+      'Write daily reflections and structure your thoughts in the journal.',
+      name: 'journalHelp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Build and maintain strong habits.`
+  String get habitTrackerDescription {
+    return Intl.message(
+      'Build and maintain strong habits.',
+      name: 'habitTrackerDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stay consistent with habit tracking for long-term success.`
+  String get habitTrackerHelp {
+    return Intl.message(
+      'Stay consistent with habit tracking for long-term success.',
+      name: 'habitTrackerHelp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Optimize your workouts and track progress.`
+  String get trainingPlanDescription {
+    return Intl.message(
+      'Optimize your workouts and track progress.',
+      name: 'trainingPlanDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Use the Training Plan to follow a structured fitness routine.`
+  String get trainingPlanHelp {
+    return Intl.message(
+      'Use the Training Plan to follow a structured fitness routine.',
+      name: 'trainingPlanHelp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Maybe later`
+  String get maybeLater {
+    return Intl.message(
+      'Maybe later',
+      name: 'maybeLater',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `How to Use These Tools`
+  String get helpDialogTitle {
+    return Intl.message(
+      'How to Use These Tools',
+      name: 'helpDialogTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Got it!`
+  String get gotIt {
+    return Intl.message(
+      'Got it!',
+      name: 'gotIt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All Habits`
+  String get allHabits {
+    return Intl.message(
+      'All Habits',
+      name: 'allHabits',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `By Category`
+  String get byCategory {
+    return Intl.message(
+      'By Category',
+      name: 'byCategory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add a New Habit`
+  String get addNewHabit {
+    return Intl.message(
+      'Add a New Habit',
+      name: 'addNewHabit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Habit deleted`
+  String get habitDeleted {
+    return Intl.message(
+      'Habit deleted',
+      name: 'habitDeleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit`
+  String get edit {
+    return Intl.message(
+      'Edit',
+      name: 'edit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Undo`
+  String get undo {
+    return Intl.message(
+      'Undo',
+      name: 'undo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Edit Habit`
+  String get editHabitTitle {
+    return Intl.message(
+      'Edit Habit',
+      name: 'editHabitTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Habit Name`
+  String get habitNameLabel {
+    return Intl.message(
+      'Habit Name',
+      name: 'habitNameLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Repeat On`
+  String get repeatLabel {
+    return Intl.message(
+      'Repeat On',
+      name: 'repeatLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Category`
+  String get categoryLabel {
+    return Intl.message(
+      'Category',
+      name: 'categoryLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose a Color`
+  String get colorLabel {
+    return Intl.message(
+      'Choose a Color',
+      name: 'colorLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Set Time`
+  String get setTime {
+    return Intl.message(
+      'Set Time',
+      name: 'setTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No reminder set`
+  String get noReminderSet {
+    return Intl.message(
+      'No reminder set',
+      name: 'noReminderSet',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update`
+  String get update {
+    return Intl.message(
+      'Update',
+      name: 'update',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Are you sure you want to delete`
+  String get deleteHabitConfirmation {
+    return Intl.message(
+      'Are you sure you want to delete',
+      name: 'deleteHabitConfirmation',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a habit name.`
+  String get emptyNameError {
+    return Intl.message(
+      'Please enter a habit name.',
+      name: 'emptyNameError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please select at least one day.`
+  String get noDaysSelectedError {
+    return Intl.message(
+      'Please select at least one day.',
+      name: 'noDaysSelectedError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Uncategorized`
+  String get uncategorized {
+    return Intl.message(
+      'Uncategorized',
+      name: 'uncategorized',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Health`
+  String get health {
+    return Intl.message(
+      'Health',
+      name: 'health',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Productivity`
+  String get productivity {
+    return Intl.message(
+      'Productivity',
+      name: 'productivity',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Learning`
+  String get learning {
+    return Intl.message(
+      'Learning',
+      name: 'learning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Personal`
+  String get personal {
+    return Intl.message(
+      'Personal',
+      name: 'personal',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Select a category`
+  String get selectCategory {
+    return Intl.message(
+      'Select a category',
+      name: 'selectCategory',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `M`
+  String get mondayShort {
+    return Intl.message(
+      'M',
+      name: 'mondayShort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `T`
+  String get tuesdayShort {
+    return Intl.message(
+      'T',
+      name: 'tuesdayShort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `W`
+  String get wednesdayShort {
+    return Intl.message(
+      'W',
+      name: 'wednesdayShort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `T`
+  String get thursdayShort {
+    return Intl.message(
+      'T',
+      name: 'thursdayShort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `F`
+  String get fridayShort {
+    return Intl.message(
+      'F',
+      name: 'fridayShort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `S`
+  String get saturdayShort {
+    return Intl.message(
+      'S',
+      name: 'saturdayShort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `S`
+  String get sundayShort {
+    return Intl.message(
+      'S',
+      name: 'sundayShort',
       desc: '',
       args: [],
     );

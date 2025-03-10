@@ -152,7 +152,7 @@ class _ChatbotPageState extends State<ChatbotPage> {
     int usedPrompts = settingsBox.get('chatPromptsUsed', defaultValue: 0);
 
     // Limit 5 Prompts
-    if (!isPremium && usedPrompts >= 5) {
+    if (!isPremium && usedPrompts >= 50) {
       _showPaywallDialog();
       return;
     }

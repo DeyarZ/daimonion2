@@ -23,7 +23,6 @@ class LevelThreshold {
 }
 
 final List<LevelThreshold> levelTable = [
-
   LevelThreshold(level: 0, totalXPNeeded: 0, status: 'Rekrut'),
   LevelThreshold(level: 1, totalXPNeeded: 0, status: 'Rekrut'),
   LevelThreshold(level: 2, totalXPNeeded: 100, status: 'Rekrut'),
@@ -121,11 +120,27 @@ class GamificationService {
   int get currentLevel => _calculateLevelFromXP(_stats.xp);
   String get currentStatus => _calculateStatusFromLevel(currentLevel);
 
+  /// Berechnet den Fortschritt zum nächsten Level (0 bis 1)
+  double get levelProgress {
+    final level = currentLevel;
+    final xpCurrentLevel = getXPNeededForLevel(level);
+    final xpNextLevel = getXPNeededForLevel(level + 1);
+
+    if (xpNextLevel <= xpCurrentLevel) return 1.0;
+
+    final xpProgress = currentXP - xpCurrentLevel;
+    final xpDelta = xpNextLevel - xpCurrentLevel;
+
+    return xpDelta == 0 ? 0.0 : (xpProgress / xpDelta).clamp(0.0, 1.0);
+  }
+
+  /// Fügt eine feste Menge an XP hinzu
   Future<void> addXP(int amount) async {
     _stats.xp += amount;
     await _stats.save();
   }
 
+  /// Fügt XP hinzu basierend auf Streak-Bonus
   Future<void> addXPWithStreak(int baseXP) async {
     final settingsBox = Hive.box('settings');
     final streak = settingsBox.get('streak', defaultValue: 1) as int;
@@ -139,11 +154,13 @@ class GamificationService {
     await addXP(finalXP);
   }
 
+  /// Setzt die XP auf einen bestimmten Wert
   Future<void> setXP(int newXP) async {
     _stats.xp = newXP;
     await _stats.save();
   }
 
+  /// Berechnet das Level basierend auf der aktuellen XP
   int _calculateLevelFromXP(int xp) {
     int userLevel = 0;
     for (var threshold in levelTable) {
@@ -156,6 +173,7 @@ class GamificationService {
     return userLevel;
   }
 
+  /// Bestimmt den Status basierend auf dem aktuellen Level
   String _calculateStatusFromLevel(int level) {
     final found = levelTable.lastWhere(
       (t) => t.level <= level,
@@ -164,6 +182,7 @@ class GamificationService {
     return found.status;
   }
 
+  /// Gibt die benötigte XP für ein bestimmtes Level zurück
   int getXPNeededForLevel(int level) {
     if (level < 0) return 0;
     final found = levelTable.lastWhere(
@@ -171,5 +190,11 @@ class GamificationService {
       orElse: () => levelTable.last,
     );
     return found.totalXPNeeded;
+  }
+
+  /// Vergibt tägliche XP für Journaling
+  Future<void> awardDailyJournalXP() async {
+    const int journalXP = 50; // Beispielwert für tägliche XP
+    await addXP(journalXP);
   }
 }
