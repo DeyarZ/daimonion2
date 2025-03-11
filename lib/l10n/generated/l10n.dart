@@ -280,20 +280,20 @@ class S {
     );
   }
 
-  /// `TODAY'S TASKS`
+  /// `Today's Tasks`
   String get todaysTasks {
     return Intl.message(
-      'TODAY\'S TASKS',
+      'Today\'s Tasks',
       name: 'todaysTasks',
       desc: '',
       args: [],
     );
   }
 
-  /// `No tasks for today`
+  /// `No tasks for today. Stay disciplined and productive!`
   String get noTasksToday {
     return Intl.message(
-      'No tasks for today',
+      'No tasks for today. Stay disciplined and productive!',
       name: 'noTasksToday',
       desc: '',
       args: [],
@@ -320,10 +320,10 @@ class S {
     );
   }
 
-  /// `WEEKLY PROGRESS`
+  /// `Weekly Progress`
   String get weeklyProgress {
     return Intl.message(
-      'WEEKLY PROGRESS',
+      'Weekly Progress',
       name: 'weeklyProgress',
       desc: '',
       args: [],
@@ -420,90 +420,90 @@ class S {
     );
   }
 
-  /// `Flow Stats`
+  /// `Flow-Statistiken`
   String get flowStatsTitle {
     return Intl.message(
-      'Flow Stats',
+      'Flow-Statistiken',
       name: 'flowStatsTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Week`
+  /// `Woche`
   String get filterWeek {
     return Intl.message(
-      'Week',
+      'Woche',
       name: 'filterWeek',
       desc: '',
       args: [],
     );
   }
 
-  /// `Month`
+  /// `Monat`
   String get filterMonth {
     return Intl.message(
-      'Month',
+      'Monat',
       name: 'filterMonth',
       desc: '',
       args: [],
     );
   }
 
-  /// `Year`
+  /// `Jahr`
   String get filterYear {
     return Intl.message(
-      'Year',
+      'Jahr',
       name: 'filterYear',
       desc: '',
       args: [],
     );
   }
 
-  /// `No data for this period`
+  /// `Keine Daten verfügbar.`
   String get noDataMessage {
     return Intl.message(
-      'No data for this period',
+      'Keine Daten verfügbar.',
       name: 'noDataMessage',
       desc: '',
       args: [],
     );
   }
 
-  /// `Flows`
+  /// `Sitzungen`
   String get statFlows {
     return Intl.message(
-      'Flows',
+      'Sitzungen',
       name: 'statFlows',
       desc: '',
       args: [],
     );
   }
 
-  /// `Total Minutes`
+  /// `Gesamtminuten`
   String get statTotalMinutes {
     return Intl.message(
-      'Total Minutes',
+      'Gesamtminuten',
       name: 'statTotalMinutes',
       desc: '',
       args: [],
     );
   }
 
-  /// `Avg Time per Flow (Min)`
+  /// `Durchschnittliche Dauer`
   String get statAverageFlow {
     return Intl.message(
-      'Avg Time per Flow (Min)',
+      'Durchschnittliche Dauer',
       name: 'statAverageFlow',
       desc: '',
       args: [],
     );
   }
 
-  /// `Avg Time per Week (Min)`
+  /// `Durchschn. Wochenfluss`
   String get statAverageWeeklyFlow {
     return Intl.message(
-      'Avg Time per Week (Min)',
+      'Durchschn. Wochenfluss',
       name: 'statAverageWeeklyFlow',
       desc: '',
       args: [],
@@ -3380,10 +3380,10 @@ class S {
     );
   }
 
-  /// `Got it!`
+  /// `Verstanden`
   String get gotIt {
     return Intl.message(
-      'Got it!',
+      'Verstanden',
       name: 'gotIt',
       desc: '',
       args: [],
@@ -3620,71 +3620,693 @@ class S {
     );
   }
 
-  /// `M`
+  /// `Mo`
   String get mondayShort {
     return Intl.message(
-      'M',
+      'Mo',
       name: 'mondayShort',
       desc: '',
       args: [],
     );
   }
 
-  /// `T`
+  /// `Tu`
   String get tuesdayShort {
     return Intl.message(
-      'T',
+      'Tu',
       name: 'tuesdayShort',
       desc: '',
       args: [],
     );
   }
 
-  /// `W`
+  /// `We`
   String get wednesdayShort {
     return Intl.message(
-      'W',
+      'We',
       name: 'wednesdayShort',
       desc: '',
       args: [],
     );
   }
 
-  /// `T`
+  /// `Th`
   String get thursdayShort {
     return Intl.message(
-      'T',
+      'Th',
       name: 'thursdayShort',
       desc: '',
       args: [],
     );
   }
 
-  /// `F`
+  /// `Fr`
   String get fridayShort {
     return Intl.message(
-      'F',
+      'Fr',
       name: 'fridayShort',
       desc: '',
       args: [],
     );
   }
 
-  /// `S`
+  /// `Sa`
   String get saturdayShort {
     return Intl.message(
-      'S',
+      'Sa',
       name: 'saturdayShort',
       desc: '',
       args: [],
     );
   }
 
-  /// `S`
+  /// `Su`
   String get sundayShort {
     return Intl.message(
-      'S',
+      'Su',
       name: 'sundayShort',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `High`
+  String get highPriority {
+    return Intl.message(
+      'High',
+      name: 'highPriority',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Medium`
+  String get mediumPriority {
+    return Intl.message(
+      'Medium',
+      name: 'mediumPriority',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Low`
+  String get lowPriority {
+    return Intl.message(
+      'Low',
+      name: 'lowPriority',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No Priority`
+  String get noPriority {
+    return Intl.message(
+      'No Priority',
+      name: 'noPriority',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View all`
+  String get viewAll {
+    return Intl.message(
+      'View all',
+      name: 'viewAll',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add New Task`
+  String get addNewTask {
+    return Intl.message(
+      'Add New Task',
+      name: 'addNewTask',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `more tasks...`
+  String get moreTasks {
+    return Intl.message(
+      'more tasks...',
+      name: 'moreTasks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Premium Feature`
+  String get premiumFeature {
+    return Intl.message(
+      'Premium Feature',
+      name: 'premiumFeature',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upgrade to unlock this feature and boost your growth.`
+  String get upgradeToUnlock {
+    return Intl.message(
+      'Upgrade to unlock this feature and boost your growth.',
+      name: 'upgradeToUnlock',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not now`
+  String get notNow {
+    return Intl.message(
+      'Not now',
+      name: 'notNow',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Upgrade`
+  String get upgrade {
+    return Intl.message(
+      'Upgrade',
+      name: 'upgrade',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Why are you slacking, soldier? Get back on track!||No excuses, get your work done!||You want to be great? Then act like it!||Losers procrastinate. Winners execute. Which one are you?`
+  String get motivationalInsults {
+    return Intl.message(
+      'Why are you slacking, soldier? Get back on track!||No excuses, get your work done!||You want to be great? Then act like it!||Losers procrastinate. Winners execute. Which one are you?',
+      name: 'motivationalInsults',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `I'll do it!`
+  String get iWillDoIt {
+    return Intl.message(
+      'I\'ll do it!',
+      name: 'iWillDoIt',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap to refresh`
+  String get tapToRefresh {
+    return Intl.message(
+      'Tap to refresh',
+      name: 'tapToRefresh',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove Ads`
+  String get removeAds {
+    return Intl.message(
+      'Remove Ads',
+      name: 'removeAds',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Go Premium`
+  String get goPremium {
+    return Intl.message(
+      'Go Premium',
+      name: 'goPremium',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Daily Progress`
+  String get dailyProgress {
+    return Intl.message(
+      'Daily Progress',
+      name: 'dailyProgress',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View Stats`
+  String get viewStats {
+    return Intl.message(
+      'View Stats',
+      name: 'viewStats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Got it`
+  String get understood {
+    return Intl.message(
+      'Got it',
+      name: 'understood',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Type a message ...`
+  String get typeMessage {
+    return Intl.message(
+      'Type a message ...',
+      name: 'typeMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You`
+  String get you {
+    return Intl.message(
+      'You',
+      name: 'you',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your Statistics`
+  String get userStats {
+    return Intl.message(
+      'Your Statistics',
+      name: 'userStats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Detailed statistics about your productivity, streaks, and progress will be displayed here.`
+  String get detailedUserStats {
+    return Intl.message(
+      'Detailed statistics about your productivity, streaks, and progress will be displayed here.',
+      name: 'detailedUserStats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pause`
+  String get pauseTimer {
+    return Intl.message(
+      'Pause',
+      name: 'pauseTimer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start`
+  String get startTimer {
+    return Intl.message(
+      'Start',
+      name: 'startTimer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Great job! You've completed all your tasks!`
+  String get allTasksCompleted {
+    return Intl.message(
+      'Great job! You\'ve completed all your tasks!',
+      name: 'allTasksCompleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `About Statistics`
+  String get aboutStatistics {
+    return Intl.message(
+      'About Statistics',
+      name: 'aboutStatistics',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This page shows your task completion statistics. The calendar view displays daily completion rates, while the analytics tab provides weekly progress and monthly summaries.`
+  String get aboutStatisticsContent {
+    return Intl.message(
+      'This page shows your task completion statistics. The calendar view displays daily completion rates, while the analytics tab provides weekly progress and monthly summaries.',
+      name: 'aboutStatisticsContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Calendar`
+  String get calendarTab {
+    return Intl.message(
+      'Calendar',
+      name: 'calendarTab',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Analytics`
+  String get analyticsTab {
+    return Intl.message(
+      'Analytics',
+      name: 'analyticsTab',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Total Tasks`
+  String get totalTasks {
+    return Intl.message(
+      'Total Tasks',
+      name: 'totalTasks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Completed`
+  String get completed {
+    return Intl.message(
+      'Completed',
+      name: 'completed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pending`
+  String get pending {
+    return Intl.message(
+      'Pending',
+      name: 'pending',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Task Completion Trends`
+  String get taskCompletionTrends {
+    return Intl.message(
+      'Task Completion Trends',
+      name: 'taskCompletionTrends',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Monthly Overview`
+  String get monthlyOverview {
+    return Intl.message(
+      'Monthly Overview',
+      name: 'monthlyOverview',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Productivity Score`
+  String get productivityScore {
+    return Intl.message(
+      'Productivity Score',
+      name: 'productivityScore',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `NEW`
+  String get newLabel {
+    return Intl.message(
+      'NEW',
+      name: 'newLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You've completed {percentage}% of your tasks this month!`
+  String completedTasksPercentage(Object percentage) {
+    return Intl.message(
+      'You\'ve completed $percentage% of your tasks this month!',
+      name: 'completedTasksPercentage',
+      desc: '',
+      args: [percentage],
+    );
+  }
+
+  /// `No tasks scheduled for this month yet.`
+  String get noTasksScheduled {
+    return Intl.message(
+      'No tasks scheduled for this month yet.',
+      name: 'noTasksScheduled',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Complete {pending} more tasks to reach 100%`
+  String completeMoreTasks(Object pending) {
+    return Intl.message(
+      'Complete $pending more tasks to reach 100%',
+      name: 'completeMoreTasks',
+      desc: '',
+      args: [pending],
+    );
+  }
+
+  /// `Start adding tasks to track your productivity.`
+  String get startAddingTasks {
+    return Intl.message(
+      'Start adding tasks to track your productivity.',
+      name: 'startAddingTasks',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count, plural, one{task} other{tasks}}`
+  String taskLabel(num count) {
+    return Intl.plural(
+      count,
+      one: 'task',
+      other: 'tasks',
+      name: 'taskLabel',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Gesamtzeit`
+  String get totalTime {
+    return Intl.message(
+      'Gesamtzeit',
+      name: 'totalTime',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Durchschn. Dauer`
+  String get avgDuration {
+    return Intl.message(
+      'Durchschn. Dauer',
+      name: 'avgDuration',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Flow-Konsistenz`
+  String get flowConsistency {
+    return Intl.message(
+      'Flow-Konsistenz',
+      name: 'flowConsistency',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tägliche Flow-Minuten`
+  String get dailyFlowMinutes {
+    return Intl.message(
+      'Tägliche Flow-Minuten',
+      name: 'dailyFlowMinutes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Wöchentliche Flow-Minuten`
+  String get weeklyFlowMinutes {
+    return Intl.message(
+      'Wöchentliche Flow-Minuten',
+      name: 'weeklyFlowMinutes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Monatliche Flow-Minuten`
+  String get monthlyFlowMinutes {
+    return Intl.message(
+      'Monatliche Flow-Minuten',
+      name: 'monthlyFlowMinutes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Flow-Minuten`
+  String get flowMinutes {
+    return Intl.message(
+      'Flow-Minuten',
+      name: 'flowMinutes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verbessernd`
+  String get improving {
+    return Intl.message(
+      'Verbessernd',
+      name: 'improving',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verschlechternd`
+  String get declining {
+    return Intl.message(
+      'Verschlechternd',
+      name: 'declining',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stabil`
+  String get stable {
+    return Intl.message(
+      'Stabil',
+      name: 'stable',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Flow-Statistik-Hilfe`
+  String get infoTitle {
+    return Intl.message(
+      'Flow-Statistik-Hilfe',
+      name: 'infoTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Dieser Bildschirm zeigt Analysen deiner Flow-Sitzungen. Hier kannst du deinen Fortschritt verfolgen und deine Leistung über die Zeit sehen.`
+  String get infoContent {
+    return Intl.message(
+      'Dieser Bildschirm zeigt Analysen deiner Flow-Sitzungen. Hier kannst du deinen Fortschritt verfolgen und deine Leistung über die Zeit sehen.',
+      name: 'infoContent',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Zeitfilter`
+  String get helpTimeFiltersTitle {
+    return Intl.message(
+      'Zeitfilter',
+      name: 'helpTimeFiltersTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Wechsle zwischen Woche, Monat und Jahr, um verschiedene Zeiträume zu sehen.`
+  String get helpTimeFiltersDescription {
+    return Intl.message(
+      'Wechsle zwischen Woche, Monat und Jahr, um verschiedene Zeiträume zu sehen.',
+      name: 'helpTimeFiltersDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Balkendiagramm`
+  String get helpBarChartTitle {
+    return Intl.message(
+      'Balkendiagramm',
+      name: 'helpBarChartTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Jeder Balken repräsentiert die Flow-Minuten für einen Tag, eine Woche oder einen Monat, basierend auf dem ausgewählten Filter.`
+  String get helpBarChartDescription {
+    return Intl.message(
+      'Jeder Balken repräsentiert die Flow-Minuten für einen Tag, eine Woche oder einen Monat, basierend auf dem ausgewählten Filter.',
+      name: 'helpBarChartDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Wöchentliches Ziel`
+  String get helpWeeklyGoalTitle {
+    return Intl.message(
+      'Wöchentliches Ziel',
+      name: 'helpWeeklyGoalTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Verfolge deinen Fortschritt in Richtung deines wöchentlichen Flow-Ziels von 300 Minuten.`
+  String get helpWeeklyGoalDescription {
+    return Intl.message(
+      'Verfolge deinen Fortschritt in Richtung deines wöchentlichen Flow-Ziels von 300 Minuten.',
+      name: 'helpWeeklyGoalDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Trendindikator`
+  String get helpTrendIndicatorTitle {
+    return Intl.message(
+      'Trendindikator',
+      name: 'helpTrendIndicatorTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Zeigt, ob dein Flow zunimmt, abnimmt oder stabil bleibt im Vergleich zum vorherigen Zeitraum.`
+  String get helpTrendIndicatorDescription {
+    return Intl.message(
+      'Zeigt, ob dein Flow zunimmt, abnimmt oder stabil bleibt im Vergleich zum vorherigen Zeitraum.',
+      name: 'helpTrendIndicatorDescription',
       desc: '',
       args: [],
     );

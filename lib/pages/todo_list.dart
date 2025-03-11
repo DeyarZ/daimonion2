@@ -49,7 +49,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
   bool _notificationsOn = false;
   DateTime _newTaskDeadline = DateTime.now();
   TaskPriority _newTaskPriority = TaskPriority.medium;
-  List<String> _newTaskTags = ['General'];
+  List<String> _newTaskTags = ['General']; // Fix: Vorher war hier ['Allgemein']
   final List<String> _defaultTags = ['General', 'Work', 'Private', 'Sport'];
 
   // Toggle für Benachrichtigungen
@@ -338,7 +338,7 @@ class _ToDoListPageState extends State<ToDoListPage> {
     final TextEditingController controller = TextEditingController();
     _newTaskDeadline = DateTime.now();
     _newTaskPriority = TaskPriority.medium;
-    _newTaskTags = ['Allgemein'];
+    _newTaskTags = ['General']; // Fix: Wert auf "General" ändern
     final bool isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
 
     showModalBottomSheet(

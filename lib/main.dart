@@ -16,7 +16,7 @@ import 'package:timezone/timezone.dart' as tz;
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'l10n/generated/l10n.dart';
 
-// DEIN Härtegrad-Enum (Pfad anpassen, wenn woanders)
+// Dein Härtegrad-Enum (Pfad anpassen, wenn woanders)
 import 'package:daimonion_app/haertegrad_enum.dart';
 
 // Services (anpassen an deine Struktur)
@@ -38,8 +38,7 @@ final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
 
 // ----------------------------------------------------------
-// CUSTOM SCROLL BEHAVIOR, damit beim Overscroll kein helles
-// Overlay auftaucht
+// CUSTOM SCROLL BEHAVIOR
 // ----------------------------------------------------------
 class MyCustomScrollBehavior extends MaterialScrollBehavior {
   @override
@@ -83,7 +82,6 @@ tz.TZDateTime _nextInstanceOfWeekday(int weekday, int hour, int minute) {
 
 // ----------------------------------------------------------
 // 2) Notifications: Weekly Habit Reminders
-//    EXAKT angepasst an habit_tracker.dart
 // ----------------------------------------------------------
 Future<void> scheduleHabitNotifications({
   required String id,
@@ -111,8 +109,6 @@ Future<void> scheduleHabitNotifications({
       iOS: iosDetails,
     );
 
-    // Notification-Title: z.B. "Habit Reminder"
-    // Notification-Body: Name des Habits, also "title"
     await flutterLocalNotificationsPlugin.zonedSchedule(
       notifId,
       S.current.habitReminderTitle,
@@ -127,12 +123,8 @@ Future<void> scheduleHabitNotifications({
   }
 }
 
-// Cancelt Notifications für ALLE Wochentage (Mo-So).
-// Dein habit_tracker ruft nur: cancelHabitNotifications(habit.id);
-// Also nehmen wir KEINE weekdays als Parameter.
+// Cancelt Notifications für alle Wochentage
 Future<void> cancelHabitNotifications(String id) async {
-  // Theoretisch wüssten wir nicht, welche Wochentage das Habit hatte.
-  // Wir canceln deswegen einfach alle 7 IDs (Mo=1..So=7).
   for (int wday = 1; wday <= 7; wday++) {
     final notifId = id.hashCode + wday;
     await flutterLocalNotificationsPlugin.cancel(notifId);
@@ -140,15 +132,11 @@ Future<void> cancelHabitNotifications(String id) async {
 }
 
 // ----------------------------------------------------------
-// 3) NEU: Täglicher Todo-Reminder um 20:00, 
-//    basierend auf Härtegrad
+// 3) NEU: Täglicher Todo-Reminder um 20:00
 // ----------------------------------------------------------
-
-// Hilfsfunktion: Liest den Härtegrad aus Hive (default: normal)
 Haertegrad _getCurrentHaertegrad() {
   final settingsBox = Hive.box('settings');
   final modeString = settingsBox.get('chatbotMode', defaultValue: 'normal');
-
   switch (modeString) {
     case 'hart':
       return Haertegrad.hart;
@@ -159,7 +147,6 @@ Haertegrad _getCurrentHaertegrad() {
   }
 }
 
-// Returns (title, body) je nach Härtegrad unter Nutzung der Internationalisierung
 Map<String, String> _getTodoReminderText(Haertegrad grad) {
   switch (grad) {
     case Haertegrad.hart:
@@ -172,7 +159,6 @@ Map<String, String> _getTodoReminderText(Haertegrad grad) {
         'title': S.current.todoReminderTitleBrutal,
         'body': S.current.todoReminderBodyBrutal,
       };
-    case Haertegrad.normal:
     default:
       return {
         'title': S.current.todoReminderTitleNormal,
@@ -181,9 +167,7 @@ Map<String, String> _getTodoReminderText(Haertegrad grad) {
   }
 }
 
-// Geplante tägliche Reminder-Funktion
 Future<void> scheduleDailyTodoReminder() async {
-  // 1) Holen wir den Härtegrad
   final grad = _getCurrentHaertegrad();
   final textMap = _getTodoReminderText(grad);
 
@@ -201,7 +185,6 @@ Future<void> scheduleDailyTodoReminder() async {
     iOS: iosDetails,
   );
 
-  // 3) Zeitpunkt 20:00 (heute oder morgen)
   final now = tz.TZDateTime.now(tz.local);
   var scheduledTime = tz.TZDateTime(
     tz.local,
@@ -211,12 +194,10 @@ Future<void> scheduleDailyTodoReminder() async {
     20, // 20:00
     0,
   );
-  // Wenn 20:00 schon vorbei -> +1 Tag
   if (scheduledTime.isBefore(now)) {
     scheduledTime = scheduledTime.add(const Duration(days: 1));
   }
 
-  // 4) Planen => Täglich wiederholen
   const notificationId = 5678;
 
   await flutterLocalNotificationsPlugin.zonedSchedule(
@@ -233,7 +214,6 @@ Future<void> scheduleDailyTodoReminder() async {
   );
 }
 
-// Falls User keinen Bock mehr hat
 Future<void> cancelDailyTodoReminder() async {
   const notificationId = 5678;
   await flutterLocalNotificationsPlugin.cancel(notificationId);
@@ -251,13 +231,11 @@ Future<void> main() async {
   // AdMob initialisieren
   await MobileAds.instance.initialize();
 
-  // ------------------------------------------
-  // OPTIONAL: Test-Device-IDs hinterlegen
-  // ------------------------------------------
+  // OPTIONAL: Test-Device-IDs konfigurieren
   await MobileAds.instance.updateRequestConfiguration(
     RequestConfiguration(
       testDeviceIds: <String>[
-        // 'ABCDEF012345', // z.B. Emulator / echtes Gerät
+        // 'ABCDEF012345' // Example
       ],
     ),
   );
@@ -265,29 +243,32 @@ Future<void> main() async {
   // Hive init
   await Hive.initFlutter();
 
-  // *** NEU: Adapter für GamificationStats registrieren ***
+  // *** NEU: Adapter für GamificationStats registrieren (falls du so was hast) ***
   Hive.registerAdapter(GamificationStatsAdapter());
 
   // *** NEU: GamificationService initialisieren ***
   await GamificationService().init();
 
-  // Deine Boxen öffnen
+  // ------------------------------------------------
+  // *** Boxen öffnen – WICHTIG vor runApp() ***
+  // ------------------------------------------------
+  // Achte darauf, dass Boxnamen dem DBService entsprechen
   await Hive.openBox<Map>(DBService.tasksBoxName);
   await Hive.openBox<Map>(DBService.habitsBoxName);
   await Hive.openBox<Map>(DBService.journalBoxName);
-  await Hive.openBox('settings');
-  await Hive.openBox('trainingPlanBox');
+  await Hive.openBox<Map>(DBService.flowSessionsBoxName);
+  await Hive.openBox('settings'); // Falls du 'settingsBoxName' => openBox('settings') etc.
+  await Hive.openBox('trainingPlanBox'); // Falls du den brauchst, wie in deinem Code
 
-  // ----------------------------------------------------------
+  // ------------------------------------------------
   // RevenueCat konfigurieren
-  // ----------------------------------------------------------
+  // ------------------------------------------------
   final revenueCatApiKey = dotenv.env['REVENUECAT_API_KEY'];
   if (revenueCatApiKey == null) {
     throw Exception("RevenueCat API Key fehlt in der .env-Datei");
   }
   await Purchases.configure(PurchasesConfiguration(revenueCatApiKey));
 
-  // Checken, ob User bereits Premium hat (Entitlements)
   try {
     final customerInfo = await Purchases.getCustomerInfo();
     final isPremium = customerInfo.entitlements.all['premium']?.isActive ?? false;
@@ -298,15 +279,12 @@ Future<void> main() async {
     debugPrint("Fehler beim Entitlement-Check: $e");
   }
 
-  // ----------------------------------------------------------
-  // STREAK handling (Beispiel: tägliche App-Nutzung)
-  // ----------------------------------------------------------
+  // Streak Logik (optional)
   final settingsBox = Hive.box('settings');
   final now = DateTime.now();
   final lastOpenedMillis = settingsBox.get('lastOpened', defaultValue: 0);
 
   if (lastOpenedMillis == 0) {
-    // erster Start
     settingsBox.put('streak', 1);
     settingsBox.put('lastOpened', now.millisecondsSinceEpoch);
   } else {
@@ -323,9 +301,7 @@ Future<void> main() async {
     }
   }
 
-  // ----------------------------------------------------------
-  // Timezone + flutter_local_notifications initialisieren
-  // ----------------------------------------------------------
+  // Timezone + flutter_local_notifications
   tz.initializeTimeZones();
   tz.setLocalLocation(tz.getLocation('Europe/Berlin'));
 
@@ -345,14 +321,11 @@ Future<void> main() async {
     initSettings,
     onDidReceiveNotificationResponse: (response) {
       debugPrint('Notification tapped: ${response.payload}');
-      // Hier könntest du z.B. zur Todo-Liste navigieren,
-      // aber brauchst evtl. nen globalen Navigator
+      // Hier könntest du zur Todo-Liste navigieren
     },
   );
 
-  // ----------------------------------------------------------
-  // App starten
-  // ----------------------------------------------------------
+  // runApp mit Providern
   runApp(
     MultiProvider(
       providers: [
@@ -372,12 +345,9 @@ class DaimonionApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Daimonion',
-      // Theme: Alles schön dunkel
-      theme: ThemeData.dark().copyWith(
-        scaffoldBackgroundColor: Colors.black,
-      ),
+      theme: ThemeData.dark().copyWith(scaffoldBackgroundColor: Colors.black),
       debugShowCheckedModeBanner: false,
-      // Lokalisierungs-Setup:
+      // Lokalisierung
       localizationsDelegates: const [
         S.delegate,
         GlobalMaterialLocalizations.delegate,
@@ -385,13 +355,13 @@ class DaimonionApp extends StatelessWidget {
         GlobalCupertinoLocalizations.delegate,
       ],
       supportedLocales: S.delegate.supportedLocales,
-      // Unser Custom ScrollBehavior gegen helles Overscroll-Geflacker
       scrollBehavior: MyCustomScrollBehavior(),
-      home: const AuthGate(),
+      home: const AuthGate(), // Dein Start-Widget
     );
   }
 }
 
+// Haupt-Screen mit BottomNav oder so
 class MainScreen extends StatefulWidget {
   const MainScreen({Key? key}) : super(key: key);
 
@@ -401,7 +371,6 @@ class MainScreen extends StatefulWidget {
 
 class MainScreenState extends State<MainScreen> {
   int _currentIndex = 0;
-
   final List<Widget> _pages = [
     const DashboardPage(),
     const ChatbotPage(),
@@ -426,9 +395,7 @@ class MainScreenState extends State<MainScreen> {
       request: const AdRequest(),
       listener: BannerAdListener(
         onAdLoaded: (Ad ad) {
-          setState(() {
-            _isAdLoaded = true;
-          });
+          setState(() => _isAdLoaded = true);
         },
         onAdFailedToLoad: (Ad ad, LoadAdError error) {
           debugPrint('Ad failed to load: $error');
@@ -453,7 +420,6 @@ class MainScreenState extends State<MainScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      // Scaffold ebenfalls schwarz
       backgroundColor: Colors.black,
       body: _pages[_currentIndex],
       bottomNavigationBar: Container(

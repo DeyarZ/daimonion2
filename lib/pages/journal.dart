@@ -16,7 +16,7 @@ class JournalEntry {
   String title;
   String content;
   DateTime date;
-  String mood; // unused, remains "none"
+  String mood; // e.g. "😔", "😐", "😊", "🥳" oder "none"
 
   JournalEntry({
     required this.title,
@@ -24,6 +24,15 @@ class JournalEntry {
     required this.date,
     required this.mood,
   });
+}
+
+/// Verschiedene Filter/Such-Optionen
+enum FilterType {
+  last7Days,
+  last30Days,
+  thisYear,
+  oldestFirst,
+  newestFirst,
 }
 
 class JournalPage extends StatefulWidget {
@@ -38,10 +47,14 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
   late AnimationController _animationController;
   late Animation<double> _fabAnimation;
 
-  final Color _primaryColor = const Color(0xFF6D28D9); // Purple
-  final Color _accentColor = const Color(0xFF8B5CF6); // Lighter purple
-  final Color _cardColor = const Color(0xFF1F2937); // Dark blue-gray
-  final Color _bgColor = const Color(0xFF111827); // Darker blue-gray
+  /// Neue Farbwerte mit etwas besserem Kontrast
+  final Color _primaryColor = const Color(0xFFDF1B1B); // Rot
+  final Color _accentColor = const Color(0xFFFF6F6F); // Helleres Rot
+  final Color _cardColor = const Color(0xFF1E1E1E);   // Dunkles Grau (statt pures Schwarz)
+  final Color _bgColor = const Color(0xFF000000);     // Schwarz
+
+  /// Wir merken uns den aktuell gewählten Filter
+  FilterType _filterType = FilterType.newestFirst;
 
   @override
   void initState() {
@@ -105,20 +118,21 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
           child: ValueListenableBuilder(
             valueListenable: _dbService.listenableJournal(),
             builder: (ctx, Box box, widget) {
+              // Journal-Einträge laden
               final entries = _boxToJournalList(box);
 
-              if (entries.isEmpty) {
+              // Anwenden von Filter/Sortierung
+              final filteredEntries = _applyFilter(entries);
+
+              if (filteredEntries.isEmpty) {
                 return _buildEmptyState(loc);
               }
-
-              // Sort by date (newest first)
-              entries.sort((a, b) => b.date.compareTo(a.date));
 
               return AnimationLimiter(
                 child: ListView.builder(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
                   physics: const BouncingScrollPhysics(),
-                  itemCount: entries.length,
+                  itemCount: filteredEntries.length,
                   itemBuilder: (context, index) {
                     return AnimationConfiguration.staggeredList(
                       position: index,
@@ -126,7 +140,7 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
                       child: SlideAnimation(
                         verticalOffset: 50.0,
                         child: FadeInAnimation(
-                          child: _buildJournalItem(entries[index], index),
+                          child: _buildJournalItem(filteredEntries[index], index),
                         ),
                       ),
                     );
@@ -149,6 +163,45 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
         ),
       ),
     );
+  }
+
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  // Filter- und Sortierlogik
+  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+  List<JournalEntry> _applyFilter(List<JournalEntry> entries) {
+    // Kopie der ursprünglichen Liste
+    List<JournalEntry> filtered = List.from(entries);
+
+    switch (_filterType) {
+      case FilterType.last7Days:
+        final cutoff = DateTime.now().subtract(const Duration(days: 7));
+        filtered = filtered.where((e) => e.date.isAfter(cutoff)).toList();
+        // Standard: Neueste zuerst
+        filtered.sort((a, b) => b.date.compareTo(a.date));
+        break;
+
+      case FilterType.last30Days:
+        final cutoff = DateTime.now().subtract(const Duration(days: 30));
+        filtered = filtered.where((e) => e.date.isAfter(cutoff)).toList();
+        filtered.sort((a, b) => b.date.compareTo(a.date));
+        break;
+
+      case FilterType.thisYear:
+        final startOfYear = DateTime(DateTime.now().year, 1, 1);
+        filtered = filtered.where((e) => e.date.isAfter(startOfYear)).toList();
+        filtered.sort((a, b) => b.date.compareTo(a.date));
+        break;
+
+      case FilterType.oldestFirst:
+        filtered.sort((a, b) => a.date.compareTo(b.date));
+        break;
+
+      case FilterType.newestFirst:
+        filtered.sort((a, b) => b.date.compareTo(a.date));
+        break;
+    }
+
+    return filtered;
   }
 
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -379,7 +432,7 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
               Padding(
                 padding: const EdgeInsets.only(bottom: 16),
                 child: Text(
-                  "Filter Entries",
+                  "Filter & Sort Entries",
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: 18,
@@ -388,12 +441,37 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
                 ),
               ),
 
-              // Filter Options
-              _buildFilterOption(context, Icons.calendar_month, "Last 7 days"),
-              _buildFilterOption(context, Icons.calendar_month, "Last 30 days"),
-              _buildFilterOption(context, Icons.calendar_today, "This year"),
-              _buildFilterOption(context, Icons.sort, "Oldest first"),
-              _buildFilterOption(context, Icons.sort, "Newest first", isSelected: true),
+              // Filter / Sort Options
+              _buildFilterOption(
+                context,
+                Icons.calendar_month,
+                "Last 7 days",
+                FilterType.last7Days,
+              ),
+              _buildFilterOption(
+                context,
+                Icons.calendar_month,
+                "Last 30 days",
+                FilterType.last30Days,
+              ),
+              _buildFilterOption(
+                context,
+                Icons.calendar_today,
+                "This year",
+                FilterType.thisYear,
+              ),
+              _buildFilterOption(
+                context,
+                Icons.sort,
+                "Oldest first",
+                FilterType.oldestFirst,
+              ),
+              _buildFilterOption(
+                context,
+                Icons.sort,
+                "Newest first",
+                FilterType.newestFirst,
+              ),
 
               const SizedBox(height: 8),
 
@@ -419,7 +497,13 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildFilterOption(BuildContext context, IconData icon, String label, {bool isSelected = false}) {
+  Widget _buildFilterOption(
+    BuildContext context,
+    IconData icon,
+    String label,
+    FilterType type,
+  ) {
+    final isSelected = (_filterType == type);
     return ListTile(
       leading: Icon(
         icon,
@@ -435,7 +519,12 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
       trailing: isSelected
           ? Icon(Icons.check_circle, color: _primaryColor)
           : null,
-      onTap: () => Navigator.pop(context),
+      onTap: () {
+        setState(() {
+          _filterType = type;
+        });
+        Navigator.pop(context);
+      },
     );
   }
 
@@ -447,8 +536,11 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
     final titleCtrl = TextEditingController();
     final contentCtrl = TextEditingController();
 
-    // To track if content has been modified
+    // Track if content has been modified
     bool hasContent = false;
+
+    // Track the selected mood (default: "😊")
+    String selectedMood = "😊";
 
     showModalBottomSheet(
       context: context,
@@ -460,6 +552,34 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
       builder: (ctx) {
         return StatefulBuilder(
           builder: (context, setState) {
+            // Hilfsfunktion für die Mood-Icons (nur Emojis)
+            Widget buildMoodIcon(String emoji) {
+              final isSelected = (selectedMood == emoji);
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedMood = emoji;
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isSelected ? _primaryColor.withOpacity(0.2) : Colors.transparent,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? _primaryColor : Colors.white.withOpacity(0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: Text(
+                    emoji,
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                ),
+              );
+            }
+
             return Padding(
               padding: MediaQuery.of(ctx).viewInsets,
               child: Container(
@@ -468,7 +588,7 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Header with close button
+                    // Header mit Close-Button
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
@@ -492,7 +612,7 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
 
                     const SizedBox(height: 16),
 
-                    // Current date
+                    // Aktuelles Datum
                     Row(
                       children: [
                         Icon(
@@ -572,14 +692,14 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
 
                     const SizedBox(height: 20),
 
-                    // Add mood selector (Optional)
+                    // Mood selector
                     Row(
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
-                        _buildMoodIcon(Icons.sentiment_dissatisfied, "😔"),
-                        _buildMoodIcon(Icons.sentiment_neutral, "😐"),
-                        _buildMoodIcon(Icons.sentiment_satisfied_alt, "😊", isSelected: true),
-                        _buildMoodIcon(Icons.sentiment_very_satisfied, "🥳"),
+                        buildMoodIcon("😔"),
+                        buildMoodIcon("😐"),
+                        buildMoodIcon("😊"),
+                        buildMoodIcon("🥳"),
                       ],
                     ),
 
@@ -605,7 +725,7 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
                                     title: titleCtrl.text.trim(),
                                     content: contentCtrl.text.trim(),
                                     date: DateTime.now(),
-                                    mood: 'none', // Keep for backward compatibility
+                                    mood: selectedMood,
                                   );
 
                                   await _saveNewEntry(newEntry);
@@ -630,31 +750,6 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
     );
   }
 
-  Widget _buildMoodIcon(IconData icon, String emoji, {bool isSelected = false}) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(horizontal: 12),
-      child: Column(
-        children: [
-          Container(
-            padding: const EdgeInsets.all(12),
-            decoration: BoxDecoration(
-              color: isSelected ? _primaryColor.withOpacity(0.2) : Colors.transparent,
-              shape: BoxShape.circle,
-              border: Border.all(
-                color: isSelected ? _primaryColor : Colors.white.withOpacity(0.3),
-                width: 2,
-              ),
-            ),
-            child: Text(
-              emoji,
-              style: const TextStyle(fontSize: 24),
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   // Edit Existing Entry => BottomSheet
   // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -662,6 +757,9 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
     final loc = S.of(context);
     final titleCtrl = TextEditingController(text: entry.title);
     final contentCtrl = TextEditingController(text: entry.content);
+
+    // lokale Kopie des aktuellen Moods
+    String selectedMood = entry.mood;
 
     showModalBottomSheet(
       context: context,
@@ -671,251 +769,282 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
       builder: (ctx) {
-        return Padding(
-          padding: MediaQuery.of(ctx).viewInsets,
-          child: Container(
-            padding: const EdgeInsets.all(20),
-            height: MediaQuery.of(ctx).size.height * 0.8,
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                // Header with close button
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        return StatefulBuilder(
+          builder: (context, setState) {
+            Widget buildMoodIcon(String emoji) {
+              final isSelected = (selectedMood == emoji);
+              return GestureDetector(
+                onTap: () {
+                  setState(() {
+                    selectedMood = emoji;
+                  });
+                },
+                child: Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12),
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isSelected ? _primaryColor.withOpacity(0.2) : Colors.transparent,
+                    shape: BoxShape.circle,
+                    border: Border.all(
+                      color: isSelected ? _primaryColor : Colors.white.withOpacity(0.3),
+                      width: 2,
+                    ),
+                  ),
+                  child: Text(
+                    emoji,
+                    style: const TextStyle(fontSize: 24),
+                  ),
+                ),
+              );
+            }
+
+            return Padding(
+              padding: MediaQuery.of(ctx).viewInsets,
+              child: Container(
+                padding: const EdgeInsets.all(20),
+                height: MediaQuery.of(ctx).size.height * 0.8,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      "Edit Journal Entry",
-                      style: TextStyle(
+                    // Header mit Close-Button
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        Text(
+                          "Edit Journal Entry",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          icon: const Icon(
+                            Icons.close,
+                            color: Colors.white70,
+                          ),
+                          onPressed: () => Navigator.pop(ctx),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Datum
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.event_note,
+                          size: 16,
+                          color: _primaryColor,
+                        ),
+                        const SizedBox(width: 8),
+                        Text(
+                          DateFormat('EEEE, MMMM d, y').format(entry.date),
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.8),
+                            fontSize: 14,
+                          ),
+                        ),
+                      ],
+                    ),
+
+                    const SizedBox(height: 24),
+
+                    // Title Field
+                    TextField(
+                      controller: titleCtrl,
+                      style: const TextStyle(
                         color: Colors.white,
-                        fontSize: 20,
-                        fontWeight: FontWeight.bold,
+                        fontSize: 18,
                       ),
-                    ),
-                    IconButton(
-                      icon: const Icon(
-                        Icons.close,
-                        color: Colors.white70,
-                      ),
-                      onPressed: () => Navigator.pop(ctx),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 16),
-
-                // Date display
-                Row(
-                  children: [
-                    Icon(
-                      Icons.event_note,
-                      size: 16,
-                      color: _primaryColor,
-                    ),
-                    const SizedBox(width: 8),
-                    Text(
-                      DateFormat('EEEE, MMMM d, y').format(entry.date),
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
-                        fontSize: 14,
-                      ),
-                    ),
-                  ],
-                ),
-
-                const SizedBox(height: 24),
-
-                // Title Field
-                TextField(
-                  controller: titleCtrl,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 18,
-                  ),
-                  decoration: InputDecoration(
-                    hintText: loc.journalTitleLabel,
-                    hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12),
-                      borderSide: BorderSide.none,
-                    ),
-                    filled: true,
-                    fillColor: Colors.white.withOpacity(0.1),
-                    contentPadding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 16,
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 16),
-
-                // Content Field
-                Expanded(
-                  child: TextField(
-                    controller: contentCtrl,
-                    style: const TextStyle(color: Colors.white),
-                    maxLines: null,
-                    expands: true,
-                    textAlignVertical: TextAlignVertical.top,
-                    decoration: InputDecoration(
-                      hintText: loc.journalContentLabel,
-                      hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(12),
-                        borderSide: BorderSide.none,
-                      ),
-                      filled: true,
-                      fillColor: Colors.white.withOpacity(0.1),
-                      contentPadding: const EdgeInsets.all(16),
-                    ),
-                  ),
-                ),
-
-                const SizedBox(height: 20),
-
-                // Mood selector (with current mood selected)
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    _buildMoodIcon(Icons.sentiment_dissatisfied, "😔"),
-                    _buildMoodIcon(Icons.sentiment_neutral, "😐"),
-                    _buildMoodIcon(Icons.sentiment_satisfied_alt, "😊", isSelected: true),
-                    _buildMoodIcon(Icons.sentiment_very_satisfied, "🥳"),
-                  ],
-                ),
-
-                const SizedBox(height: 20),
-
-                // Action buttons
-                Row(
-                  children: [
-                    // Delete button
-                    Expanded(
-                      flex: 1,
-                      child: OutlinedButton.icon(
-                        icon: const Icon(Icons.delete_outline),
-                        label: const Text("Delete"),
-                        style: OutlinedButton.styleFrom(
-                          foregroundColor: Colors.red.shade300,
-                          side: BorderSide(color: Colors.red.shade300),
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
-                          ),
+                      decoration: InputDecoration(
+                        hintText: loc.journalTitleLabel,
+                        hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12),
+                          borderSide: BorderSide.none,
                         ),
-                        onPressed: () async {
-                          final confirm = await showDialog<bool>(
-                            context: context,
-                            builder: (context) => AlertDialog(
-                              backgroundColor: _cardColor,
-                              title: const Text(
-                                "Delete this entry?",
-                                style: TextStyle(color: Colors.white),
+                        filled: true,
+                        fillColor: Colors.white.withOpacity(0.1),
+                        contentPadding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 16,
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 16),
+
+                    // Content Field
+                    Expanded(
+                      child: TextField(
+                        controller: contentCtrl,
+                        style: const TextStyle(color: Colors.white),
+                        maxLines: null,
+                        expands: true,
+                        textAlignVertical: TextAlignVertical.top,
+                        decoration: InputDecoration(
+                          hintText: loc.journalContentLabel,
+                          hintStyle: TextStyle(color: Colors.white.withOpacity(0.5)),
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          filled: true,
+                          fillColor: Colors.white.withOpacity(0.1),
+                          contentPadding: const EdgeInsets.all(16),
+                        ),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Mood selector
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        buildMoodIcon("😔"),
+                        buildMoodIcon("😐"),
+                        buildMoodIcon("😊"),
+                        buildMoodIcon("🥳"),
+                      ],
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // Action buttons
+                    Row(
+                      children: [
+                        // Delete button
+                        Expanded(
+                          flex: 1,
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.delete_outline),
+                            label: const Text("Delete"),
+                            style: OutlinedButton.styleFrom(
+                              foregroundColor: Colors.red.shade300,
+                              side: BorderSide(color: Colors.red.shade300),
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                              content: const Text(
-                                "This action cannot be undone.",
-                                style: TextStyle(color: Colors.white70),
-                              ),
-                              actions: [
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(false),
-                                  child: Text(
-                                    "Cancel",
-                                    style: TextStyle(color: _accentColor),
-                                  ),
-                                ),
-                                TextButton(
-                                  onPressed: () => Navigator.of(context).pop(true),
-                                  child: const Text(
-                                    "Delete",
-                                    style: TextStyle(color: Colors.red),
-                                  ),
-                                ),
-                              ],
                             ),
-                          );
+                            onPressed: () async {
+                              final confirm = await showDialog<bool>(
+                                context: context,
+                                builder: (context) => AlertDialog(
+                                  backgroundColor: _cardColor,
+                                  title: const Text(
+                                    "Delete this entry?",
+                                    style: TextStyle(color: Colors.white),
+                                  ),
+                                  content: const Text(
+                                    "This action cannot be undone.",
+                                    style: TextStyle(color: Colors.white70),
+                                  ),
+                                  actions: [
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(false),
+                                      child: Text(
+                                        "Cancel",
+                                        style: TextStyle(color: _accentColor),
+                                      ),
+                                    ),
+                                    TextButton(
+                                      onPressed: () => Navigator.of(context).pop(true),
+                                      child: const Text(
+                                        "Delete",
+                                        style: TextStyle(color: Colors.red),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
 
-                          if (confirm == true) {
-                            await _deleteEntry(index);
-                            Navigator.pop(ctx);
-                          }
-                        },
-                      ),
-                    ),
-
-                    const SizedBox(width: 12),
-
-                    // Save button
-                    Expanded(
-                      flex: 2,
-                      child: ElevatedButton.icon(
-                        icon: const Icon(Icons.check),
-                        label: Text(loc.save),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: _primaryColor,
-                          padding: const EdgeInsets.symmetric(vertical: 16),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(12),
+                              if (confirm == true) {
+                                await _deleteEntry(index);
+                                Navigator.pop(ctx);
+                              }
+                            },
                           ),
                         ),
-                        onPressed: () async {
-                          final updated = JournalEntry(
-                            title: titleCtrl.text.trim(),
-                            content: contentCtrl.text.trim(),
-                            date: entry.date,
-                            mood: 'none',
-                          );
 
-                          if (updated.title.isEmpty && updated.content.isEmpty) {
-                            // Ask user if they want to delete instead
-                            final shouldDelete = await showDialog<bool>(
-                              context: context,
-                              builder: (context) => AlertDialog(
-                                backgroundColor: _cardColor,
-                                title: const Text(
-                                  "Empty Entry",
-                                  style: TextStyle(color: Colors.white),
-                                ),
-                                content: const Text(
-                                  "Do you want to delete this empty entry?",
-                                  style: TextStyle(color: Colors.white70),
-                                ),
-                                actions: [
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop(false),
-                                    child: Text(
-                                      "No",
-                                      style: TextStyle(color: _accentColor),
-                                    ),
-                                  ),
-                                  TextButton(
-                                    onPressed: () => Navigator.of(context).pop(true),
-                                    child: const Text(
-                                      "Delete",
-                                      style: TextStyle(color: Colors.red),
-                                    ),
-                                  ),
-                                ],
+                        const SizedBox(width: 12),
+
+                        // Save button
+                        Expanded(
+                          flex: 2,
+                          child: ElevatedButton.icon(
+                            icon: const Icon(Icons.check),
+                            label: Text(loc.save),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: _primaryColor,
+                              padding: const EdgeInsets.symmetric(vertical: 16),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
                               ),
-                            );
+                            ),
+                            onPressed: () async {
+                              final updated = JournalEntry(
+                                title: titleCtrl.text.trim(),
+                                content: contentCtrl.text.trim(),
+                                date: entry.date,
+                                mood: selectedMood,
+                              );
 
-                            if (shouldDelete == true) {
-                              await _deleteEntry(index);
-                            }
-                            Navigator.pop(ctx);
-                            return;
-                          }
+                              // Wenn alles leer => Nachfragen, ob löschen
+                              if (updated.title.isEmpty && updated.content.isEmpty) {
+                                final shouldDelete = await showDialog<bool>(
+                                  context: context,
+                                  builder: (context) => AlertDialog(
+                                    backgroundColor: _cardColor,
+                                    title: const Text(
+                                      "Empty Entry",
+                                      style: TextStyle(color: Colors.white),
+                                    ),
+                                    content: const Text(
+                                      "Do you want to delete this empty entry?",
+                                      style: TextStyle(color: Colors.white70),
+                                    ),
+                                    actions: [
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(false),
+                                        child: Text(
+                                          "No",
+                                          style: TextStyle(color: _accentColor),
+                                        ),
+                                      ),
+                                      TextButton(
+                                        onPressed: () => Navigator.of(context).pop(true),
+                                        child: const Text(
+                                          "Delete",
+                                          style: TextStyle(color: Colors.red),
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
 
-                          await _updateEntry(updated, index);
-                          Navigator.pop(ctx);
-                        },
-                      ),
+                                if (shouldDelete == true) {
+                                  await _deleteEntry(index);
+                                }
+                                Navigator.pop(ctx);
+                                return;
+                              }
+
+                              await _updateEntry(updated, index);
+                              Navigator.pop(ctx);
+                            },
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
-              ],
-            ),
-          ),
+              ),
+            );
+          },
         );
       },
     );
@@ -996,7 +1125,6 @@ class _JournalPageState extends State<JournalPage> with SingleTickerProviderStat
 
   /// Award daily XP for journaling
   Future<void> _awardDailyJournalXP() async {
-    // Beispiel: Falls du einen GamificationService hast
     await GamificationService().awardDailyJournalXP();
 
     ScaffoldMessenger.of(context).showSnackBar(

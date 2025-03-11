@@ -236,13 +236,13 @@ abstract class AppLocalizations {
   /// No description provided for @todaysTasks.
   ///
   /// In en, this message translates to:
-  /// **'TODAY\'S TASKS'**
+  /// **'Today\'s Tasks'**
   String get todaysTasks;
 
   /// No description provided for @noTasksToday.
   ///
   /// In en, this message translates to:
-  /// **'No tasks for today'**
+  /// **'No tasks for today. Stay disciplined and productive!'**
   String get noTasksToday;
 
   /// No description provided for @tasks.
@@ -260,7 +260,7 @@ abstract class AppLocalizations {
   /// No description provided for @weeklyProgress.
   ///
   /// In en, this message translates to:
-  /// **'WEEKLY PROGRESS'**
+  /// **'Weekly Progress'**
   String get weeklyProgress;
 
   /// No description provided for @premiumRequired.
@@ -320,55 +320,55 @@ abstract class AppLocalizations {
   /// No description provided for @flowStatsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Flow Stats'**
+  /// **'Flow-Statistiken'**
   String get flowStatsTitle;
 
   /// No description provided for @filterWeek.
   ///
   /// In en, this message translates to:
-  /// **'Week'**
+  /// **'Woche'**
   String get filterWeek;
 
   /// No description provided for @filterMonth.
   ///
   /// In en, this message translates to:
-  /// **'Month'**
+  /// **'Monat'**
   String get filterMonth;
 
   /// No description provided for @filterYear.
   ///
   /// In en, this message translates to:
-  /// **'Year'**
+  /// **'Jahr'**
   String get filterYear;
 
   /// No description provided for @noDataMessage.
   ///
   /// In en, this message translates to:
-  /// **'No data for this period'**
+  /// **'Keine Daten verfügbar.'**
   String get noDataMessage;
 
   /// No description provided for @statFlows.
   ///
   /// In en, this message translates to:
-  /// **'Flows'**
+  /// **'Sitzungen'**
   String get statFlows;
 
   /// No description provided for @statTotalMinutes.
   ///
   /// In en, this message translates to:
-  /// **'Total Minutes'**
+  /// **'Gesamtminuten'**
   String get statTotalMinutes;
 
   /// No description provided for @statAverageFlow.
   ///
   /// In en, this message translates to:
-  /// **'Avg Time per Flow (Min)'**
+  /// **'Durchschnittliche Dauer'**
   String get statAverageFlow;
 
   /// No description provided for @statAverageWeeklyFlow.
   ///
   /// In en, this message translates to:
-  /// **'Avg Time per Week (Min)'**
+  /// **'Durchschn. Wochenfluss'**
   String get statAverageWeeklyFlow;
 
   /// No description provided for @flowTimerTitle.
@@ -2096,7 +2096,7 @@ abstract class AppLocalizations {
   /// No description provided for @gotIt.
   ///
   /// In en, this message translates to:
-  /// **'Got it!'**
+  /// **'Verstanden'**
   String get gotIt;
 
   /// No description provided for @allHabits.
@@ -2240,44 +2240,416 @@ abstract class AppLocalizations {
   /// No description provided for @mondayShort.
   ///
   /// In en, this message translates to:
-  /// **'M'**
+  /// **'Mo'**
   String get mondayShort;
 
   /// No description provided for @tuesdayShort.
   ///
   /// In en, this message translates to:
-  /// **'T'**
+  /// **'Tu'**
   String get tuesdayShort;
 
   /// No description provided for @wednesdayShort.
   ///
   /// In en, this message translates to:
-  /// **'W'**
+  /// **'We'**
   String get wednesdayShort;
 
   /// No description provided for @thursdayShort.
   ///
   /// In en, this message translates to:
-  /// **'T'**
+  /// **'Th'**
   String get thursdayShort;
 
   /// No description provided for @fridayShort.
   ///
   /// In en, this message translates to:
-  /// **'F'**
+  /// **'Fr'**
   String get fridayShort;
 
   /// No description provided for @saturdayShort.
   ///
   /// In en, this message translates to:
-  /// **'S'**
+  /// **'Sa'**
   String get saturdayShort;
 
   /// No description provided for @sundayShort.
   ///
   /// In en, this message translates to:
-  /// **'S'**
+  /// **'Su'**
   String get sundayShort;
+
+  /// No description provided for @highPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get highPriority;
+
+  /// No description provided for @mediumPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get mediumPriority;
+
+  /// No description provided for @lowPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get lowPriority;
+
+  /// No description provided for @noPriority.
+  ///
+  /// In en, this message translates to:
+  /// **'No Priority'**
+  String get noPriority;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAll;
+
+  /// No description provided for @addNewTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Add New Task'**
+  String get addNewTask;
+
+  /// No description provided for @moreTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'more tasks...'**
+  String get moreTasks;
+
+  /// No description provided for @premiumFeature.
+  ///
+  /// In en, this message translates to:
+  /// **'Premium Feature'**
+  String get premiumFeature;
+
+  /// No description provided for @upgradeToUnlock.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade to unlock this feature and boost your growth.'**
+  String get upgradeToUnlock;
+
+  /// No description provided for @notNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Not now'**
+  String get notNow;
+
+  /// No description provided for @upgrade.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade'**
+  String get upgrade;
+
+  /// No description provided for @motivationalInsults.
+  ///
+  /// In en, this message translates to:
+  /// **'Why are you slacking, soldier? Get back on track!||No excuses, get your work done!||You want to be great? Then act like it!||Losers procrastinate. Winners execute. Which one are you?'**
+  String get motivationalInsults;
+
+  /// No description provided for @iWillDoIt.
+  ///
+  /// In en, this message translates to:
+  /// **'I\'ll do it!'**
+  String get iWillDoIt;
+
+  /// No description provided for @tapToRefresh.
+  ///
+  /// In en, this message translates to:
+  /// **'Tap to refresh'**
+  String get tapToRefresh;
+
+  /// No description provided for @removeAds.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove Ads'**
+  String get removeAds;
+
+  /// No description provided for @goPremium.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Premium'**
+  String get goPremium;
+
+  /// No description provided for @dailyProgress.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Progress'**
+  String get dailyProgress;
+
+  /// No description provided for @viewStats.
+  ///
+  /// In en, this message translates to:
+  /// **'View Stats'**
+  String get viewStats;
+
+  /// No description provided for @understood.
+  ///
+  /// In en, this message translates to:
+  /// **'Got it'**
+  String get understood;
+
+  /// No description provided for @typeMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Type a message ...'**
+  String get typeMessage;
+
+  /// No description provided for @you.
+  ///
+  /// In en, this message translates to:
+  /// **'You'**
+  String get you;
+
+  /// No description provided for @userStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Your Statistics'**
+  String get userStats;
+
+  /// No description provided for @detailedUserStats.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed statistics about your productivity, streaks, and progress will be displayed here.'**
+  String get detailedUserStats;
+
+  /// No description provided for @pauseTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Pause'**
+  String get pauseTimer;
+
+  /// No description provided for @startTimer.
+  ///
+  /// In en, this message translates to:
+  /// **'Start'**
+  String get startTimer;
+
+  /// No description provided for @allTasksCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Great job! You\'ve completed all your tasks!'**
+  String get allTasksCompleted;
+
+  /// No description provided for @aboutStatistics.
+  ///
+  /// In en, this message translates to:
+  /// **'About Statistics'**
+  String get aboutStatistics;
+
+  /// No description provided for @aboutStatisticsContent.
+  ///
+  /// In en, this message translates to:
+  /// **'This page shows your task completion statistics. The calendar view displays daily completion rates, while the analytics tab provides weekly progress and monthly summaries.'**
+  String get aboutStatisticsContent;
+
+  /// No description provided for @calendarTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Calendar'**
+  String get calendarTab;
+
+  /// No description provided for @analyticsTab.
+  ///
+  /// In en, this message translates to:
+  /// **'Analytics'**
+  String get analyticsTab;
+
+  /// No description provided for @totalTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Tasks'**
+  String get totalTasks;
+
+  /// No description provided for @completed.
+  ///
+  /// In en, this message translates to:
+  /// **'Completed'**
+  String get completed;
+
+  /// No description provided for @pending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get pending;
+
+  /// No description provided for @taskCompletionTrends.
+  ///
+  /// In en, this message translates to:
+  /// **'Task Completion Trends'**
+  String get taskCompletionTrends;
+
+  /// No description provided for @monthlyOverview.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly Overview'**
+  String get monthlyOverview;
+
+  /// No description provided for @productivityScore.
+  ///
+  /// In en, this message translates to:
+  /// **'Productivity Score'**
+  String get productivityScore;
+
+  /// No description provided for @newLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'NEW'**
+  String get newLabel;
+
+  /// No description provided for @completedTasksPercentage.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve completed {percentage}% of your tasks this month!'**
+  String completedTasksPercentage(Object percentage);
+
+  /// No description provided for @noTasksScheduled.
+  ///
+  /// In en, this message translates to:
+  /// **'No tasks scheduled for this month yet.'**
+  String get noTasksScheduled;
+
+  /// No description provided for @completeMoreTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Complete {pending} more tasks to reach 100%'**
+  String completeMoreTasks(Object pending);
+
+  /// No description provided for @startAddingTasks.
+  ///
+  /// In en, this message translates to:
+  /// **'Start adding tasks to track your productivity.'**
+  String get startAddingTasks;
+
+  /// No description provided for @taskLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, one{task} other{tasks}}'**
+  String taskLabel(num count);
+
+  /// No description provided for @totalTime.
+  ///
+  /// In en, this message translates to:
+  /// **'Gesamtzeit'**
+  String get totalTime;
+
+  /// No description provided for @avgDuration.
+  ///
+  /// In en, this message translates to:
+  /// **'Durchschn. Dauer'**
+  String get avgDuration;
+
+  /// No description provided for @flowConsistency.
+  ///
+  /// In en, this message translates to:
+  /// **'Flow-Konsistenz'**
+  String get flowConsistency;
+
+  /// No description provided for @dailyFlowMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Tägliche Flow-Minuten'**
+  String get dailyFlowMinutes;
+
+  /// No description provided for @weeklyFlowMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Wöchentliche Flow-Minuten'**
+  String get weeklyFlowMinutes;
+
+  /// No description provided for @monthlyFlowMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Monatliche Flow-Minuten'**
+  String get monthlyFlowMinutes;
+
+  /// No description provided for @flowMinutes.
+  ///
+  /// In en, this message translates to:
+  /// **'Flow-Minuten'**
+  String get flowMinutes;
+
+  /// No description provided for @improving.
+  ///
+  /// In en, this message translates to:
+  /// **'Verbessernd'**
+  String get improving;
+
+  /// No description provided for @declining.
+  ///
+  /// In en, this message translates to:
+  /// **'Verschlechternd'**
+  String get declining;
+
+  /// No description provided for @stable.
+  ///
+  /// In en, this message translates to:
+  /// **'Stabil'**
+  String get stable;
+
+  /// No description provided for @infoTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Flow-Statistik-Hilfe'**
+  String get infoTitle;
+
+  /// No description provided for @infoContent.
+  ///
+  /// In en, this message translates to:
+  /// **'Dieser Bildschirm zeigt Analysen deiner Flow-Sitzungen. Hier kannst du deinen Fortschritt verfolgen und deine Leistung über die Zeit sehen.'**
+  String get infoContent;
+
+  /// No description provided for @helpTimeFiltersTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Zeitfilter'**
+  String get helpTimeFiltersTitle;
+
+  /// No description provided for @helpTimeFiltersDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Wechsle zwischen Woche, Monat und Jahr, um verschiedene Zeiträume zu sehen.'**
+  String get helpTimeFiltersDescription;
+
+  /// No description provided for @helpBarChartTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Balkendiagramm'**
+  String get helpBarChartTitle;
+
+  /// No description provided for @helpBarChartDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Jeder Balken repräsentiert die Flow-Minuten für einen Tag, eine Woche oder einen Monat, basierend auf dem ausgewählten Filter.'**
+  String get helpBarChartDescription;
+
+  /// No description provided for @helpWeeklyGoalTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Wöchentliches Ziel'**
+  String get helpWeeklyGoalTitle;
+
+  /// No description provided for @helpWeeklyGoalDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Verfolge deinen Fortschritt in Richtung deines wöchentlichen Flow-Ziels von 300 Minuten.'**
+  String get helpWeeklyGoalDescription;
+
+  /// No description provided for @helpTrendIndicatorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Trendindikator'**
+  String get helpTrendIndicatorTitle;
+
+  /// No description provided for @helpTrendIndicatorDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Zeigt, ob dein Flow zunimmt, abnimmt oder stabil bleibt im Vergleich zum vorherigen Zeitraum.'**
+  String get helpTrendIndicatorDescription;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

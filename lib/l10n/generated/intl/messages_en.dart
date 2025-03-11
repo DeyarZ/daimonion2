@@ -22,47 +22,59 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m0(date) => "Choose day: ${date}";
 
-  static String m1(count) =>
+  static String m1(pending) => "Complete ${pending} more tasks to reach 100%";
+
+  static String m2(percentage) =>
+      "You\'ve completed ${percentage}% of your tasks this month!";
+
+  static String m3(count) =>
       "You missed ${count} fundamentals. That won\'t lead you anywhere!";
 
-  static String m2(number) => "Day ${number}";
+  static String m4(number) => "Day ${number}";
 
-  static String m3(habitName) =>
+  static String m5(habitName) =>
       "Do you really want to delete the habit \"${habitName}\"?";
 
-  static String m4(entryTitle) =>
+  static String m6(entryTitle) =>
       "Do you really want to delete the entry \"${entryTitle}\"?";
 
-  static String m5(date) => "Due on ${date}";
+  static String m7(date) => "Due on ${date}";
 
-  static String m6(error) => "An error occurred: ${error}";
+  static String m8(error) => "An error occurred: ${error}";
 
-  static String m7(currentFlow, totalFlows) =>
+  static String m9(currentFlow, totalFlows) =>
       "Flow ${currentFlow} / ${totalFlows}";
 
-  static String m8(usedPrompts) => "Free prompts used: ${usedPrompts} / 5";
+  static String m10(usedPrompts) => "Free prompts used: ${usedPrompts} / 5";
 
-  static String m9(level) => "Level ${level}";
+  static String m11(level) => "Level ${level}";
 
-  static String m10(date) => "No tasks for ${date}";
+  static String m12(date) => "No tasks for ${date}";
 
-  static String m11(percent, nextLevel) => "${percent}% to Level ${nextLevel}";
+  static String m13(percent, nextLevel) => "${percent}% to Level ${nextLevel}";
 
-  static String m12(error) => "Purchase error: ${error}";
+  static String m14(error) => "Purchase error: ${error}";
 
-  static String m13(error) => "Error restoring purchases: ${error}";
+  static String m15(error) => "Error restoring purchases: ${error}";
 
-  static String m14(status) => "Status: ${status}";
+  static String m16(status) => "Status: ${status}";
 
-  static String m15(streak) => "${streak} Days Streak";
+  static String m17(streak) => "${streak} Days Streak";
 
-  static String m16(bonusPercent) => "XP Bonus: ${bonusPercent}%";
+  static String m18(count) =>
+      "${Intl.plural(count, one: 'task', other: 'tasks')}";
 
-  static String m17(xpProgress, xpToNextLevel) =>
+  static String m19(bonusPercent) => "XP Bonus: ${bonusPercent}%";
+
+  static String m20(xpProgress, xpToNextLevel) =>
       "${xpProgress} / ${xpToNextLevel} XP";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+        "aboutStatistics":
+            MessageLookupByLibrary.simpleMessage("About Statistics"),
+        "aboutStatisticsContent": MessageLookupByLibrary.simpleMessage(
+            "This page shows your task completion statistics. The calendar view displays daily completion rates, while the analytics tab provides weekly progress and monthly summaries."),
         "access_habit_tracker":
             MessageLookupByLibrary.simpleMessage("Access to Habit Tracker"),
         "access_journal":
@@ -73,9 +85,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "addExerciseSnackbar":
             MessageLookupByLibrary.simpleMessage("Enter an exercise!"),
         "addNewHabit": MessageLookupByLibrary.simpleMessage("Add a New Habit"),
+        "addNewTask": MessageLookupByLibrary.simpleMessage("Add New Task"),
         "addTask": MessageLookupByLibrary.simpleMessage("Add"),
         "addTodo": MessageLookupByLibrary.simpleMessage("Add"),
         "allHabits": MessageLookupByLibrary.simpleMessage("All Habits"),
+        "allTasksCompleted": MessageLookupByLibrary.simpleMessage(
+            "Great job! You\'ve completed all your tasks!"),
+        "analyticsTab": MessageLookupByLibrary.simpleMessage("Analytics"),
         "appBarTitle": MessageLookupByLibrary.simpleMessage("Daimonion Chat"),
         "appTitle": MessageLookupByLibrary.simpleMessage("Training Plan"),
         "atLeastOneWorkoutDay": MessageLookupByLibrary.simpleMessage(
@@ -85,11 +101,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "autoStartNextFlow":
             MessageLookupByLibrary.simpleMessage("Auto-Start Next Flow"),
         "auto_renewal": MessageLookupByLibrary.simpleMessage("Auto Renewal"),
+        "avgDuration": MessageLookupByLibrary.simpleMessage("Durchschn. Dauer"),
         "back": MessageLookupByLibrary.simpleMessage("Back"),
         "back_button": MessageLookupByLibrary.simpleMessage("Back"),
         "badge": MessageLookupByLibrary.simpleMessage("Badge"),
         "buyPremium": MessageLookupByLibrary.simpleMessage("Buy Premium"),
         "byCategory": MessageLookupByLibrary.simpleMessage("By Category"),
+        "calendarTab": MessageLookupByLibrary.simpleMessage("Calendar"),
         "calendarViewTitle":
             MessageLookupByLibrary.simpleMessage("Calendar Overview"),
         "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
@@ -124,23 +142,29 @@ class MessageLookup extends MessageLookupByLibrary {
         "coming_soon": MessageLookupByLibrary.simpleMessage("Coming Soon"),
         "coming_soon_description": MessageLookupByLibrary.simpleMessage(
             "This option will be available soon!"),
+        "completeMoreTasks": m1,
         "complete_habit":
             MessageLookupByLibrary.simpleMessage("Complete a Habit"),
         "complete_todo":
             MessageLookupByLibrary.simpleMessage("Complete a To-Do"),
+        "completed": MessageLookupByLibrary.simpleMessage("Completed"),
+        "completedTasksPercentage": m2,
         "confirmDelete": MessageLookupByLibrary.simpleMessage("Yes, delete"),
         "confirmDeleteHabit":
             MessageLookupByLibrary.simpleMessage("Yes, delete"),
         "continueButton": MessageLookupByLibrary.simpleMessage("Continue"),
         "couldNotSendFeedback":
             MessageLookupByLibrary.simpleMessage("Could not send feedback."),
+        "dailyFlowMinutes":
+            MessageLookupByLibrary.simpleMessage("Tägliche Flow-Minuten"),
         "dailyFundamentalsTitle":
             MessageLookupByLibrary.simpleMessage("FUNDAMENTALS"),
         "dailyInsultAllMissed": MessageLookupByLibrary.simpleMessage(
             "You ignored ALL fundamentals!"),
-        "dailyInsultSomeMissed": m1,
+        "dailyInsultSomeMissed": m3,
         "dailyInsultTitle":
             MessageLookupByLibrary.simpleMessage("You messed up!"),
+        "dailyProgress": MessageLookupByLibrary.simpleMessage("Daily Progress"),
         "dailyReminderActivated": MessageLookupByLibrary.simpleMessage(
             "Daily reminder at 20:00 activated!"),
         "dailyReminderDeactivated":
@@ -152,18 +176,21 @@ class MessageLookup extends MessageLookupByLibrary {
         "daimonion_warlord":
             MessageLookupByLibrary.simpleMessage("Daimonion Warlord"),
         "dashboardTitle": MessageLookupByLibrary.simpleMessage("Dashboard"),
-        "day": m2,
+        "day": m4,
+        "declining": MessageLookupByLibrary.simpleMessage("Verschlechternd"),
         "delete": MessageLookupByLibrary.simpleMessage("Delete"),
         "deleteHabitConfirmation": MessageLookupByLibrary.simpleMessage(
             "Are you sure you want to delete"),
-        "deleteHabitMessage": m3,
+        "deleteHabitMessage": m5,
         "deleteHabitTitle":
             MessageLookupByLibrary.simpleMessage("Delete Habit"),
-        "deleteJournalEntryMessage": m4,
+        "deleteJournalEntryMessage": m6,
         "deleteJournalEntryTitle":
             MessageLookupByLibrary.simpleMessage("Delete?"),
         "deleteTask": MessageLookupByLibrary.simpleMessage("Delete"),
-        "dueOn": m5,
+        "detailedUserStats": MessageLookupByLibrary.simpleMessage(
+            "Detailed statistics about your productivity, streaks, and progress will be displayed here."),
+        "dueOn": m7,
         "edit": MessageLookupByLibrary.simpleMessage("Edit"),
         "editDayTitle": MessageLookupByLibrary.simpleMessage("Edit Day"),
         "editExerciseTitle":
@@ -187,7 +214,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Please enter a habit name."),
         "errorContent": MessageLookupByLibrary.simpleMessage(
             "An error occurred. Please try again later."),
-        "errorOccurred": m6,
+        "errorOccurred": m8,
         "errorTitle": MessageLookupByLibrary.simpleMessage("Error"),
         "error_title": MessageLookupByLibrary.simpleMessage("Error"),
         "exerciseDetails":
@@ -198,15 +225,19 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("What\'s included:"),
         "feedbackButtonLabel":
             MessageLookupByLibrary.simpleMessage("Send Feedback"),
-        "filterMonth": MessageLookupByLibrary.simpleMessage("Month"),
-        "filterWeek": MessageLookupByLibrary.simpleMessage("Week"),
-        "filterYear": MessageLookupByLibrary.simpleMessage("Year"),
+        "filterMonth": MessageLookupByLibrary.simpleMessage("Monat"),
+        "filterWeek": MessageLookupByLibrary.simpleMessage("Woche"),
+        "filterYear": MessageLookupByLibrary.simpleMessage("Jahr"),
         "firstTimeButtonText":
             MessageLookupByLibrary.simpleMessage("I\'M READY"),
         "firstTimeHeadline": MessageLookupByLibrary.simpleMessage(
             "DO YOU WANT TO BE SOMEONE WHO HAS CONTROL,\nOR DO YOU WANT TO REMAIN A SLAVE TO YOUR IMPULSES?"),
-        "flowCounter": m7,
-        "flowStatsTitle": MessageLookupByLibrary.simpleMessage("Flow Stats"),
+        "flowConsistency":
+            MessageLookupByLibrary.simpleMessage("Flow-Konsistenz"),
+        "flowCounter": m9,
+        "flowMinutes": MessageLookupByLibrary.simpleMessage("Flow-Minuten"),
+        "flowStatsTitle":
+            MessageLookupByLibrary.simpleMessage("Flow-Statistiken"),
         "flowTimer": MessageLookupByLibrary.simpleMessage("Flow Timer"),
         "flowTimerBreakLabel": MessageLookupByLibrary.simpleMessage("Break"),
         "flowTimerDescription": MessageLookupByLibrary.simpleMessage(
@@ -224,9 +255,9 @@ class MessageLookup extends MessageLookupByLibrary {
         "flowTimerTitle": MessageLookupByLibrary.simpleMessage("Flow Timer"),
         "flowTimerToolTitle":
             MessageLookupByLibrary.simpleMessage("Flow Timer"),
-        "freePromptsCounter": m8,
+        "freePromptsCounter": m10,
         "friday": MessageLookupByLibrary.simpleMessage("Friday"),
-        "fridayShort": MessageLookupByLibrary.simpleMessage("F"),
+        "fridayShort": MessageLookupByLibrary.simpleMessage("Fr"),
         "fullCheckGym": MessageLookupByLibrary.simpleMessage(
             "Did you do something for your body?"),
         "fullCheckHealthyEating":
@@ -241,6 +272,7 @@ class MessageLookup extends MessageLookupByLibrary {
             "Did you stay away from porn?"),
         "general": MessageLookupByLibrary.simpleMessage("General"),
         "getPremiumButton": MessageLookupByLibrary.simpleMessage("Get Premium"),
+        "goPremium": MessageLookupByLibrary.simpleMessage("Go Premium"),
         "goalBetterRelationships":
             MessageLookupByLibrary.simpleMessage("Build better relationships"),
         "goalCareer":
@@ -252,7 +284,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Be more productive"),
         "goalSaveMoney":
             MessageLookupByLibrary.simpleMessage("Save more money"),
-        "gotIt": MessageLookupByLibrary.simpleMessage("Got it!"),
+        "gotIt": MessageLookupByLibrary.simpleMessage("Verstanden"),
         "habitDeleted": MessageLookupByLibrary.simpleMessage("Habit deleted"),
         "habitHeader": MessageLookupByLibrary.simpleMessage("Habit"),
         "habitNameLabel": MessageLookupByLibrary.simpleMessage("Habit Name"),
@@ -279,14 +311,37 @@ class MessageLookup extends MessageLookupByLibrary {
             "How tough do you want your Daimonion to be?"),
         "hardnessTitle": MessageLookupByLibrary.simpleMessage("Hardness Level"),
         "health": MessageLookupByLibrary.simpleMessage("Health"),
+        "helpBarChartDescription": MessageLookupByLibrary.simpleMessage(
+            "Jeder Balken repräsentiert die Flow-Minuten für einen Tag, eine Woche oder einen Monat, basierend auf dem ausgewählten Filter."),
+        "helpBarChartTitle":
+            MessageLookupByLibrary.simpleMessage("Balkendiagramm"),
         "helpDialogTitle":
             MessageLookupByLibrary.simpleMessage("How to Use These Tools"),
+        "helpTimeFiltersDescription": MessageLookupByLibrary.simpleMessage(
+            "Wechsle zwischen Woche, Monat und Jahr, um verschiedene Zeiträume zu sehen."),
+        "helpTimeFiltersTitle":
+            MessageLookupByLibrary.simpleMessage("Zeitfilter"),
+        "helpTrendIndicatorDescription": MessageLookupByLibrary.simpleMessage(
+            "Zeigt, ob dein Flow zunimmt, abnimmt oder stabil bleibt im Vergleich zum vorherigen Zeitraum."),
+        "helpTrendIndicatorTitle":
+            MessageLookupByLibrary.simpleMessage("Trendindikator"),
+        "helpWeeklyGoalDescription": MessageLookupByLibrary.simpleMessage(
+            "Verfolge deinen Fortschritt in Richtung deines wöchentlichen Flow-Ziels von 300 Minuten."),
+        "helpWeeklyGoalTitle":
+            MessageLookupByLibrary.simpleMessage("Wöchentliches Ziel"),
         "hideDone": MessageLookupByLibrary.simpleMessage("Hide done"),
+        "highPriority": MessageLookupByLibrary.simpleMessage("High"),
         "hintText": MessageLookupByLibrary.simpleMessage(
             "Ask Daimonion whatever you want..."),
         "how_to_earn_xp": MessageLookupByLibrary.simpleMessage(
             "How to earn XP and level up!"),
+        "iWillDoIt": MessageLookupByLibrary.simpleMessage("I\'ll do it!"),
         "immortal": MessageLookupByLibrary.simpleMessage("Immortal"),
+        "improving": MessageLookupByLibrary.simpleMessage("Verbessernd"),
+        "infoContent": MessageLookupByLibrary.simpleMessage(
+            "Dieser Bildschirm zeigt Analysen deiner Flow-Sitzungen. Hier kannst du deinen Fortschritt verfolgen und deine Leistung über die Zeit sehen."),
+        "infoTitle":
+            MessageLookupByLibrary.simpleMessage("Flow-Statistik-Hilfe"),
         "journalContentLabel": MessageLookupByLibrary.simpleMessage("Content"),
         "journalDescription": MessageLookupByLibrary.simpleMessage(
             "Track your thoughts and progress."),
@@ -306,29 +361,38 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Legal & App Info"),
         "legend": MessageLookupByLibrary.simpleMessage("Legend"),
         "level": MessageLookupByLibrary.simpleMessage("Level"),
-        "level_text": m9,
+        "level_text": m11,
         "levels_and_rankings":
             MessageLookupByLibrary.simpleMessage("Levels and Rankings"),
         "levels_and_ranks":
             MessageLookupByLibrary.simpleMessage("Levels & Ranks"),
         "lieutenant": MessageLookupByLibrary.simpleMessage("Lieutenant"),
         "loadOffers": MessageLookupByLibrary.simpleMessage("Load Offers"),
+        "lowPriority": MessageLookupByLibrary.simpleMessage("Low"),
         "major": MessageLookupByLibrary.simpleMessage("Major"),
         "max_per_day": MessageLookupByLibrary.simpleMessage("Max/Day"),
         "maybeLater": MessageLookupByLibrary.simpleMessage("Maybe later"),
+        "mediumPriority": MessageLookupByLibrary.simpleMessage("Medium"),
         "monday": MessageLookupByLibrary.simpleMessage("Monday"),
-        "mondayShort": MessageLookupByLibrary.simpleMessage("M"),
+        "mondayShort": MessageLookupByLibrary.simpleMessage("Mo"),
         "monthly": MessageLookupByLibrary.simpleMessage("Monthly"),
+        "monthlyFlowMinutes":
+            MessageLookupByLibrary.simpleMessage("Monatliche Flow-Minuten"),
+        "monthlyOverview":
+            MessageLookupByLibrary.simpleMessage("Monthly Overview"),
         "monthly_description":
             MessageLookupByLibrary.simpleMessage("Save over 30%"),
         "monthly_label": MessageLookupByLibrary.simpleMessage("Monthly"),
         "monthly_price": MessageLookupByLibrary.simpleMessage("\$3.99/month"),
+        "moreTasks": MessageLookupByLibrary.simpleMessage("more tasks..."),
         "more_to_come": MessageLookupByLibrary.simpleMessage("More to come!"),
         "most_popular_label": MessageLookupByLibrary.simpleMessage("Popular"),
         "motivationQuotes": MessageLookupByLibrary.simpleMessage(
             "You’re not here to be average!||No excuses – keep moving!||If you quit, you never meant it anyway.||Every day is a new chance – seize it!||Your future self will thank you for today’s grind.||Discipline beats talent – every day.||What you do today decides tomorrow.||Dream big, work harder.||You’re stronger than you think.||No growth without effort.||The toughest battles come before the greatest victories.||You must become the person you want to be – step by step.||No matter how slow you go, you’re beating everyone sitting on the couch.||Mistakes prove that you’re trying.||You don’t grow in your comfort zone – dare to step out.||Hard work isn’t always rewarded, but it builds character.||It’s the small daily victories that form great successes.||You have 24 hours like everyone else – use them with intention.||Your goals don’t care about your excuses.||If the path is easy, you’re on the wrong track.||Stop talking and start doing.||Every success begins with the courage to try.||Strength grows where comfort ends.||Your only limit is the one you set for yourself.||Your potential is waiting for you to act.||Every no brings you closer to a yes.||Focus on what you can control.||Yesterday is gone. Today is your day.||The best decisions are often the hardest.||A small progress is still progress.||The hardest decision of your life might be the one that changes everything.||Every great journey begins with a single step.||Those who underestimate you give you the greatest gift: the drive to prove them wrong.||Success is not a destination, but a journey – keep at it.||You can’t control anything except your reaction to the world.||The toughest moments often shape you the most.||What you plant today, you will harvest tomorrow.||If you fail, try again – but fail better next time.||Success means progress, not perfection.||Pain is temporary, pride lasts forever.||Focus beats chaos.||Do what needs to be done.||You’re a warrior – no excuse counts.||Hate fuels you, love makes you unstoppable.||Aim high – always.||Discipline is freedom.||Either you do it or someone else will.||Never lose faith in yourself.||Fear is your compass – follow it."),
         "motivation_text": MessageLookupByLibrary.simpleMessage(
             "Come on! Stop whining and show them what you\'re made of!"),
+        "motivationalInsults": MessageLookupByLibrary.simpleMessage(
+            "Why are you slacking, soldier? Get back on track!||No excuses, get your work done!||You want to be great? Then act like it!||Losers procrastinate. Winners execute. Which one are you?"),
         "nameEmptyWarning":
             MessageLookupByLibrary.simpleMessage("Please enter your name."),
         "nameHint": MessageLookupByLibrary.simpleMessage("Your Name"),
@@ -341,12 +405,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "newHabitTitle":
             MessageLookupByLibrary.simpleMessage("Create New Habit"),
         "newJournalEntry": MessageLookupByLibrary.simpleMessage("New Entry"),
+        "newLabel": MessageLookupByLibrary.simpleMessage("NEW"),
         "newTaskHint": MessageLookupByLibrary.simpleMessage("New Task..."),
         "newTodoHint": MessageLookupByLibrary.simpleMessage("New Task..."),
         "noActivePurchases":
             MessageLookupByLibrary.simpleMessage("No active purchases found."),
         "noDataMessage":
-            MessageLookupByLibrary.simpleMessage("No data for this period"),
+            MessageLookupByLibrary.simpleMessage("Keine Daten verfügbar."),
         "noDaysSelectedError": MessageLookupByLibrary.simpleMessage(
             "Please select at least one day."),
         "noEmailClientFound": MessageLookupByLibrary.simpleMessage(
@@ -361,19 +426,23 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("No matching tasks"),
         "noOffersAvailable":
             MessageLookupByLibrary.simpleMessage("No offers available"),
+        "noPriority": MessageLookupByLibrary.simpleMessage("No Priority"),
         "noPurchasesToRestore": MessageLookupByLibrary.simpleMessage(
             "No previous purchases found to restore."),
         "noReminder": MessageLookupByLibrary.simpleMessage("None"),
         "noReminderSet":
             MessageLookupByLibrary.simpleMessage("No reminder set"),
         "noTasks": MessageLookupByLibrary.simpleMessage("No tasks"),
-        "noTasksForDay": m10,
-        "noTasksToday":
-            MessageLookupByLibrary.simpleMessage("No tasks for today"),
+        "noTasksForDay": m12,
+        "noTasksScheduled": MessageLookupByLibrary.simpleMessage(
+            "No tasks scheduled for this month yet."),
+        "noTasksToday": MessageLookupByLibrary.simpleMessage(
+            "No tasks for today. Stay disciplined and productive!"),
         "noTodosAdded":
             MessageLookupByLibrary.simpleMessage("No to-dos added yet."),
         "noWorkoutName":
             MessageLookupByLibrary.simpleMessage("No Workout Name"),
+        "notNow": MessageLookupByLibrary.simpleMessage("Not now"),
         "notes": MessageLookupByLibrary.simpleMessage("Notes"),
         "notificationActiveMessage": MessageLookupByLibrary.simpleMessage(
             "Notifications are now active! Let\'s get started."),
@@ -407,11 +476,15 @@ class MessageLookup extends MessageLookupByLibrary {
             "Set up your first tasks. These to-dos will go directly into your main list."),
         "onboardingTodosTitle":
             MessageLookupByLibrary.simpleMessage("Your First To-Dos"),
+        "pauseTimer": MessageLookupByLibrary.simpleMessage("Pause"),
         "paywallContent": MessageLookupByLibrary.simpleMessage(
             "Get access to all premium features and tools to maximize your productivity and growth."),
         "paywallTitle":
             MessageLookupByLibrary.simpleMessage("Unlock Premium Tools"),
+        "pending": MessageLookupByLibrary.simpleMessage("Pending"),
         "personal": MessageLookupByLibrary.simpleMessage("Personal"),
+        "premiumFeature":
+            MessageLookupByLibrary.simpleMessage("Premium Feature"),
         "premiumPackageNotFound":
             MessageLookupByLibrary.simpleMessage("Premium package not found"),
         "premiumRequired":
@@ -440,10 +513,12 @@ class MessageLookup extends MessageLookupByLibrary {
         "productivity": MessageLookupByLibrary.simpleMessage("Productivity"),
         "productivityCategory":
             MessageLookupByLibrary.simpleMessage("Productivity"),
+        "productivityScore":
+            MessageLookupByLibrary.simpleMessage("Productivity Score"),
         "profileHeader": MessageLookupByLibrary.simpleMessage("Your Profile"),
         "profileTitle": MessageLookupByLibrary.simpleMessage("Profile"),
-        "progress_text": m11,
-        "purchaseError": m12,
+        "progress_text": m13,
+        "purchaseError": m14,
         "purchasesRestoredError": MessageLookupByLibrary.simpleMessage(
             "Could not restore purchases."),
         "purchasesRestoredSuccess": MessageLookupByLibrary.simpleMessage(
@@ -452,16 +527,17 @@ class MessageLookup extends MessageLookupByLibrary {
         "rank": MessageLookupByLibrary.simpleMessage("Rank"),
         "recruit": MessageLookupByLibrary.simpleMessage("Recruit"),
         "reminderLabel": MessageLookupByLibrary.simpleMessage("Set Reminder"),
+        "removeAds": MessageLookupByLibrary.simpleMessage("Remove Ads"),
         "repeatLabel": MessageLookupByLibrary.simpleMessage("Repeat On"),
         "reps": MessageLookupByLibrary.simpleMessage("reps"),
         "repsLabel": MessageLookupByLibrary.simpleMessage("Reps"),
-        "restoreError": m13,
+        "restoreError": m15,
         "restorePurchases":
             MessageLookupByLibrary.simpleMessage("Restore Purchases"),
         "restoringPurchases":
             MessageLookupByLibrary.simpleMessage("Restoring purchases..."),
         "saturday": MessageLookupByLibrary.simpleMessage("Saturday"),
-        "saturdayShort": MessageLookupByLibrary.simpleMessage("S"),
+        "saturdayShort": MessageLookupByLibrary.simpleMessage("Sa"),
         "save": MessageLookupByLibrary.simpleMessage("Save"),
         "saveButton": MessageLookupByLibrary.simpleMessage("Save"),
         "selectCategory":
@@ -481,18 +557,22 @@ class MessageLookup extends MessageLookupByLibrary {
         "shortCheckNature": MessageLookupByLibrary.simpleMessage("Nature"),
         "shortCheckNoPorn": MessageLookupByLibrary.simpleMessage("No Porn"),
         "soldier": MessageLookupByLibrary.simpleMessage("Soldier"),
+        "stable": MessageLookupByLibrary.simpleMessage("Stabil"),
+        "startAddingTasks": MessageLookupByLibrary.simpleMessage(
+            "Start adding tasks to track your productivity."),
+        "startTimer": MessageLookupByLibrary.simpleMessage("Start"),
         "start_free_week_label":
             MessageLookupByLibrary.simpleMessage("Start free week"),
         "statAverageFlow":
-            MessageLookupByLibrary.simpleMessage("Avg Time per Flow (Min)"),
+            MessageLookupByLibrary.simpleMessage("Durchschnittliche Dauer"),
         "statAverageWeeklyFlow":
-            MessageLookupByLibrary.simpleMessage("Avg Time per Week (Min)"),
-        "statFlows": MessageLookupByLibrary.simpleMessage("Flows"),
+            MessageLookupByLibrary.simpleMessage("Durchschn. Wochenfluss"),
+        "statFlows": MessageLookupByLibrary.simpleMessage("Sitzungen"),
         "statTotalMinutes":
-            MessageLookupByLibrary.simpleMessage("Total Minutes"),
-        "status_text": m14,
+            MessageLookupByLibrary.simpleMessage("Gesamtminuten"),
+        "status_text": m16,
         "streak": MessageLookupByLibrary.simpleMessage("Streak"),
-        "streak_days": m15,
+        "streak_days": m17,
         "streak_description": MessageLookupByLibrary.simpleMessage(
             "The longer you stay active daily, the more XP you earn! Your streak rewards consistency and helps you level up faster."),
         "streak_info_title":
@@ -519,11 +599,15 @@ class MessageLookup extends MessageLookupByLibrary {
         "suggestion6":
             MessageLookupByLibrary.simpleMessage("Give me a kick in the butt!"),
         "sunday": MessageLookupByLibrary.simpleMessage("Sunday"),
-        "sundayShort": MessageLookupByLibrary.simpleMessage("S"),
+        "sundayShort": MessageLookupByLibrary.simpleMessage("Su"),
         "tapToAddDetails":
             MessageLookupByLibrary.simpleMessage("Tap to add details"),
         "tapToAddExercises":
             MessageLookupByLibrary.simpleMessage("Tap to add exercises"),
+        "tapToRefresh": MessageLookupByLibrary.simpleMessage("Tap to refresh"),
+        "taskCompletionTrends":
+            MessageLookupByLibrary.simpleMessage("Task Completion Trends"),
+        "taskLabel": m18,
         "taskTitleLabel": MessageLookupByLibrary.simpleMessage("Title"),
         "tasks": MessageLookupByLibrary.simpleMessage("Tasks"),
         "tasksDescription": MessageLookupByLibrary.simpleMessage(
@@ -535,10 +619,10 @@ class MessageLookup extends MessageLookupByLibrary {
         "ten_min_flow": MessageLookupByLibrary.simpleMessage("10 min Flow"),
         "thank_you": MessageLookupByLibrary.simpleMessage("Thank you!"),
         "thursday": MessageLookupByLibrary.simpleMessage("Thursday"),
-        "thursdayShort": MessageLookupByLibrary.simpleMessage("T"),
+        "thursdayShort": MessageLookupByLibrary.simpleMessage("Th"),
         "title_progress": MessageLookupByLibrary.simpleMessage("Your Progress"),
         "todayLabel": MessageLookupByLibrary.simpleMessage("Today"),
-        "todaysTasks": MessageLookupByLibrary.simpleMessage("TODAY\'S TASKS"),
+        "todaysTasks": MessageLookupByLibrary.simpleMessage("Today\'s Tasks"),
         "todoListTitle": MessageLookupByLibrary.simpleMessage("To-Do List"),
         "todoReminderBodyBrutal": MessageLookupByLibrary.simpleMessage(
             "Your tasks are waiting! Time to grind!"),
@@ -553,6 +637,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "todoReminderTitleNormal":
             MessageLookupByLibrary.simpleMessage("Check your tasks!"),
         "toolsPageTitle": MessageLookupByLibrary.simpleMessage("Tools"),
+        "totalTasks": MessageLookupByLibrary.simpleMessage("Total Tasks"),
+        "totalTime": MessageLookupByLibrary.simpleMessage("Gesamtzeit"),
         "trainingPlan": MessageLookupByLibrary.simpleMessage("Training Plan"),
         "trainingPlanDescription": MessageLookupByLibrary.simpleMessage(
             "Optimize your workouts and track progress."),
@@ -561,8 +647,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "trainingPlanToolTitle":
             MessageLookupByLibrary.simpleMessage("Training Plan"),
         "tuesday": MessageLookupByLibrary.simpleMessage("Tuesday"),
-        "tuesdayShort": MessageLookupByLibrary.simpleMessage("T"),
+        "tuesdayShort": MessageLookupByLibrary.simpleMessage("Tu"),
+        "typeMessage":
+            MessageLookupByLibrary.simpleMessage("Type a message ..."),
         "uncategorized": MessageLookupByLibrary.simpleMessage("Uncategorized"),
+        "understood": MessageLookupByLibrary.simpleMessage("Got it"),
         "undo": MessageLookupByLibrary.simpleMessage("Undo"),
         "unknownUser": MessageLookupByLibrary.simpleMessage("Unknown User"),
         "unlimited_chat_prompts":
@@ -571,6 +660,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Unlock Premium"),
         "untitled": MessageLookupByLibrary.simpleMessage("(Untitled)"),
         "update": MessageLookupByLibrary.simpleMessage("Update"),
+        "upgrade": MessageLookupByLibrary.simpleMessage("Upgrade"),
         "upgradeContent": MessageLookupByLibrary.simpleMessage(
             "You have used your 5 free prompts.\n\nGet the premium version for unlimited chats now!"),
         "upgradeForMoreFeatures":
@@ -579,14 +669,21 @@ class MessageLookup extends MessageLookupByLibrary {
         "upgradeTitle": MessageLookupByLibrary.simpleMessage("Upgrade Needed"),
         "upgradeToPremium":
             MessageLookupByLibrary.simpleMessage("Upgrade to Premium"),
+        "upgradeToUnlock": MessageLookupByLibrary.simpleMessage(
+            "Upgrade to unlock this feature and boost your growth."),
+        "userStats": MessageLookupByLibrary.simpleMessage("Your Statistics"),
         "version": MessageLookupByLibrary.simpleMessage("Version"),
         "veteran": MessageLookupByLibrary.simpleMessage("Veteran"),
+        "viewAll": MessageLookupByLibrary.simpleMessage("View all"),
+        "viewStats": MessageLookupByLibrary.simpleMessage("View Stats"),
         "warlord": MessageLookupByLibrary.simpleMessage("Warlord"),
         "wednesday": MessageLookupByLibrary.simpleMessage("Wednesday"),
-        "wednesdayShort": MessageLookupByLibrary.simpleMessage("W"),
+        "wednesdayShort": MessageLookupByLibrary.simpleMessage("We"),
         "weekly": MessageLookupByLibrary.simpleMessage("Weekly"),
+        "weeklyFlowMinutes":
+            MessageLookupByLibrary.simpleMessage("Wöchentliche Flow-Minuten"),
         "weeklyProgress":
-            MessageLookupByLibrary.simpleMessage("WEEKLY PROGRESS"),
+            MessageLookupByLibrary.simpleMessage("Weekly Progress"),
         "weekly_description":
             MessageLookupByLibrary.simpleMessage("Try it out cheaply"),
         "weekly_label": MessageLookupByLibrary.simpleMessage("Weekly"),
@@ -598,12 +695,13 @@ class MessageLookup extends MessageLookupByLibrary {
         "workoutNameLabel":
             MessageLookupByLibrary.simpleMessage("Workout Name"),
         "xp": MessageLookupByLibrary.simpleMessage("XP"),
-        "xp_bonus": m16,
-        "xp_text": m17,
+        "xp_bonus": m19,
+        "xp_text": m20,
         "yearly": MessageLookupByLibrary.simpleMessage("Yearly"),
         "yearly_description":
             MessageLookupByLibrary.simpleMessage("Save over 40%"),
         "yearly_label": MessageLookupByLibrary.simpleMessage("Yearly"),
-        "yearly_price": MessageLookupByLibrary.simpleMessage("\$29.99/year")
+        "yearly_price": MessageLookupByLibrary.simpleMessage("\$29.99/year"),
+        "you": MessageLookupByLibrary.simpleMessage("You")
       };
 }

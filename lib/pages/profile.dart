@@ -115,7 +115,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: (isPremium ? Colors.red : Colors.white).withOpacity(0.2),
+                                        color: (isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.white).withOpacity(0.2),
                                         blurRadius: 20,
                                         spreadRadius: 5,
                                       ),
@@ -129,7 +129,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                     shape: BoxShape.circle,
                                     gradient: LinearGradient(
                                       colors: isPremium 
-                                          ? [const Color(0xFFFF4D4D), const Color(0xFF7D0000)]
+                                          ? [const Color.fromARGB(255, 223, 27, 27), const Color(0xFF7D0000)]
                                           : [const Color(0xFF444444), const Color(0xFF1A1A1A)],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
@@ -160,7 +160,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   child: Container(
                                     padding: const EdgeInsets.all(4),
                                     decoration: BoxDecoration(
-                                      color: Colors.red,
+                                      color: const Color.fromARGB(255, 223, 27, 27),
                                       shape: BoxShape.circle,
                                       boxShadow: [
                                         BoxShadow(
@@ -198,7 +198,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                 onTap: _editProfile,
                                 child: const Icon(
                                   Icons.edit,
-                                  color: Color(0xFFFF4D4D),
+                                  color: Color.fromARGB(255, 223, 27, 27),
                                   size: 20,
                                 ),
                               ),
@@ -211,7 +211,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             decoration: BoxDecoration(
                               color: isPremium ? const Color(0xFF3D0000) : Colors.black38,
                               border: Border.all(
-                                color: isPremium ? const Color(0xFFFF4D4D) : Colors.grey[700]!,
+                                color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.grey[700]!,
                                 width: 1.5,
                               ),
                               borderRadius: BorderRadius.circular(20),
@@ -221,7 +221,7 @@ class _ProfilePageState extends State<ProfilePage> {
                               children: [
                                 Icon(
                                   isPremium ? Icons.military_tech : Icons.shield,
-                                  color: isPremium ? const Color(0xFFFF4D4D) : Colors.grey[400],
+                                  color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.grey[400],
                                   size: 18,
                                 ),
                                 const SizedBox(width: 6),
@@ -230,7 +230,7 @@ class _ProfilePageState extends State<ProfilePage> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
-                                    color: isPremium ? const Color(0xFFFF4D4D) : Colors.grey[400],
+                                    color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.grey[400],
                                   ),
                                 ),
                               ],
@@ -321,12 +321,12 @@ class _ProfilePageState extends State<ProfilePage> {
                         height: 6,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color(0xFFFF4D4D), Colors.red],
+                            colors: [Color.fromARGB(255, 223, 27, 27), Colors.red],
                           ),
                           borderRadius: BorderRadius.circular(3),
                           boxShadow: [
                             BoxShadow(
-                              color: Colors.red.withOpacity(0.5),
+                              color: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.5),
                               blurRadius: 4,
                               offset: const Offset(0, 0),
                             ),
@@ -433,7 +433,7 @@ class _ProfilePageState extends State<ProfilePage> {
             decoration: BoxDecoration(
               gradient: LinearGradient(
                 colors: isPremium 
-                    ? [const Color(0xFFFF4D4D), const Color(0xFF7D0000)]
+                    ? [const Color.fromARGB(255, 223, 27, 27), const Color(0xFF7D0000)]
                     : isActive 
                         ? [const Color(0xFF444444), const Color(0xFF222222)]
                         : [const Color(0xFF333333), const Color(0xFF222222)],
@@ -443,7 +443,7 @@ class _ProfilePageState extends State<ProfilePage> {
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: (isPremium ? Colors.red : Colors.black).withOpacity(0.3),
+                  color: (isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.black).withOpacity(0.3),
                   offset: const Offset(0, 2),
                   blurRadius: 5,
                 ),
@@ -461,7 +461,7 @@ class _ProfilePageState extends State<ProfilePage> {
             style: TextStyle(
               fontSize: 12,
               fontWeight: isPremium ? FontWeight.bold : FontWeight.normal,
-              color: isPremium ? const Color(0xFFFF4D4D) : Colors.white70,
+              color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.white70,
             ),
           ),
         ],
@@ -482,14 +482,14 @@ class _ProfilePageState extends State<ProfilePage> {
           trailing: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
-              color: Colors.red.withOpacity(0.1),
+              color: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: Colors.red.withOpacity(0.3)),
+              border: Border.all(color: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.3)),
             ),
             child: Text(
               _haertegradToString(context, currentHaertegrad),
               style: const TextStyle(
-                color: Color(0xFFFF4D4D),
+                color: Color.fromARGB(255, 223, 27, 27),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -602,7 +602,7 @@ class _ProfilePageState extends State<ProfilePage> {
               children: [
                 Icon(
                   icon,
-                  color: const Color(0xFFFF4D4D),
+                  color: const Color.fromARGB(255, 223, 27, 27),
                   size: 20,
                 ),
                 const SizedBox(width: 10),
@@ -642,8 +642,8 @@ class _ProfilePageState extends State<ProfilePage> {
       color: Colors.transparent,
       child: InkWell(
         onTap: onTap,
-        splashColor: Colors.red.withOpacity(0.1),
-        highlightColor: Colors.red.withOpacity(0.05),
+        splashColor: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.1),
+        highlightColor: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.05),
         child: Container(
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Row(
@@ -653,12 +653,12 @@ class _ProfilePageState extends State<ProfilePage> {
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: isPremium ? Colors.red.withOpacity(0.1) : Colors.grey[850],
+                  color: isPremium ? const Color.fromARGB(255, 223, 27, 27).withOpacity(0.1) : Colors.grey[850],
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   icon,
-                  color: isPremium ? const Color(0xFFFF4D4D) : Colors.white70,
+                  color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.white70,
                   size: 20,
                 ),
               ),
@@ -671,7 +671,7 @@ class _ProfilePageState extends State<ProfilePage> {
                     Text(
                       title,
                       style: TextStyle(
-                        color: isPremium ? const Color(0xFFFF4D4D) : Colors.white,
+                        color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.white,
                         fontSize: 16,
                         fontWeight: isPremium ? FontWeight.bold : FontWeight.w500,
                       ),
@@ -810,7 +810,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   const SizedBox(height: 24),
                   ElevatedButton(
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFFFF4D4D),
+                      backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                       minimumSize: const Size(double.infinity, 50),
                       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
                       elevation: 5,
@@ -884,14 +884,14 @@ class _ProfilePageState extends State<ProfilePage> {
         decoration: BoxDecoration(
           gradient: LinearGradient(
             colors: isSelected 
-                ? [Colors.red.withOpacity(0.2), Colors.red.withOpacity(0.05)]
+                ? [const Color.fromARGB(255, 223, 27, 27).withOpacity(0.2), const Color.fromARGB(255, 223, 27, 27).withOpacity(0.05)]
                 : [Colors.grey[850]!, Colors.grey[900]!],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
           ),
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isSelected ? Colors.red : Colors.grey[800]!,
+            color: isSelected ? const Color.fromARGB(255, 223, 27, 27) : Colors.grey[800]!,
             width: isSelected ? 2 : 1,
           ),
         ),
@@ -900,7 +900,7 @@ class _ProfilePageState extends State<ProfilePage> {
             Container(
               padding: const EdgeInsets.all(10),
               decoration: BoxDecoration(
-                color: isSelected ? Colors.red.withOpacity(0.1) : Colors.black26,
+                color: isSelected ? const Color.fromARGB(255, 223, 27, 27).withOpacity(0.1) : Colors.black26,
                 borderRadius: BorderRadius.circular(10),
               ),
               child: icon,
@@ -933,12 +933,12 @@ class _ProfilePageState extends State<ProfilePage> {
               Container(
                 padding: const EdgeInsets.all(4),
                 decoration: BoxDecoration(
-                  color: Colors.red.withOpacity(0.2),
+                  color: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.2),
                   shape: BoxShape.circle,
                 ),
                 child: const Icon(
                   Icons.check,
-                  color: Colors.red,
+                  color: Color.fromARGB(255, 223, 27, 27),
                   size: 18,
                 ),
               ),
@@ -983,12 +983,12 @@ class _ProfilePageState extends State<ProfilePage> {
                   borderRadius: BorderRadius.circular(10),
                 ),
                 focusedBorder: OutlineInputBorder(
-                  borderSide: const BorderSide(color: Color(0xFFFF4D4D)),
+                  borderSide: const BorderSide(color: Color.fromARGB(255, 223, 27, 27)),
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
               style: const TextStyle(color: Colors.white),
-              cursorColor: const Color(0xFFFF4D4D),
+              cursorColor: const Color.fromARGB(255, 223, 27, 27),
             ),
           ],
         ),
@@ -1002,7 +1002,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           ElevatedButton(
             style: ElevatedButton.styleFrom(
-              backgroundColor: const Color(0xFFFF4D4D),
+              backgroundColor: const Color.fromARGB(255, 223, 27, 27),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),

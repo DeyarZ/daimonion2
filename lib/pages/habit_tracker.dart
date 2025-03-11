@@ -116,8 +116,9 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                 pinned: true,
                 backgroundColor: Colors.transparent,
                 elevation: 0,
-                expandedHeight: 120,
+                expandedHeight: 200,
                 flexibleSpace: FlexibleSpaceBar(
+                  titlePadding: const EdgeInsets.only(left: 16, bottom: 100), // Runterziehen des Titels
                   title: Text(
                     loc.habitTrackerTitle,
                     style: const TextStyle(
@@ -203,9 +204,9 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
         TabBar(
           controller: _tabController,
           isScrollable: true,
-          indicatorColor: Theme.of(context).primaryColor,
+          indicatorColor: const Color.fromARGB(255, 223, 27, 27),
           indicatorSize: TabBarIndicatorSize.label,
-          labelColor: Theme.of(context).primaryColor,
+          labelColor: const Color.fromARGB(255, 223, 27, 27),
           unselectedLabelColor: Colors.white70,
           tabs: [
             Tab(text: loc.allHabits),

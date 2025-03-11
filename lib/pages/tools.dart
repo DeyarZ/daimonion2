@@ -74,7 +74,7 @@ class ToolsPage extends StatelessWidget {
     ];
 
     // Check if the user has Premium
-    final isPremium = Hive.box('settings').get('isPremium', defaultValue: true); //WICHTIG !!!
+    final isPremium = Hive.box('settings').get('isPremium', defaultValue: false); //WICHTIG !!!
 
     return AdWrapper(
       child: Scaffold(
@@ -198,7 +198,7 @@ class ToolsPage extends StatelessWidget {
         // Floating action button for quick help
         floatingActionButton: FloatingActionButton(
           onPressed: () => _showHelpDialog(context),
-          backgroundColor: const Color(0xFFE74C3C),
+          backgroundColor: const Color.fromARGB(255, 223, 27, 27),
           child: const Icon(Icons.help_outline),
         ),
       ),
@@ -242,7 +242,7 @@ class ToolsPage extends StatelessWidget {
                   );
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color(0xFFE74C3C),
+                  backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                   padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
                   shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
                 ),
@@ -312,7 +312,7 @@ class ToolsPage extends StatelessWidget {
               child: Text(
                 loc.gotIt,
                 style: const TextStyle(
-                  color: Color(0xFFE74C3C),
+                  color: Color.fromARGB(255, 223, 27, 27),
                   fontWeight: FontWeight.bold,
                 ),
               ),
@@ -329,7 +329,7 @@ class ToolsPage extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: const Color(0xFFE74C3C), size: 24),
+          Icon(icon, color: const Color.fromARGB(255, 223, 27, 27), size: 24),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -516,7 +516,7 @@ class _ToolCardItem extends StatelessWidget {
                                     ),
                                     const SizedBox(width: 4),
                                     const Text(
-                                      'PRO',
+                                      'Premium',
                                       style: TextStyle(
                                         color: Colors.white70,
                                         fontSize: 12,

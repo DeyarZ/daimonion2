@@ -147,7 +147,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                                 boxShadow: [
                                   BoxShadow(
                                     color: (isRunning 
-                                      ? const Color(0xFFFF3B5C)
+                                      ? const Color.fromARGB(255, 223, 27, 27)
                                       : Colors.blueGrey).withOpacity(0.3),
                                     blurRadius: 20,
                                     spreadRadius: 5,
@@ -183,7 +183,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                                       backgroundColor: Colors.grey.shade800.withOpacity(0.3),
                                       valueColor: AlwaysStoppedAnimation<Color>(
                                         isRunning 
-                                          ? const Color(0xFFFF3B5C) 
+                                          ? const Color.fromARGB(255, 223, 27, 27) 
                                           : Colors.blueGrey,
                                       ),
                                     ),
@@ -199,7 +199,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                                           fontSize: size.width * 0.15,
                                           fontWeight: FontWeight.bold,
                                           color: isRunning 
-                                            ? const Color(0xFFFF3B5C) 
+                                            ? const Color.fromARGB(255, 223, 27, 27) 
                                             : Colors.white,
                                           fontFamily: 'Digital',
                                           letterSpacing: 2,
@@ -221,7 +221,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                                             fontSize: 14,
                                             fontWeight: FontWeight.w500,
                                             color: isRunning 
-                                              ? const Color(0xFFFF3B5C) 
+                                              ? const Color.fromARGB(255, 223, 27, 27) 
                                               : Colors.white70,
                                             letterSpacing: 1.5,
                                           ),
@@ -282,7 +282,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                             ),
                             _buildControlButton(
                               icon: isRunning ? Icons.pause : Icons.play_arrow,
-                              color: isRunning ? Colors.blue : const Color(0xFFFF3B5C),
+                              color: isRunning ? Colors.blue : const Color.fromARGB(255, 223, 27, 27),
                               size: 70,
                               onPressed: () {
                                 if (isRunning) {
@@ -474,7 +474,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
               if (index < currentFlowIndex) {
                 flowColor = Colors.green; // completed
               } else if (index == currentFlowIndex) {
-                flowColor = const Color(0xFFFF3B5C); // current
+                flowColor = const Color.fromARGB(255, 223, 27, 27); // current
               } else {
                 flowColor = Colors.grey; // upcoming
                 opacity = 0.5;
@@ -557,7 +557,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: const Color(0xFFFF3B5C),
+                    backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -600,7 +600,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
               const Icon(
                 Icons.timer,
                 size: 48,
-                color: Color(0xFFFF3B5C),
+                color: Color.fromARGB(255, 223, 27, 27),
               ),
               const SizedBox(height: 16),
               const Text(
@@ -644,7 +644,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
               child: ElevatedButton(
                 style: ElevatedButton.styleFrom(
                   foregroundColor: Colors.white,
-                  backgroundColor: const Color(0xFFFF3B5C),
+                  backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(12),
                   ),
@@ -800,7 +800,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: const Color(0xFFFF3B5C),
+                    backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),
@@ -934,7 +934,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                 ElevatedButton(
                   style: ElevatedButton.styleFrom(
                     foregroundColor: Colors.white,
-                    backgroundColor: const Color(0xFFFF3B5C),
+                    backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                     shape: RoundedRectangleBorder(
                       borderRadius: BorderRadius.circular(12),
                     ),

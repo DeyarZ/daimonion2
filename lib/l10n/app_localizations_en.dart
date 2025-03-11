@@ -1,3 +1,5 @@
+import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -80,10 +82,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get flowTimer => 'Flow Timer';
 
   @override
-  String get todaysTasks => 'TODAY\'S TASKS';
+  String get todaysTasks => 'Today\'s Tasks';
 
   @override
-  String get noTasksToday => 'No tasks for today';
+  String get noTasksToday => 'No tasks for today. Stay disciplined and productive!';
 
   @override
   String get tasks => 'Tasks';
@@ -92,7 +94,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get habits => 'Habits';
 
   @override
-  String get weeklyProgress => 'WEEKLY PROGRESS';
+  String get weeklyProgress => 'Weekly Progress';
 
   @override
   String get premiumRequired => 'Premium required';
@@ -122,31 +124,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get firstTimeButtonText => 'I\'M READY';
 
   @override
-  String get flowStatsTitle => 'Flow Stats';
+  String get flowStatsTitle => 'Flow-Statistiken';
 
   @override
-  String get filterWeek => 'Week';
+  String get filterWeek => 'Woche';
 
   @override
-  String get filterMonth => 'Month';
+  String get filterMonth => 'Monat';
 
   @override
-  String get filterYear => 'Year';
+  String get filterYear => 'Jahr';
 
   @override
-  String get noDataMessage => 'No data for this period';
+  String get noDataMessage => 'Keine Daten verfügbar.';
 
   @override
-  String get statFlows => 'Flows';
+  String get statFlows => 'Sitzungen';
 
   @override
-  String get statTotalMinutes => 'Total Minutes';
+  String get statTotalMinutes => 'Gesamtminuten';
 
   @override
-  String get statAverageFlow => 'Avg Time per Flow (Min)';
+  String get statAverageFlow => 'Durchschnittliche Dauer';
 
   @override
-  String get statAverageWeeklyFlow => 'Avg Time per Week (Min)';
+  String get statAverageWeeklyFlow => 'Durchschn. Wochenfluss';
 
   @override
   String get flowTimerTitle => 'Flow Timer';
@@ -1042,7 +1044,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpDialogTitle => 'How to Use These Tools';
 
   @override
-  String get gotIt => 'Got it!';
+  String get gotIt => 'Verstanden';
 
   @override
   String get allHabits => 'All Habits';
@@ -1114,23 +1116,221 @@ class AppLocalizationsEn extends AppLocalizations {
   String get selectCategory => 'Select a category';
 
   @override
-  String get mondayShort => 'M';
+  String get mondayShort => 'Mo';
 
   @override
-  String get tuesdayShort => 'T';
+  String get tuesdayShort => 'Tu';
 
   @override
-  String get wednesdayShort => 'W';
+  String get wednesdayShort => 'We';
 
   @override
-  String get thursdayShort => 'T';
+  String get thursdayShort => 'Th';
 
   @override
-  String get fridayShort => 'F';
+  String get fridayShort => 'Fr';
 
   @override
-  String get saturdayShort => 'S';
+  String get saturdayShort => 'Sa';
 
   @override
-  String get sundayShort => 'S';
+  String get sundayShort => 'Su';
+
+  @override
+  String get highPriority => 'High';
+
+  @override
+  String get mediumPriority => 'Medium';
+
+  @override
+  String get lowPriority => 'Low';
+
+  @override
+  String get noPriority => 'No Priority';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get addNewTask => 'Add New Task';
+
+  @override
+  String get moreTasks => 'more tasks...';
+
+  @override
+  String get premiumFeature => 'Premium Feature';
+
+  @override
+  String get upgradeToUnlock => 'Upgrade to unlock this feature and boost your growth.';
+
+  @override
+  String get notNow => 'Not now';
+
+  @override
+  String get upgrade => 'Upgrade';
+
+  @override
+  String get motivationalInsults => 'Why are you slacking, soldier? Get back on track!||No excuses, get your work done!||You want to be great? Then act like it!||Losers procrastinate. Winners execute. Which one are you?';
+
+  @override
+  String get iWillDoIt => 'I\'ll do it!';
+
+  @override
+  String get tapToRefresh => 'Tap to refresh';
+
+  @override
+  String get removeAds => 'Remove Ads';
+
+  @override
+  String get goPremium => 'Go Premium';
+
+  @override
+  String get dailyProgress => 'Daily Progress';
+
+  @override
+  String get viewStats => 'View Stats';
+
+  @override
+  String get understood => 'Got it';
+
+  @override
+  String get typeMessage => 'Type a message ...';
+
+  @override
+  String get you => 'You';
+
+  @override
+  String get userStats => 'Your Statistics';
+
+  @override
+  String get detailedUserStats => 'Detailed statistics about your productivity, streaks, and progress will be displayed here.';
+
+  @override
+  String get pauseTimer => 'Pause';
+
+  @override
+  String get startTimer => 'Start';
+
+  @override
+  String get allTasksCompleted => 'Great job! You\'ve completed all your tasks!';
+
+  @override
+  String get aboutStatistics => 'About Statistics';
+
+  @override
+  String get aboutStatisticsContent => 'This page shows your task completion statistics. The calendar view displays daily completion rates, while the analytics tab provides weekly progress and monthly summaries.';
+
+  @override
+  String get calendarTab => 'Calendar';
+
+  @override
+  String get analyticsTab => 'Analytics';
+
+  @override
+  String get totalTasks => 'Total Tasks';
+
+  @override
+  String get completed => 'Completed';
+
+  @override
+  String get pending => 'Pending';
+
+  @override
+  String get taskCompletionTrends => 'Task Completion Trends';
+
+  @override
+  String get monthlyOverview => 'Monthly Overview';
+
+  @override
+  String get productivityScore => 'Productivity Score';
+
+  @override
+  String get newLabel => 'NEW';
+
+  @override
+  String completedTasksPercentage(Object percentage) {
+    return 'You\'ve completed $percentage% of your tasks this month!';
+  }
+
+  @override
+  String get noTasksScheduled => 'No tasks scheduled for this month yet.';
+
+  @override
+  String completeMoreTasks(Object pending) {
+    return 'Complete $pending more tasks to reach 100%';
+  }
+
+  @override
+  String get startAddingTasks => 'Start adding tasks to track your productivity.';
+
+  @override
+  String taskLabel(num count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: 'tasks',
+      one: 'task',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get totalTime => 'Gesamtzeit';
+
+  @override
+  String get avgDuration => 'Durchschn. Dauer';
+
+  @override
+  String get flowConsistency => 'Flow-Konsistenz';
+
+  @override
+  String get dailyFlowMinutes => 'Tägliche Flow-Minuten';
+
+  @override
+  String get weeklyFlowMinutes => 'Wöchentliche Flow-Minuten';
+
+  @override
+  String get monthlyFlowMinutes => 'Monatliche Flow-Minuten';
+
+  @override
+  String get flowMinutes => 'Flow-Minuten';
+
+  @override
+  String get improving => 'Verbessernd';
+
+  @override
+  String get declining => 'Verschlechternd';
+
+  @override
+  String get stable => 'Stabil';
+
+  @override
+  String get infoTitle => 'Flow-Statistik-Hilfe';
+
+  @override
+  String get infoContent => 'Dieser Bildschirm zeigt Analysen deiner Flow-Sitzungen. Hier kannst du deinen Fortschritt verfolgen und deine Leistung über die Zeit sehen.';
+
+  @override
+  String get helpTimeFiltersTitle => 'Zeitfilter';
+
+  @override
+  String get helpTimeFiltersDescription => 'Wechsle zwischen Woche, Monat und Jahr, um verschiedene Zeiträume zu sehen.';
+
+  @override
+  String get helpBarChartTitle => 'Balkendiagramm';
+
+  @override
+  String get helpBarChartDescription => 'Jeder Balken repräsentiert die Flow-Minuten für einen Tag, eine Woche oder einen Monat, basierend auf dem ausgewählten Filter.';
+
+  @override
+  String get helpWeeklyGoalTitle => 'Wöchentliches Ziel';
+
+  @override
+  String get helpWeeklyGoalDescription => 'Verfolge deinen Fortschritt in Richtung deines wöchentlichen Flow-Ziels von 300 Minuten.';
+
+  @override
+  String get helpTrendIndicatorTitle => 'Trendindikator';
+
+  @override
+  String get helpTrendIndicatorDescription => 'Zeigt, ob dein Flow zunimmt, abnimmt oder stabil bleibt im Vergleich zum vorherigen Zeitraum.';
 }
