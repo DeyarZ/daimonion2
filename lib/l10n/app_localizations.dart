@@ -320,55 +320,55 @@ abstract class AppLocalizations {
   /// No description provided for @flowStatsTitle.
   ///
   /// In en, this message translates to:
-  /// **'Flow-Statistiken'**
+  /// **'Flow Statistics'**
   String get flowStatsTitle;
 
   /// No description provided for @filterWeek.
   ///
   /// In en, this message translates to:
-  /// **'Woche'**
+  /// **'Week'**
   String get filterWeek;
 
   /// No description provided for @filterMonth.
   ///
   /// In en, this message translates to:
-  /// **'Monat'**
+  /// **'Month'**
   String get filterMonth;
 
   /// No description provided for @filterYear.
   ///
   /// In en, this message translates to:
-  /// **'Jahr'**
+  /// **'Year'**
   String get filterYear;
 
   /// No description provided for @noDataMessage.
   ///
   /// In en, this message translates to:
-  /// **'Keine Daten verfügbar.'**
+  /// **'No data available.'**
   String get noDataMessage;
 
   /// No description provided for @statFlows.
   ///
   /// In en, this message translates to:
-  /// **'Sitzungen'**
+  /// **'Sessions'**
   String get statFlows;
 
   /// No description provided for @statTotalMinutes.
   ///
   /// In en, this message translates to:
-  /// **'Gesamtminuten'**
+  /// **'Total Minutes'**
   String get statTotalMinutes;
 
   /// No description provided for @statAverageFlow.
   ///
   /// In en, this message translates to:
-  /// **'Durchschnittliche Dauer'**
+  /// **'Avg Flow Duration'**
   String get statAverageFlow;
 
   /// No description provided for @statAverageWeeklyFlow.
   ///
   /// In en, this message translates to:
-  /// **'Durchschn. Wochenfluss'**
+  /// **'Avg Weekly Flow'**
   String get statAverageWeeklyFlow;
 
   /// No description provided for @flowTimerTitle.
@@ -2096,7 +2096,7 @@ abstract class AppLocalizations {
   /// No description provided for @gotIt.
   ///
   /// In en, this message translates to:
-  /// **'Verstanden'**
+  /// **'Got it'**
   String get gotIt;
 
   /// No description provided for @allHabits.
@@ -2534,122 +2534,254 @@ abstract class AppLocalizations {
   /// No description provided for @totalTime.
   ///
   /// In en, this message translates to:
-  /// **'Gesamtzeit'**
+  /// **'Total Time'**
   String get totalTime;
 
   /// No description provided for @avgDuration.
   ///
   /// In en, this message translates to:
-  /// **'Durchschn. Dauer'**
+  /// **'Avg Duration'**
   String get avgDuration;
 
   /// No description provided for @flowConsistency.
   ///
   /// In en, this message translates to:
-  /// **'Flow-Konsistenz'**
+  /// **'Flow Consistency'**
   String get flowConsistency;
 
   /// No description provided for @dailyFlowMinutes.
   ///
   /// In en, this message translates to:
-  /// **'Tägliche Flow-Minuten'**
+  /// **'Daily Flow Minutes'**
   String get dailyFlowMinutes;
 
   /// No description provided for @weeklyFlowMinutes.
   ///
   /// In en, this message translates to:
-  /// **'Wöchentliche Flow-Minuten'**
+  /// **'Weekly Flow Minutes'**
   String get weeklyFlowMinutes;
 
   /// No description provided for @monthlyFlowMinutes.
   ///
   /// In en, this message translates to:
-  /// **'Monatliche Flow-Minuten'**
+  /// **'Monthly Flow Minutes'**
   String get monthlyFlowMinutes;
 
   /// No description provided for @flowMinutes.
   ///
   /// In en, this message translates to:
-  /// **'Flow-Minuten'**
+  /// **'Flow Minutes'**
   String get flowMinutes;
 
   /// No description provided for @improving.
   ///
   /// In en, this message translates to:
-  /// **'Verbessernd'**
+  /// **'Improving'**
   String get improving;
 
   /// No description provided for @declining.
   ///
   /// In en, this message translates to:
-  /// **'Verschlechternd'**
+  /// **'Declining'**
   String get declining;
 
   /// No description provided for @stable.
   ///
   /// In en, this message translates to:
-  /// **'Stabil'**
+  /// **'Stable'**
   String get stable;
 
   /// No description provided for @infoTitle.
   ///
   /// In en, this message translates to:
-  /// **'Flow-Statistik-Hilfe'**
+  /// **'Flow Statistics Help'**
   String get infoTitle;
 
   /// No description provided for @infoContent.
   ///
   /// In en, this message translates to:
-  /// **'Dieser Bildschirm zeigt Analysen deiner Flow-Sitzungen. Hier kannst du deinen Fortschritt verfolgen und deine Leistung über die Zeit sehen.'**
+  /// **'This screen shows analytics for your flow sessions. Here you can track your progress and see your performance over time.'**
   String get infoContent;
 
   /// No description provided for @helpTimeFiltersTitle.
   ///
   /// In en, this message translates to:
-  /// **'Zeitfilter'**
+  /// **'Time Filters'**
   String get helpTimeFiltersTitle;
 
   /// No description provided for @helpTimeFiltersDescription.
   ///
   /// In en, this message translates to:
-  /// **'Wechsle zwischen Woche, Monat und Jahr, um verschiedene Zeiträume zu sehen.'**
+  /// **'Switch between week, month, and year views to see different time periods.'**
   String get helpTimeFiltersDescription;
 
   /// No description provided for @helpBarChartTitle.
   ///
   /// In en, this message translates to:
-  /// **'Balkendiagramm'**
+  /// **'Bar Chart'**
   String get helpBarChartTitle;
 
   /// No description provided for @helpBarChartDescription.
   ///
   /// In en, this message translates to:
-  /// **'Jeder Balken repräsentiert die Flow-Minuten für einen Tag, eine Woche oder einen Monat, basierend auf dem ausgewählten Filter.'**
+  /// **'Each bar represents the flow minutes for a day, week, or month based on your selected filter.'**
   String get helpBarChartDescription;
 
   /// No description provided for @helpWeeklyGoalTitle.
   ///
   /// In en, this message translates to:
-  /// **'Wöchentliches Ziel'**
+  /// **'Weekly Goal'**
   String get helpWeeklyGoalTitle;
 
   /// No description provided for @helpWeeklyGoalDescription.
   ///
   /// In en, this message translates to:
-  /// **'Verfolge deinen Fortschritt in Richtung deines wöchentlichen Flow-Ziels von 300 Minuten.'**
+  /// **'Track your progress toward your weekly flow goal of 300 minutes.'**
   String get helpWeeklyGoalDescription;
 
   /// No description provided for @helpTrendIndicatorTitle.
   ///
   /// In en, this message translates to:
-  /// **'Trendindikator'**
+  /// **'Trend Indicator'**
   String get helpTrendIndicatorTitle;
 
   /// No description provided for @helpTrendIndicatorDescription.
   ///
   /// In en, this message translates to:
-  /// **'Zeigt, ob dein Flow zunimmt, abnimmt oder stabil bleibt im Vergleich zum vorherigen Zeitraum.'**
+  /// **'Shows whether your flow time is improving, declining, or stable compared to the previous period.'**
   String get helpTrendIndicatorDescription;
+
+  /// No description provided for @dailyReminderTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Daily Reminder'**
+  String get dailyReminderTitle;
+
+  /// No description provided for @dailyReminderBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Don\'t forget to complete your tasks for today!'**
+  String get dailyReminderBody;
+
+  /// No description provided for @saveChanges.
+  ///
+  /// In en, this message translates to:
+  /// **'Save changes'**
+  String get saveChanges;
+
+  /// No description provided for @taskDeleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Task deleted'**
+  String get taskDeleted;
+
+  /// No description provided for @addPoints.
+  ///
+  /// In en, this message translates to:
+  /// **'You earned 2 XP for completing the task!'**
+  String get addPoints;
+
+  /// No description provided for @taskAdded.
+  ///
+  /// In en, this message translates to:
+  /// **'Task added'**
+  String get taskAdded;
+
+  /// No description provided for @changeDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Change date'**
+  String get changeDate;
+
+  /// No description provided for @taskNotesLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Task notes'**
+  String get taskNotesLabel;
+
+  /// No description provided for @emptyTitleError.
+  ///
+  /// In en, this message translates to:
+  /// **'The title cannot be empty!'**
+  String get emptyTitleError;
+
+  /// No description provided for @taskCompletedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Task successfully completed!'**
+  String get taskCompletedMessage;
+
+  /// No description provided for @updateTask.
+  ///
+  /// In en, this message translates to:
+  /// **'Update task'**
+  String get updateTask;
+
+  /// No description provided for @taskUpdatedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Task has been updated'**
+  String get taskUpdatedMessage;
+
+  /// No description provided for @taskDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Task details'**
+  String get taskDetails;
+
+  /// No description provided for @description.
+  ///
+  /// In en, this message translates to:
+  /// **'Description'**
+  String get description;
+
+  /// No description provided for @deadline.
+  ///
+  /// In en, this message translates to:
+  /// **'Deadline'**
+  String get deadline;
+
+  /// No description provided for @priority.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get priority;
+
+  /// No description provided for @notCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Not completed'**
+  String get notCompleted;
+
+  /// No description provided for @tags.
+  ///
+  /// In en, this message translates to:
+  /// **'Tags'**
+  String get tags;
+
+  /// No description provided for @quoteShared.
+  ///
+  /// In en, this message translates to:
+  /// **'Quote shared!'**
+  String get quoteShared;
+
+  /// No description provided for @favoriteTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Mark as favorite'**
+  String get favoriteTooltip;
+
+  /// No description provided for @shareTooltip.
+  ///
+  /// In en, this message translates to:
+  /// **'Share'**
+  String get shareTooltip;
+
+  /// No description provided for @doubleTapToFavorite.
+  ///
+  /// In en, this message translates to:
+  /// **'Double tap to favorite'**
+  String get doubleTapToFavorite;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

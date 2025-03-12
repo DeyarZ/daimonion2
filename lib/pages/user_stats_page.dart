@@ -43,7 +43,18 @@ class _UserStatsPageState extends State<UserStatsPage>
     super.dispose();
   }
 
-  // Hilfsmethode: Konvertiert die Tasks-Box in eine Liste von Tasks
+  // Hilfsmethode zum Parsen von Datum: Akzeptiert sowohl int als auch String
+  DateTime _parseDate(dynamic value) {
+    if (value is int) {
+      return DateTime.fromMillisecondsSinceEpoch(value);
+    } else if (value is String) {
+      return DateTime.parse(value);
+    } else {
+      return DateTime.now();
+    }
+  }
+
+  // Konvertiert die Tasks-Box in eine Liste von Tasks
   List<Task> _boxToTaskList(Box box) {
     final List<Task> tasks = [];
     for (int i = 0; i < box.length; i++) {
@@ -53,16 +64,8 @@ class _UserStatsPageState extends State<UserStatsPage>
       final id = data['id'] as String? ?? '';
       final title = data['title'] as String? ?? '';
       final completed = data['completed'] as bool? ?? false;
-
-      final deadlineTimestamp = data['deadline'] as int?;
-      final deadline = deadlineTimestamp != null
-          ? DateTime.fromMillisecondsSinceEpoch(deadlineTimestamp)
-          : DateTime.now();
-
-      final createdAtTimestamp = data['createdAt'] as int?;
-      final createdAt = createdAtTimestamp != null
-          ? DateTime.fromMillisecondsSinceEpoch(createdAtTimestamp)
-          : DateTime.now();
+      final deadline = _parseDate(data['deadline']);
+      final createdAt = _parseDate(data['createdAt']);
 
       tasks.add(Task(
         id: id,
@@ -190,7 +193,7 @@ class _UserStatsPageState extends State<UserStatsPage>
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => CalendarViewPage(
+                builder: (context) => DayTasksPage(
                   tasks: tasks,
                   selectedDay: currentDay,
                 ),
@@ -198,7 +201,7 @@ class _UserStatsPageState extends State<UserStatsPage>
             );
           },
           child: Container(
-            margin: const EdgeInsets.all(2), // reduziertes Margin
+            margin: const EdgeInsets.all(2),
             decoration: BoxDecoration(
               color: isToday
                   ? _primaryColor.withOpacity(0.15)
@@ -241,8 +244,7 @@ class _UserStatsPageState extends State<UserStatsPage>
                             value: percentage,
                             backgroundColor:
                                 _secondaryColor.withOpacity(0.3),
-                            valueColor:
-                                AlwaysStoppedAnimation<Color>(
+                            valueColor: AlwaysStoppedAnimation<Color>(
                               percentage > 0.7
                                   ? Colors.green
                                   : percentage > 0.3
@@ -300,7 +302,7 @@ class _UserStatsPageState extends State<UserStatsPage>
       crossAxisCount: 7,
       shrinkWrap: true,
       physics: const NeverScrollableScrollPhysics(),
-      childAspectRatio: 1.0, // erhöhter Aspect Ratio, damit vertikaler Platz mehr verteilt wird
+      childAspectRatio: 1.0,
       children: dayWidgets,
     );
   }
@@ -469,8 +471,7 @@ class _UserStatsPageState extends State<UserStatsPage>
   Widget _buildStatCard(String title, int value, IconData icon, Color color) {
     return Expanded(
       child: Container(
-        padding:
-            const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
+        padding: const EdgeInsets.symmetric(vertical: 16, horizontal: 12),
         decoration: BoxDecoration(
           color: _cardColor,
           borderRadius: BorderRadius.circular(16),
@@ -514,22 +515,20 @@ class _UserStatsPageState extends State<UserStatsPage>
     );
   }
 
-  // Hilfsmethode: Formatiert den Monat zur Anzeige
+  // Formatiert den Monat zur Anzeige
   String _formatMonth(DateTime date) {
     return DateFormat('MMMM yyyy').format(date);
   }
 
   void _previousMonth() {
     setState(() {
-      _displayedMonth =
-          DateTime(_displayedMonth.year, _displayedMonth.month - 1, 1);
+      _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month - 1, 1);
     });
   }
 
   void _nextMonth() {
     setState(() {
-      _displayedMonth =
-          DateTime(_displayedMonth.year, _displayedMonth.month + 1, 1);
+      _displayedMonth = DateTime(_displayedMonth.year, _displayedMonth.month + 1, 1);
     });
   }
 
@@ -617,21 +616,17 @@ class _UserStatsPageState extends State<UserStatsPage>
                     children: [
                       // Monatsnavigation
                       Container(
-                        padding: const EdgeInsets.symmetric(
-                            horizontal: 16, vertical: 12),
+                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                         decoration: BoxDecoration(
                           color: _cardColor,
                           borderRadius: BorderRadius.circular(16),
                         ),
                         child: Row(
-                          mainAxisAlignment:
-                              MainAxisAlignment.spaceBetween,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             IconButton(
                               onPressed: _previousMonth,
-                              icon: const Icon(
-                                  Icons.chevron_left,
-                                  color: Colors.white),
+                              icon: const Icon(Icons.chevron_left, color: Colors.white),
                               style: IconButton.styleFrom(
                                 backgroundColor: _secondaryColor,
                                 minimumSize: const Size(40, 40),
@@ -647,9 +642,7 @@ class _UserStatsPageState extends State<UserStatsPage>
                             ),
                             IconButton(
                               onPressed: _nextMonth,
-                              icon: const Icon(
-                                  Icons.chevron_right,
-                                  color: Colors.white),
+                              icon: const Icon(Icons.chevron_right, color: Colors.white),
                               style: IconButton.styleFrom(
                                 backgroundColor: _secondaryColor,
                                 minimumSize: const Size(40, 40),
@@ -718,21 +711,16 @@ class _UserStatsPageState extends State<UserStatsPage>
                           color: _cardColor,
                           borderRadius: BorderRadius.circular(16),
                           gradient: LinearGradient(
-                            colors: [
-                              _cardColor,
-                              _primaryColor.withOpacity(0.2),
-                            ],
+                            colors: [_cardColor, _primaryColor.withOpacity(0.2)],
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
                           ),
                         ),
                         child: Column(
-                          crossAxisAlignment:
-                              CrossAxisAlignment.start,
+                          crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
                             Row(
-                              mainAxisAlignment:
-                                  MainAxisAlignment.spaceBetween,
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
                               children: [
                                 Text(
                                   loc.productivityScore,
@@ -743,12 +731,10 @@ class _UserStatsPageState extends State<UserStatsPage>
                                   ),
                                 ),
                                 Container(
-                                  padding: const EdgeInsets.symmetric(
-                                      horizontal: 12, vertical: 6),
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                                   decoration: BoxDecoration(
                                     color: _primaryColor,
-                                    borderRadius:
-                                        BorderRadius.circular(20),
+                                    borderRadius: BorderRadius.circular(20),
                                   ),
                                   child: Text(
                                     loc.newLabel,
@@ -763,30 +749,23 @@ class _UserStatsPageState extends State<UserStatsPage>
                             ),
                             const SizedBox(height: 16),
                             LinearProgressIndicator(
-                              value: monthlyStats['completed'] != null &&
+                              value: (monthlyStats['completed'] != null &&
                                       monthlyStats['total'] != null &&
-                                      monthlyStats['total']! > 0
-                                  ? monthlyStats['completed']! /
-                                      monthlyStats['total']!
+                                      monthlyStats['total']! > 0)
+                                  ? monthlyStats['completed']! / monthlyStats['total']!
                                   : 0.0,
-                              backgroundColor:
-                                  Colors.grey.withOpacity(0.2),
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(
-                                      _primaryColor),
+                              backgroundColor: Colors.grey.withOpacity(0.2),
+                              valueColor: AlwaysStoppedAnimation<Color>(_primaryColor),
                               minHeight: 10,
                               borderRadius: BorderRadius.circular(5),
                             ),
                             const SizedBox(height: 16),
                             Text(
-                              monthlyStats['completed'] != null &&
+                              (monthlyStats['completed'] != null &&
                                       monthlyStats['total'] != null &&
-                                      monthlyStats['total']! > 0
+                                      monthlyStats['total']! > 0)
                                   ? loc.completedTasksPercentage(
-                                      ((monthlyStats['completed']! /
-                                                  monthlyStats['total']!) *
-                                              100)
-                                          .toInt())
+                                      ((monthlyStats['completed']! / monthlyStats['total']!) * 100).toInt())
                                   : loc.noTasksScheduled,
                               style: const TextStyle(
                                 color: Colors.white70,
@@ -795,17 +774,13 @@ class _UserStatsPageState extends State<UserStatsPage>
                             ),
                             const SizedBox(height: 8),
                             Text(
-                              monthlyStats['pending'] != null &&
-                                      monthlyStats['pending']! > 0
-                                  ? loc.completeMoreTasks(
-                                      monthlyStats['pending']!)
-                                  : monthlyStats['completed'] != null &&
-                                          monthlyStats['completed']! > 0
+                              (monthlyStats['pending'] != null && monthlyStats['pending']! > 0)
+                                  ? loc.completeMoreTasks(monthlyStats['pending']!)
+                                  : (monthlyStats['completed'] != null && monthlyStats['completed']! > 0)
                                       ? loc.allTasksCompleted
                                       : loc.startAddingTasks,
                               style: TextStyle(
-                                color: monthlyStats['pending'] != null &&
-                                        monthlyStats['pending']! > 0
+                                color: (monthlyStats['pending'] != null && monthlyStats['pending']! > 0)
                                     ? _primaryColor
                                     : Colors.green,
                                 fontSize: 14,
@@ -829,7 +804,7 @@ class _UserStatsPageState extends State<UserStatsPage>
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => CalendarViewPage(
+              builder: (context) => DayTasksPage(
                 tasks: _boxToTaskList(_dbService.listenableTasks().value),
                 selectedDay: DateTime.now(),
               ),
@@ -838,6 +813,77 @@ class _UserStatsPageState extends State<UserStatsPage>
         },
         child: const Icon(Icons.add_task),
       ),
+    );
+  }
+}
+
+class DayTasksPage extends StatelessWidget {
+  final List<Task> tasks;
+  final DateTime selectedDay;
+
+  const DayTasksPage({Key? key, required this.tasks, required this.selectedDay})
+      : super(key: key);
+
+  bool isSameDay(DateTime d1, DateTime d2) {
+    return d1.year == d2.year &&
+        d1.month == d2.month &&
+        d1.day == d2.day;
+  }
+
+  String _formatDate(DateTime date) => '${date.day}.${date.month}.${date.year}';
+
+  @override
+  Widget build(BuildContext context) {
+    final filteredTasks =
+        tasks.where((task) => isSameDay(task.deadline, selectedDay)).toList();
+    final loc = S.of(context);
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(_formatDate(selectedDay)),
+        backgroundColor: Colors.black,
+      ),
+      backgroundColor: Colors.black,
+      body: filteredTasks.isEmpty
+          ? Center(
+              child: Text(
+                loc.noTasksForDay(_formatDate(selectedDay)),
+                style: const TextStyle(color: Colors.white),
+              ),
+            )
+          : ListView.builder(
+              itemCount: filteredTasks.length,
+              itemBuilder: (context, index) {
+                final task = filteredTasks[index];
+                return Container(
+                  margin: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: Colors.grey[850],
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: ListTile(
+                    leading: Icon(
+                      task.completed ? Icons.check_circle : Icons.circle_outlined,
+                      color: task.completed ? Colors.green : Colors.grey,
+                    ),
+                    title: Text(
+                      task.title,
+                      style: TextStyle(
+                        color: Colors.white,
+                        decoration: task.completed ? TextDecoration.lineThrough : TextDecoration.none,
+                      ),
+                    ),
+                    subtitle: Text(
+                      loc.dueOn(_formatDate(task.deadline)),
+                      style: const TextStyle(color: Colors.white70),
+                    ),
+                    trailing: Icon(Icons.edit, color: Colors.white70),
+                    onTap: () {
+                      // Hier könnte man Edit-Funktionalität hinzufügen
+                    },
+                  ),
+                );
+              },
+            ),
     );
   }
 }

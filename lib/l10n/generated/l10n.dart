@@ -420,90 +420,90 @@ class S {
     );
   }
 
-  /// `Flow-Statistiken`
+  /// `Flow Statistics`
   String get flowStatsTitle {
     return Intl.message(
-      'Flow-Statistiken',
+      'Flow Statistics',
       name: 'flowStatsTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Woche`
+  /// `Week`
   String get filterWeek {
     return Intl.message(
-      'Woche',
+      'Week',
       name: 'filterWeek',
       desc: '',
       args: [],
     );
   }
 
-  /// `Monat`
+  /// `Month`
   String get filterMonth {
     return Intl.message(
-      'Monat',
+      'Month',
       name: 'filterMonth',
       desc: '',
       args: [],
     );
   }
 
-  /// `Jahr`
+  /// `Year`
   String get filterYear {
     return Intl.message(
-      'Jahr',
+      'Year',
       name: 'filterYear',
       desc: '',
       args: [],
     );
   }
 
-  /// `Keine Daten verfügbar.`
+  /// `No data available.`
   String get noDataMessage {
     return Intl.message(
-      'Keine Daten verfügbar.',
+      'No data available.',
       name: 'noDataMessage',
       desc: '',
       args: [],
     );
   }
 
-  /// `Sitzungen`
+  /// `Sessions`
   String get statFlows {
     return Intl.message(
-      'Sitzungen',
+      'Sessions',
       name: 'statFlows',
       desc: '',
       args: [],
     );
   }
 
-  /// `Gesamtminuten`
+  /// `Total Minutes`
   String get statTotalMinutes {
     return Intl.message(
-      'Gesamtminuten',
+      'Total Minutes',
       name: 'statTotalMinutes',
       desc: '',
       args: [],
     );
   }
 
-  /// `Durchschnittliche Dauer`
+  /// `Avg Flow Duration`
   String get statAverageFlow {
     return Intl.message(
-      'Durchschnittliche Dauer',
+      'Avg Flow Duration',
       name: 'statAverageFlow',
       desc: '',
       args: [],
     );
   }
 
-  /// `Durchschn. Wochenfluss`
+  /// `Avg Weekly Flow`
   String get statAverageWeeklyFlow {
     return Intl.message(
-      'Durchschn. Wochenfluss',
+      'Avg Weekly Flow',
       name: 'statAverageWeeklyFlow',
       desc: '',
       args: [],
@@ -3380,10 +3380,10 @@ class S {
     );
   }
 
-  /// `Verstanden`
+  /// `Got it`
   String get gotIt {
     return Intl.message(
-      'Verstanden',
+      'Got it',
       name: 'gotIt',
       desc: '',
       args: [],
@@ -4112,201 +4112,421 @@ class S {
     );
   }
 
-  /// `Gesamtzeit`
+  /// `Total Time`
   String get totalTime {
     return Intl.message(
-      'Gesamtzeit',
+      'Total Time',
       name: 'totalTime',
       desc: '',
       args: [],
     );
   }
 
-  /// `Durchschn. Dauer`
+  /// `Avg Duration`
   String get avgDuration {
     return Intl.message(
-      'Durchschn. Dauer',
+      'Avg Duration',
       name: 'avgDuration',
       desc: '',
       args: [],
     );
   }
 
-  /// `Flow-Konsistenz`
+  /// `Flow Consistency`
   String get flowConsistency {
     return Intl.message(
-      'Flow-Konsistenz',
+      'Flow Consistency',
       name: 'flowConsistency',
       desc: '',
       args: [],
     );
   }
 
-  /// `Tägliche Flow-Minuten`
+  /// `Daily Flow Minutes`
   String get dailyFlowMinutes {
     return Intl.message(
-      'Tägliche Flow-Minuten',
+      'Daily Flow Minutes',
       name: 'dailyFlowMinutes',
       desc: '',
       args: [],
     );
   }
 
-  /// `Wöchentliche Flow-Minuten`
+  /// `Weekly Flow Minutes`
   String get weeklyFlowMinutes {
     return Intl.message(
-      'Wöchentliche Flow-Minuten',
+      'Weekly Flow Minutes',
       name: 'weeklyFlowMinutes',
       desc: '',
       args: [],
     );
   }
 
-  /// `Monatliche Flow-Minuten`
+  /// `Monthly Flow Minutes`
   String get monthlyFlowMinutes {
     return Intl.message(
-      'Monatliche Flow-Minuten',
+      'Monthly Flow Minutes',
       name: 'monthlyFlowMinutes',
       desc: '',
       args: [],
     );
   }
 
-  /// `Flow-Minuten`
+  /// `Flow Minutes`
   String get flowMinutes {
     return Intl.message(
-      'Flow-Minuten',
+      'Flow Minutes',
       name: 'flowMinutes',
       desc: '',
       args: [],
     );
   }
 
-  /// `Verbessernd`
+  /// `Improving`
   String get improving {
     return Intl.message(
-      'Verbessernd',
+      'Improving',
       name: 'improving',
       desc: '',
       args: [],
     );
   }
 
-  /// `Verschlechternd`
+  /// `Declining`
   String get declining {
     return Intl.message(
-      'Verschlechternd',
+      'Declining',
       name: 'declining',
       desc: '',
       args: [],
     );
   }
 
-  /// `Stabil`
+  /// `Stable`
   String get stable {
     return Intl.message(
-      'Stabil',
+      'Stable',
       name: 'stable',
       desc: '',
       args: [],
     );
   }
 
-  /// `Flow-Statistik-Hilfe`
+  /// `Flow Statistics Help`
   String get infoTitle {
     return Intl.message(
-      'Flow-Statistik-Hilfe',
+      'Flow Statistics Help',
       name: 'infoTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Dieser Bildschirm zeigt Analysen deiner Flow-Sitzungen. Hier kannst du deinen Fortschritt verfolgen und deine Leistung über die Zeit sehen.`
+  /// `This screen shows analytics for your flow sessions. Here you can track your progress and see your performance over time.`
   String get infoContent {
     return Intl.message(
-      'Dieser Bildschirm zeigt Analysen deiner Flow-Sitzungen. Hier kannst du deinen Fortschritt verfolgen und deine Leistung über die Zeit sehen.',
+      'This screen shows analytics for your flow sessions. Here you can track your progress and see your performance over time.',
       name: 'infoContent',
       desc: '',
       args: [],
     );
   }
 
-  /// `Zeitfilter`
+  /// `Time Filters`
   String get helpTimeFiltersTitle {
     return Intl.message(
-      'Zeitfilter',
+      'Time Filters',
       name: 'helpTimeFiltersTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Wechsle zwischen Woche, Monat und Jahr, um verschiedene Zeiträume zu sehen.`
+  /// `Switch between week, month, and year views to see different time periods.`
   String get helpTimeFiltersDescription {
     return Intl.message(
-      'Wechsle zwischen Woche, Monat und Jahr, um verschiedene Zeiträume zu sehen.',
+      'Switch between week, month, and year views to see different time periods.',
       name: 'helpTimeFiltersDescription',
       desc: '',
       args: [],
     );
   }
 
-  /// `Balkendiagramm`
+  /// `Bar Chart`
   String get helpBarChartTitle {
     return Intl.message(
-      'Balkendiagramm',
+      'Bar Chart',
       name: 'helpBarChartTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Jeder Balken repräsentiert die Flow-Minuten für einen Tag, eine Woche oder einen Monat, basierend auf dem ausgewählten Filter.`
+  /// `Each bar represents the flow minutes for a day, week, or month based on your selected filter.`
   String get helpBarChartDescription {
     return Intl.message(
-      'Jeder Balken repräsentiert die Flow-Minuten für einen Tag, eine Woche oder einen Monat, basierend auf dem ausgewählten Filter.',
+      'Each bar represents the flow minutes for a day, week, or month based on your selected filter.',
       name: 'helpBarChartDescription',
       desc: '',
       args: [],
     );
   }
 
-  /// `Wöchentliches Ziel`
+  /// `Weekly Goal`
   String get helpWeeklyGoalTitle {
     return Intl.message(
-      'Wöchentliches Ziel',
+      'Weekly Goal',
       name: 'helpWeeklyGoalTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Verfolge deinen Fortschritt in Richtung deines wöchentlichen Flow-Ziels von 300 Minuten.`
+  /// `Track your progress toward your weekly flow goal of 300 minutes.`
   String get helpWeeklyGoalDescription {
     return Intl.message(
-      'Verfolge deinen Fortschritt in Richtung deines wöchentlichen Flow-Ziels von 300 Minuten.',
+      'Track your progress toward your weekly flow goal of 300 minutes.',
       name: 'helpWeeklyGoalDescription',
       desc: '',
       args: [],
     );
   }
 
-  /// `Trendindikator`
+  /// `Trend Indicator`
   String get helpTrendIndicatorTitle {
     return Intl.message(
-      'Trendindikator',
+      'Trend Indicator',
       name: 'helpTrendIndicatorTitle',
       desc: '',
       args: [],
     );
   }
 
-  /// `Zeigt, ob dein Flow zunimmt, abnimmt oder stabil bleibt im Vergleich zum vorherigen Zeitraum.`
+  /// `Shows whether your flow time is improving, declining, or stable compared to the previous period.`
   String get helpTrendIndicatorDescription {
     return Intl.message(
-      'Zeigt, ob dein Flow zunimmt, abnimmt oder stabil bleibt im Vergleich zum vorherigen Zeitraum.',
+      'Shows whether your flow time is improving, declining, or stable compared to the previous period.',
       name: 'helpTrendIndicatorDescription',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Daily Reminder`
+  String get dailyReminderTitle {
+    return Intl.message(
+      'Daily Reminder',
+      name: 'dailyReminderTitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Don't forget to complete your tasks for today!`
+  String get dailyReminderBody {
+    return Intl.message(
+      'Don\'t forget to complete your tasks for today!',
+      name: 'dailyReminderBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Save changes`
+  String get saveChanges {
+    return Intl.message(
+      'Save changes',
+      name: 'saveChanges',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Task deleted`
+  String get taskDeleted {
+    return Intl.message(
+      'Task deleted',
+      name: 'taskDeleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You earned 2 XP for completing the task!`
+  String get addPoints {
+    return Intl.message(
+      'You earned 2 XP for completing the task!',
+      name: 'addPoints',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Task added`
+  String get taskAdded {
+    return Intl.message(
+      'Task added',
+      name: 'taskAdded',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Change date`
+  String get changeDate {
+    return Intl.message(
+      'Change date',
+      name: 'changeDate',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Task notes`
+  String get taskNotesLabel {
+    return Intl.message(
+      'Task notes',
+      name: 'taskNotesLabel',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The title cannot be empty!`
+  String get emptyTitleError {
+    return Intl.message(
+      'The title cannot be empty!',
+      name: 'emptyTitleError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Task successfully completed!`
+  String get taskCompletedMessage {
+    return Intl.message(
+      'Task successfully completed!',
+      name: 'taskCompletedMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Update task`
+  String get updateTask {
+    return Intl.message(
+      'Update task',
+      name: 'updateTask',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Task has been updated`
+  String get taskUpdatedMessage {
+    return Intl.message(
+      'Task has been updated',
+      name: 'taskUpdatedMessage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Task details`
+  String get taskDetails {
+    return Intl.message(
+      'Task details',
+      name: 'taskDetails',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Description`
+  String get description {
+    return Intl.message(
+      'Description',
+      name: 'description',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Deadline`
+  String get deadline {
+    return Intl.message(
+      'Deadline',
+      name: 'deadline',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Priority`
+  String get priority {
+    return Intl.message(
+      'Priority',
+      name: 'priority',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Not completed`
+  String get notCompleted {
+    return Intl.message(
+      'Not completed',
+      name: 'notCompleted',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tags`
+  String get tags {
+    return Intl.message(
+      'Tags',
+      name: 'tags',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Quote shared!`
+  String get quoteShared {
+    return Intl.message(
+      'Quote shared!',
+      name: 'quoteShared',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Mark as favorite`
+  String get favoriteTooltip {
+    return Intl.message(
+      'Mark as favorite',
+      name: 'favoriteTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Share`
+  String get shareTooltip {
+    return Intl.message(
+      'Share',
+      name: 'shareTooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Double tap to favorite`
+  String get doubleTapToFavorite {
+    return Intl.message(
+      'Double tap to favorite',
+      name: 'doubleTapToFavorite',
       desc: '',
       args: [],
     );

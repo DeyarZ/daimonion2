@@ -124,31 +124,31 @@ class AppLocalizationsEn extends AppLocalizations {
   String get firstTimeButtonText => 'I\'M READY';
 
   @override
-  String get flowStatsTitle => 'Flow-Statistiken';
+  String get flowStatsTitle => 'Flow Statistics';
 
   @override
-  String get filterWeek => 'Woche';
+  String get filterWeek => 'Week';
 
   @override
-  String get filterMonth => 'Monat';
+  String get filterMonth => 'Month';
 
   @override
-  String get filterYear => 'Jahr';
+  String get filterYear => 'Year';
 
   @override
-  String get noDataMessage => 'Keine Daten verfügbar.';
+  String get noDataMessage => 'No data available.';
 
   @override
-  String get statFlows => 'Sitzungen';
+  String get statFlows => 'Sessions';
 
   @override
-  String get statTotalMinutes => 'Gesamtminuten';
+  String get statTotalMinutes => 'Total Minutes';
 
   @override
-  String get statAverageFlow => 'Durchschnittliche Dauer';
+  String get statAverageFlow => 'Avg Flow Duration';
 
   @override
-  String get statAverageWeeklyFlow => 'Durchschn. Wochenfluss';
+  String get statAverageWeeklyFlow => 'Avg Weekly Flow';
 
   @override
   String get flowTimerTitle => 'Flow Timer';
@@ -1044,7 +1044,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get helpDialogTitle => 'How to Use These Tools';
 
   @override
-  String get gotIt => 'Verstanden';
+  String get gotIt => 'Got it';
 
   @override
   String get allHabits => 'All Habits';
@@ -1275,62 +1275,128 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get totalTime => 'Gesamtzeit';
+  String get totalTime => 'Total Time';
 
   @override
-  String get avgDuration => 'Durchschn. Dauer';
+  String get avgDuration => 'Avg Duration';
 
   @override
-  String get flowConsistency => 'Flow-Konsistenz';
+  String get flowConsistency => 'Flow Consistency';
 
   @override
-  String get dailyFlowMinutes => 'Tägliche Flow-Minuten';
+  String get dailyFlowMinutes => 'Daily Flow Minutes';
 
   @override
-  String get weeklyFlowMinutes => 'Wöchentliche Flow-Minuten';
+  String get weeklyFlowMinutes => 'Weekly Flow Minutes';
 
   @override
-  String get monthlyFlowMinutes => 'Monatliche Flow-Minuten';
+  String get monthlyFlowMinutes => 'Monthly Flow Minutes';
 
   @override
-  String get flowMinutes => 'Flow-Minuten';
+  String get flowMinutes => 'Flow Minutes';
 
   @override
-  String get improving => 'Verbessernd';
+  String get improving => 'Improving';
 
   @override
-  String get declining => 'Verschlechternd';
+  String get declining => 'Declining';
 
   @override
-  String get stable => 'Stabil';
+  String get stable => 'Stable';
 
   @override
-  String get infoTitle => 'Flow-Statistik-Hilfe';
+  String get infoTitle => 'Flow Statistics Help';
 
   @override
-  String get infoContent => 'Dieser Bildschirm zeigt Analysen deiner Flow-Sitzungen. Hier kannst du deinen Fortschritt verfolgen und deine Leistung über die Zeit sehen.';
+  String get infoContent => 'This screen shows analytics for your flow sessions. Here you can track your progress and see your performance over time.';
 
   @override
-  String get helpTimeFiltersTitle => 'Zeitfilter';
+  String get helpTimeFiltersTitle => 'Time Filters';
 
   @override
-  String get helpTimeFiltersDescription => 'Wechsle zwischen Woche, Monat und Jahr, um verschiedene Zeiträume zu sehen.';
+  String get helpTimeFiltersDescription => 'Switch between week, month, and year views to see different time periods.';
 
   @override
-  String get helpBarChartTitle => 'Balkendiagramm';
+  String get helpBarChartTitle => 'Bar Chart';
 
   @override
-  String get helpBarChartDescription => 'Jeder Balken repräsentiert die Flow-Minuten für einen Tag, eine Woche oder einen Monat, basierend auf dem ausgewählten Filter.';
+  String get helpBarChartDescription => 'Each bar represents the flow minutes for a day, week, or month based on your selected filter.';
 
   @override
-  String get helpWeeklyGoalTitle => 'Wöchentliches Ziel';
+  String get helpWeeklyGoalTitle => 'Weekly Goal';
 
   @override
-  String get helpWeeklyGoalDescription => 'Verfolge deinen Fortschritt in Richtung deines wöchentlichen Flow-Ziels von 300 Minuten.';
+  String get helpWeeklyGoalDescription => 'Track your progress toward your weekly flow goal of 300 minutes.';
 
   @override
-  String get helpTrendIndicatorTitle => 'Trendindikator';
+  String get helpTrendIndicatorTitle => 'Trend Indicator';
 
   @override
-  String get helpTrendIndicatorDescription => 'Zeigt, ob dein Flow zunimmt, abnimmt oder stabil bleibt im Vergleich zum vorherigen Zeitraum.';
+  String get helpTrendIndicatorDescription => 'Shows whether your flow time is improving, declining, or stable compared to the previous period.';
+
+  @override
+  String get dailyReminderTitle => 'Daily Reminder';
+
+  @override
+  String get dailyReminderBody => 'Don\'t forget to complete your tasks for today!';
+
+  @override
+  String get saveChanges => 'Save changes';
+
+  @override
+  String get taskDeleted => 'Task deleted';
+
+  @override
+  String get addPoints => 'You earned 2 XP for completing the task!';
+
+  @override
+  String get taskAdded => 'Task added';
+
+  @override
+  String get changeDate => 'Change date';
+
+  @override
+  String get taskNotesLabel => 'Task notes';
+
+  @override
+  String get emptyTitleError => 'The title cannot be empty!';
+
+  @override
+  String get taskCompletedMessage => 'Task successfully completed!';
+
+  @override
+  String get updateTask => 'Update task';
+
+  @override
+  String get taskUpdatedMessage => 'Task has been updated';
+
+  @override
+  String get taskDetails => 'Task details';
+
+  @override
+  String get description => 'Description';
+
+  @override
+  String get deadline => 'Deadline';
+
+  @override
+  String get priority => 'Priority';
+
+  @override
+  String get notCompleted => 'Not completed';
+
+  @override
+  String get tags => 'Tags';
+
+  @override
+  String get quoteShared => 'Quote shared!';
+
+  @override
+  String get favoriteTooltip => 'Mark as favorite';
+
+  @override
+  String get shareTooltip => 'Share';
+
+  @override
+  String get doubleTapToFavorite => 'Double tap to favorite';
 }

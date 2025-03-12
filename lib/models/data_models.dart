@@ -14,6 +14,7 @@ class Task {
   // Optionale Felder:
   String? description;
   int? priority;
+  List<String>? tags; // Neu: Tags hinzufügen
 
   Task({
     required this.id,
@@ -22,8 +23,10 @@ class Task {
     required this.deadline,
     this.description,
     this.priority,
+    this.tags = const [],
   });
 }
+
 
 class Habit {
   String id;

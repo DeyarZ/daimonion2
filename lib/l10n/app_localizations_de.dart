@@ -1275,62 +1275,128 @@ class AppLocalizationsDe extends AppLocalizations {
   }
 
   @override
-  String get totalTime => 'Gesamtzeit';
+  String get totalTime => 'Total Time';
 
   @override
-  String get avgDuration => 'Durchschn. Dauer';
+  String get avgDuration => 'Avg Duration';
 
   @override
-  String get flowConsistency => 'Flow-Konsistenz';
+  String get flowConsistency => 'Flow Consistency';
 
   @override
-  String get dailyFlowMinutes => 'Tägliche Flow-Minuten';
+  String get dailyFlowMinutes => 'Daily Flow Minutes';
 
   @override
-  String get weeklyFlowMinutes => 'Wöchentliche Flow-Minuten';
+  String get weeklyFlowMinutes => 'Weekly Flow Minutes';
 
   @override
-  String get monthlyFlowMinutes => 'Monatliche Flow-Minuten';
+  String get monthlyFlowMinutes => 'Monthly Flow Minutes';
 
   @override
-  String get flowMinutes => 'Flow-Minuten';
+  String get flowMinutes => 'Flow Minutes';
 
   @override
-  String get improving => 'Verbessernd';
+  String get improving => 'Improving';
 
   @override
-  String get declining => 'Verschlechternd';
+  String get declining => 'Declining';
 
   @override
-  String get stable => 'Stabil';
+  String get stable => 'Stable';
 
   @override
-  String get infoTitle => 'Flow-Statistik-Hilfe';
+  String get infoTitle => 'Flow Statistics Help';
 
   @override
-  String get infoContent => 'Dieser Bildschirm zeigt Analysen deiner Flow-Sitzungen. Hier kannst du deinen Fortschritt verfolgen und deine Leistung über die Zeit sehen.';
+  String get infoContent => 'This screen shows analytics for your flow sessions. Here you can track your progress and see your performance over time.';
 
   @override
-  String get helpTimeFiltersTitle => 'Zeitfilter';
+  String get helpTimeFiltersTitle => 'Time Filters';
 
   @override
-  String get helpTimeFiltersDescription => 'Wechsle zwischen Woche, Monat und Jahr, um verschiedene Zeiträume zu sehen.';
+  String get helpTimeFiltersDescription => 'Switch between week, month, and year views to see different time periods.';
 
   @override
-  String get helpBarChartTitle => 'Balkendiagramm';
+  String get helpBarChartTitle => 'Bar Chart';
 
   @override
-  String get helpBarChartDescription => 'Jeder Balken repräsentiert die Flow-Minuten für einen Tag, eine Woche oder einen Monat, basierend auf dem ausgewählten Filter.';
+  String get helpBarChartDescription => 'Each bar represents the flow minutes for a day, week, or month based on your selected filter.';
 
   @override
-  String get helpWeeklyGoalTitle => 'Wöchentliches Ziel';
+  String get helpWeeklyGoalTitle => 'Weekly Goal';
 
   @override
-  String get helpWeeklyGoalDescription => 'Verfolge deinen Fortschritt in Richtung deines wöchentlichen Flow-Ziels von 300 Minuten.';
+  String get helpWeeklyGoalDescription => 'Track your progress toward your weekly flow goal of 300 minutes.';
 
   @override
-  String get helpTrendIndicatorTitle => 'Trendindikator';
+  String get helpTrendIndicatorTitle => 'Trend Indicator';
 
   @override
-  String get helpTrendIndicatorDescription => 'Zeigt, ob dein Flow zunimmt, abnimmt oder stabil bleibt im Vergleich zum vorherigen Zeitraum.';
+  String get helpTrendIndicatorDescription => 'Shows whether your flow time is improving, declining, or stable compared to the previous period.';
+
+  @override
+  String get dailyReminderTitle => 'Tägliche Erinnerung';
+
+  @override
+  String get dailyReminderBody => 'Vergiss nicht, deine Aufgaben für heute zu erledigen!';
+
+  @override
+  String get saveChanges => 'Änderungen speichern';
+
+  @override
+  String get taskDeleted => 'Aufgabe gelöscht';
+
+  @override
+  String get addPoints => 'Du hast 2 XP für die abgeschlossene Aufgabe erhalten!';
+
+  @override
+  String get taskAdded => 'Aufgabe hinzugefügt';
+
+  @override
+  String get changeDate => 'Datum ändern';
+
+  @override
+  String get taskNotesLabel => 'Notizen zur Aufgabe';
+
+  @override
+  String get emptyTitleError => 'Der Titel darf nicht leer sein!';
+
+  @override
+  String get taskCompletedMessage => 'Aufgabe erfolgreich abgeschlossen!';
+
+  @override
+  String get updateTask => 'Aufgabe aktualisieren';
+
+  @override
+  String get taskUpdatedMessage => 'Aufgabe wurde aktualisiert';
+
+  @override
+  String get taskDetails => 'Aufgabendetails';
+
+  @override
+  String get description => 'Beschreibung';
+
+  @override
+  String get deadline => 'Fälligkeitsdatum';
+
+  @override
+  String get priority => 'Priorität';
+
+  @override
+  String get notCompleted => 'Nicht abgeschlossen';
+
+  @override
+  String get tags => 'Tags';
+
+  @override
+  String get quoteShared => 'Zitat wurde geteilt!';
+
+  @override
+  String get favoriteTooltip => 'Als Favorit markieren';
+
+  @override
+  String get shareTooltip => 'Teilen';
+
+  @override
+  String get doubleTapToFavorite => 'Doppelt tippen, um als Favorit zu markieren';
 }

@@ -90,6 +90,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Neue Gewohnheit hinzufügen"),
         "addNewTask":
             MessageLookupByLibrary.simpleMessage("Neue Aufgabe hinzufügen"),
+        "addPoints": MessageLookupByLibrary.simpleMessage(
+            "Du hast 2 XP für die abgeschlossene Aufgabe erhalten!"),
         "addTask": MessageLookupByLibrary.simpleMessage("Add"),
         "addTodo": MessageLookupByLibrary.simpleMessage("Add"),
         "allHabits": MessageLookupByLibrary.simpleMessage("Alle Gewohnheiten"),
@@ -118,6 +120,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "cancelButton": MessageLookupByLibrary.simpleMessage("Abbrechen"),
         "captain": MessageLookupByLibrary.simpleMessage("Captain"),
         "categoryLabel": MessageLookupByLibrary.simpleMessage("Kategorie"),
+        "changeDate": MessageLookupByLibrary.simpleMessage("Datum ändern"),
         "changeDeadline":
             MessageLookupByLibrary.simpleMessage("Deadline ändern"),
         "chatbotModeBrutal":
@@ -170,8 +173,12 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Täglicher Fortschritt"),
         "dailyReminderActivated": MessageLookupByLibrary.simpleMessage(
             "Täglicher Reminder um 20:00 aktiviert!"),
+        "dailyReminderBody": MessageLookupByLibrary.simpleMessage(
+            "Vergiss nicht, deine Aufgaben für heute zu erledigen!"),
         "dailyReminderDeactivated": MessageLookupByLibrary.simpleMessage(
             "Täglicher Reminder wurde deaktiviert."),
+        "dailyReminderTitle":
+            MessageLookupByLibrary.simpleMessage("Tägliche Erinnerung"),
         "dailyTodoChannelDesc": MessageLookupByLibrary.simpleMessage(
             "Erinnert dich jeden Tag um 20:00 an deine Aufgaben."),
         "dailyTodoChannelName":
@@ -180,6 +187,7 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Daimonion-Warlord"),
         "dashboardTitle": MessageLookupByLibrary.simpleMessage("Dashboard"),
         "day": m4,
+        "deadline": MessageLookupByLibrary.simpleMessage("Fälligkeitsdatum"),
         "delete": MessageLookupByLibrary.simpleMessage("Löschen"),
         "deleteHabitConfirmation": MessageLookupByLibrary.simpleMessage(
             "Bist du sicher, dass du die Gewohnheit löschen möchtest?"),
@@ -190,8 +198,11 @@ class MessageLookup extends MessageLookupByLibrary {
         "deleteJournalEntryTitle":
             MessageLookupByLibrary.simpleMessage("Löschen?"),
         "deleteTask": MessageLookupByLibrary.simpleMessage("Löschen"),
+        "description": MessageLookupByLibrary.simpleMessage("Beschreibung"),
         "detailedUserStats": MessageLookupByLibrary.simpleMessage(
             "Hier werden detaillierte Statistiken über deine Produktivität, Streaks und Fortschritte angezeigt."),
+        "doubleTapToFavorite": MessageLookupByLibrary.simpleMessage(
+            "Doppelt tippen, um als Favorit zu markieren"),
         "dueOn": m7,
         "edit": MessageLookupByLibrary.simpleMessage("Bearbeiten"),
         "editDayTitle": MessageLookupByLibrary.simpleMessage("Tag bearbeiten"),
@@ -217,6 +228,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Kein E-Mail-Client auf diesem Gerät gefunden."),
         "emptyNameError": MessageLookupByLibrary.simpleMessage(
             "Bitte gib einen Namen für die Gewohnheit ein."),
+        "emptyTitleError": MessageLookupByLibrary.simpleMessage(
+            "Der Titel darf nicht leer sein!"),
         "errorContent": MessageLookupByLibrary.simpleMessage(
             "Es ist ein Fehler aufgetreten. Bitte versuche es später erneut."),
         "errorOccurred": m8,
@@ -226,6 +239,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Übungsdetails"),
         "exerciseName": MessageLookupByLibrary.simpleMessage("Übungsname"),
         "exercises": MessageLookupByLibrary.simpleMessage("Übungen"),
+        "favoriteTooltip":
+            MessageLookupByLibrary.simpleMessage("Als Favorit markieren"),
         "features_label":
             MessageLookupByLibrary.simpleMessage("Was ist enthalten:"),
         "feedbackButtonLabel":
@@ -425,6 +440,8 @@ class MessageLookup extends MessageLookupByLibrary {
             "Noch keine To-Dos hinzugefügt."),
         "noWorkoutName":
             MessageLookupByLibrary.simpleMessage("Kein Trainingsname"),
+        "notCompleted":
+            MessageLookupByLibrary.simpleMessage("Nicht abgeschlossen"),
         "notNow": MessageLookupByLibrary.simpleMessage("Nicht jetzt"),
         "notes": MessageLookupByLibrary.simpleMessage("Notizen"),
         "notificationActiveMessage": MessageLookupByLibrary.simpleMessage(
@@ -485,6 +502,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "premium_label": MessageLookupByLibrary.simpleMessage("PREMIUM"),
         "premium_not_available": MessageLookupByLibrary.simpleMessage(
             "Premium-Paket nicht verfügbar."),
+        "priority": MessageLookupByLibrary.simpleMessage("Priorität"),
         "privacyAndTerms": MessageLookupByLibrary.simpleMessage(
             "Datenschutz & Nutzungsbedingungen"),
         "privacyAndTermsContent": MessageLookupByLibrary.simpleMessage(
@@ -507,6 +525,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "purchasesRestoredSuccess": MessageLookupByLibrary.simpleMessage(
             "Deine Käufe wurden erfolgreich wiederhergestellt!"),
         "quickAdd": MessageLookupByLibrary.simpleMessage("Schnell hinzufügen"),
+        "quoteShared":
+            MessageLookupByLibrary.simpleMessage("Zitat wurde geteilt!"),
         "rank": MessageLookupByLibrary.simpleMessage("Rang"),
         "recruit": MessageLookupByLibrary.simpleMessage("Rekrut"),
         "reminderLabel":
@@ -524,6 +544,8 @@ class MessageLookup extends MessageLookupByLibrary {
         "saturdayShort": MessageLookupByLibrary.simpleMessage("Sa"),
         "save": MessageLookupByLibrary.simpleMessage("Speichern"),
         "saveButton": MessageLookupByLibrary.simpleMessage("Speichern"),
+        "saveChanges":
+            MessageLookupByLibrary.simpleMessage("Änderungen speichern"),
         "selectCategory":
             MessageLookupByLibrary.simpleMessage("Kategorie auswählen"),
         "selectHardness":
@@ -533,6 +555,7 @@ class MessageLookup extends MessageLookupByLibrary {
         "sets": MessageLookupByLibrary.simpleMessage("Sätze"),
         "setsLabel": MessageLookupByLibrary.simpleMessage("Sätze"),
         "settingsTitle": MessageLookupByLibrary.simpleMessage("Einstellungen"),
+        "shareTooltip": MessageLookupByLibrary.simpleMessage("Teilen"),
         "shortCheckGym": MessageLookupByLibrary.simpleMessage("Körper"),
         "shortCheckHealthyEating":
             MessageLookupByLibrary.simpleMessage("Gesund"),
@@ -583,16 +606,27 @@ class MessageLookup extends MessageLookupByLibrary {
             "Gib mir einen Tritt in den Hintern!"),
         "sunday": MessageLookupByLibrary.simpleMessage("Sonntag"),
         "sundayShort": MessageLookupByLibrary.simpleMessage("So"),
+        "tags": MessageLookupByLibrary.simpleMessage("Tags"),
         "tapToAddDetails": MessageLookupByLibrary.simpleMessage(
             "Tippe, um Details hinzuzufügen"),
         "tapToAddExercises": MessageLookupByLibrary.simpleMessage(
             "Tippe, um Übungen hinzuzufügen"),
         "tapToRefresh":
             MessageLookupByLibrary.simpleMessage("Zum Aktualisieren tippen"),
+        "taskAdded":
+            MessageLookupByLibrary.simpleMessage("Aufgabe hinzugefügt"),
+        "taskCompletedMessage": MessageLookupByLibrary.simpleMessage(
+            "Aufgabe erfolgreich abgeschlossen!"),
         "taskCompletionTrends":
             MessageLookupByLibrary.simpleMessage("Aufgabenabschluss-Trends"),
+        "taskDeleted": MessageLookupByLibrary.simpleMessage("Aufgabe gelöscht"),
+        "taskDetails": MessageLookupByLibrary.simpleMessage("Aufgabendetails"),
         "taskLabel": m18,
+        "taskNotesLabel":
+            MessageLookupByLibrary.simpleMessage("Notizen zur Aufgabe"),
         "taskTitleLabel": MessageLookupByLibrary.simpleMessage("Titel"),
+        "taskUpdatedMessage":
+            MessageLookupByLibrary.simpleMessage("Aufgabe wurde aktualisiert"),
         "tasks": MessageLookupByLibrary.simpleMessage("Tasks"),
         "tasksDescription": MessageLookupByLibrary.simpleMessage(
             "Organisiere deine Aufgaben effizient."),
@@ -646,6 +680,8 @@ class MessageLookup extends MessageLookupByLibrary {
             MessageLookupByLibrary.simpleMessage("Premium freischalten"),
         "untitled": MessageLookupByLibrary.simpleMessage("(Ohne Titel)"),
         "update": MessageLookupByLibrary.simpleMessage("Aktualisieren"),
+        "updateTask":
+            MessageLookupByLibrary.simpleMessage("Aufgabe aktualisieren"),
         "upgrade": MessageLookupByLibrary.simpleMessage("Upgrade"),
         "upgradeContent": MessageLookupByLibrary.simpleMessage(
             "Du hast deine 5 kostenlosen Prompts verbraucht.\n\nHol dir jetzt die Premium-Version für unbegrenzte Chats!"),
