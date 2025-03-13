@@ -522,7 +522,7 @@ class _ChatbotPageState extends State<ChatbotPage> with TickerProviderStateMixin
   }
 
   // ----------------------------------------------------
-  // Custom App Bar (angepasst: oben links Icons.chat, Mitte Text "Daimonion" in _primaryColor)
+  // Custom App Bar (angepasst)
   // ----------------------------------------------------
   Widget _buildAppBar() {
     return Container(
@@ -537,94 +537,87 @@ class _ChatbotPageState extends State<ChatbotPage> with TickerProviderStateMixin
           ),
         ],
       ),
-      child: Stack(
-        alignment: Alignment.center,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          // Links: Einfaches Icon (Icons.chat) in _primaryColor
-          Align(
-            alignment: Alignment.centerLeft,
-            child: Icon(
-              Icons.chat,
-              color: _primaryColor,
-              size: 36,
-            ),
+          // Links: Kleineres Chat-Emoji
+          Icon(
+            Icons.chat,
+            color: _primaryColor,
+            size: 24,
           ),
-          // Mitte: Statt Asset-Bild nun Text "Daimonion"
-          Align(
-            alignment: Alignment.center,
-            child: Text(
-              "Daimonion",
-              style: TextStyle(
-                color: _primaryColor,
-                fontSize: 24,
-                fontWeight: FontWeight.bold,
-              ),
+          // Mitte: Schriftzug "Daimonion" in weiß und kleiner
+          Text(
+            "Daimonion",
+            style: TextStyle(
+              color: Colors.white,
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
             ),
           ),
           // Rechts: Aktionen (Voice Button etc.)
-          Align(
-            alignment: Alignment.centerRight,
-            child: Row(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                // Voice Button
-                GestureDetector(
-                  onTap: () {
-                    setState(() {
-                      _voiceEnabled = !_voiceEnabled;
-                    });
-                    Hive.box('settings').put('voiceEnabled', _voiceEnabled);
-                  },
-                  child: AnimatedContainer(
-                    duration: const Duration(milliseconds: 300),
-                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                    decoration: BoxDecoration(
-                      color: _voiceEnabled ? _primaryColor : Colors.grey.shade800,
-                      borderRadius: BorderRadius.circular(30),
-                      boxShadow: _voiceEnabled ? [
-                        BoxShadow(
-                          color: _primaryColor.withOpacity(0.4),
-                          blurRadius: 8,
-                          offset: const Offset(0, 2),
-                        ),
-                      ] : null,
-                    ),
-                    child: Row(
-                      children: [
-                        Icon(
-                          _voiceEnabled ? Icons.volume_up : Icons.volume_off,
-                          color: Colors.white,
-                          size: 16,
-                        ),
-                        const SizedBox(width: 6),
-                        Text(
-                          _voiceEnabled ? 'ON' : 'OFF',
-                          style: const TextStyle(
-                            color: Colors.white, 
-                            fontSize: 12,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                const SizedBox(width: 12),
-                // Voice Selection Button
-                Container(
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              // Voice Button
+              GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _voiceEnabled = !_voiceEnabled;
+                  });
+                  Hive.box('settings').put('voiceEnabled', _voiceEnabled);
+                },
+                child: AnimatedContainer(
+                  duration: const Duration(milliseconds: 300),
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
-                    color: Colors.grey.shade800,
-                    shape: BoxShape.circle,
+                    color: _voiceEnabled ? _primaryColor : Colors.grey.shade800,
+                    borderRadius: BorderRadius.circular(30),
+                    boxShadow: _voiceEnabled
+                        ? [
+                            BoxShadow(
+                              color: _primaryColor.withOpacity(0.4),
+                              blurRadius: 8,
+                              offset: const Offset(0, 2),
+                            ),
+                          ]
+                        : null,
                   ),
-                  child: IconButton(
-                    icon: const Icon(Icons.settings_voice, color: Colors.white),
-                    onPressed: _showVoiceSelectionSheet,
-                    tooltip: 'Voice auswählen',
-                    iconSize: 20,
+                  child: Row(
+                    children: [
+                      Icon(
+                        _voiceEnabled ? Icons.volume_up : Icons.volume_off,
+                        color: Colors.white,
+                        size: 16,
+                      ),
+                      const SizedBox(width: 6),
+                      Text(
+                        _voiceEnabled ? 'ON' : 'OFF',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              const SizedBox(width: 12),
+              // Voice Selection Button
+              Container(
+                decoration: BoxDecoration(
+                  color: Colors.grey.shade800,
+                  shape: BoxShape.circle,
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.settings_voice, color: Colors.white),
+                  onPressed: _showVoiceSelectionSheet,
+                  tooltip: 'Voice auswählen',
+                  iconSize: 20,
+                ),
+              ),
+            ],
           ),
         ],
       ),

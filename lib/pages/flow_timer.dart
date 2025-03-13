@@ -1,11 +1,14 @@
 // lib/pages/flow_timer.dart
 
+import 'dart:async';
 import 'dart:math';
+import 'package:audioplayers/audioplayers.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../services/flow_timer_service.dart';
 import '../widgets/ad_wrapper.dart';
 import '../l10n/generated/l10n.dart';
+import 'flow_stats_page.dart';
 
 class FlowTimerPage extends StatefulWidget {
   const FlowTimerPage({Key? key}) : super(key: key);
@@ -19,6 +22,14 @@ class _FlowTimerPageState extends State<FlowTimerPage>
   DateTime? _sessionStart;
   late AnimationController _animationController;
   late Animation<double> _animation;
+
+  // Blackout-Variablen
+  bool _isBlackout = false;
+  Timer? _blackoutTimer;
+
+  // Für Ding-Ton, wenn ein Flow vorbei ist
+  final AudioPlayer _dingPlayer = AudioPlayer();
+  int _lastFlowIndex = -1;
 
   @override
   void initState() {
@@ -37,7 +48,35 @@ class _FlowTimerPageState extends State<FlowTimerPage>
   @override
   void dispose() {
     _animationController.dispose();
+    _cancelBlackoutTimer();
     super.dispose();
+  }
+
+  // Startet den Timer, der nach 30 Sekunden den Blackout aktiviert
+  void _startBlackoutTimer() {
+    _cancelBlackoutTimer();
+    _blackoutTimer = Timer(const Duration(seconds: 30), () {
+      if (mounted) {
+        setState(() {
+          _isBlackout = true;
+        });
+      }
+    });
+  }
+
+  // Löscht den Blackout-Timer
+  void _cancelBlackoutTimer() {
+    _blackoutTimer?.cancel();
+    _blackoutTimer = null;
+  }
+
+  // Spielt den Ding-Ton ab (Stelle sicher, dass die Datei in assets/sounds/ding.mp3 vorhanden und deklariert ist)
+  Future<void> _playDingSound() async {
+    try {
+      await _dingPlayer.play(AssetSource('sounds/ding.mp3'));
+    } catch (e) {
+      debugPrint("Error playing ding sound: $e");
+    }
   }
 
   @override
@@ -53,272 +92,334 @@ class _FlowTimerPageState extends State<FlowTimerPage>
     final secondsLeft = flowTimer.secondsLeft.toDouble();
     final timeString = _formatTime(flowTimer.secondsLeft);
 
-    // If we've reached the end => reset
+    // Wenn das Ende erreicht ist => zurücksetzen
     if (currentFlowIndex >= totalFlows) {
       flowTimer.resetTimer();
     }
 
-    // Progress for the current flow (0..1)
+    // Fortschritt des aktuellen Flows (0..1)
     double flowProgress = 0.0;
     if (isRunning && totalSeconds > 0) {
       flowProgress = (totalSeconds - secondsLeft) / totalSeconds;
     } else if (currentFlowIndex > 0 && !isRunning) {
-      // If a flow is finished, we're in pause
       flowProgress = 1.0;
     }
 
-    // Session duration calculation
+    // Session-Dauer
     final sessionTime = _sessionStart != null
         ? DateTime.now().difference(_sessionStart!)
         : Duration.zero;
     final sessionTimeString = _formatDuration(sessionTime);
 
-    return AdWrapper(
-      child: Scaffold(
-        extendBodyBehindAppBar: true,
-        appBar: AppBar(
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          centerTitle: true,
-          title: Text(
-            loc.flowTimerTitle,
-            style: const TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 20,
-              letterSpacing: 1.2,
-            ),
-          ),
-          leading: IconButton(
-            icon: const Icon(Icons.arrow_back_ios_new, size: 20),
-            onPressed: () => Navigator.pop(context),
-          ),
-          actions: [
-            IconButton(
-              icon: const Icon(Icons.info_outline, size: 20),
-              onPressed: () => _showInfoDialog(context),
-            ),
-          ],
-        ),
-        body: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              colors: isRunning 
-                  ? [const Color(0xFF1A2151), const Color(0xFF3D0D4E)]
-                  : [const Color(0xFF0F0F0F), const Color(0xFF2A2A2A)],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
-          child: SafeArea(
-            child: FadeTransition(
-              opacity: _animation,
-              child: Column(
-                children: [
-                  // Stats summary card
-                  if (_sessionStart != null)
-                    Padding(
-                      padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
-                      child: _buildSessionCard(sessionTimeString, currentFlowIndex, totalFlows),
-                    ),
-                  
-                  // Flow progress visualization
-                  Padding(
-                    padding: const EdgeInsets.all(16.0),
-                    child: _buildFlowProgress(flowTimer),
-                  ),
+    // Ding-Ton abspielen, wenn ein Flow vorbei ist und noch nicht für diesen Flow der Ton gespielt wurde
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!isRunning && flowTimer.secondsLeft == 0 && _lastFlowIndex != currentFlowIndex) {
+        _lastFlowIndex = currentFlowIndex;
+        _playDingSound();
+      }
+    });
 
-                  // Main timer section
-                  Expanded(
-                    child: Center(
-                      child: GestureDetector(
-                        onTap: () async {
-                          _sessionStart ??= DateTime.now();
-                          await _changeTimeDialog(context);
-                        },
-                        child: FractionallySizedBox(
-                          widthFactor: 0.85,
-                          child: AspectRatio(
-                            aspectRatio: 1,
-                            child: Container(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: (isRunning 
-                                      ? const Color.fromARGB(255, 223, 27, 27)
-                                      : Colors.blueGrey).withOpacity(0.3),
-                                    blurRadius: 20,
-                                    spreadRadius: 5,
-                                  ),
-                                ],
-                              ),
-                              child: Stack(
-                                alignment: Alignment.center,
-                                children: [
-                                  // Timer background
-                                  Container(
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    decoration: BoxDecoration(
-                                      shape: BoxShape.circle,
-                                      gradient: RadialGradient(
-                                        colors: [
-                                          Colors.black.withOpacity(0.8),
-                                          Colors.black.withOpacity(0.6),
-                                        ],
-                                        stops: const [0.6, 1.0],
-                                      ),
-                                    ),
-                                  ),
-                                  
-                                  // Progress indicator
-                                  SizedBox(
-                                    width: double.infinity,
-                                    height: double.infinity,
-                                    child: CircularProgressIndicator(
-                                      value: flowProgress,
-                                      strokeWidth: 15,
-                                      backgroundColor: Colors.grey.shade800.withOpacity(0.3),
-                                      valueColor: AlwaysStoppedAnimation<Color>(
-                                        isRunning 
-                                          ? const Color.fromARGB(255, 223, 27, 27) 
-                                          : Colors.blueGrey,
-                                      ),
-                                    ),
-                                  ),
-                                  
-                                  // Time display
-                                  Column(
-                                    mainAxisAlignment: MainAxisAlignment.center,
-                                    children: [
-                                      Text(
-                                        timeString,
-                                        style: TextStyle(
-                                          fontSize: size.width * 0.15,
-                                          fontWeight: FontWeight.bold,
-                                          color: isRunning 
-                                            ? const Color.fromARGB(255, 223, 27, 27) 
-                                            : Colors.white,
-                                          fontFamily: 'Digital',
-                                          letterSpacing: 2,
-                                        ),
-                                      ),
-                                      const SizedBox(height: 8),
-                                      Container(
-                                        padding: const EdgeInsets.symmetric(
-                                          horizontal: 12, 
-                                          vertical: 4
-                                        ),
-                                        decoration: BoxDecoration(
-                                          color: Colors.black26,
-                                          borderRadius: BorderRadius.circular(20),
-                                        ),
-                                        child: Text(
-                                          isRunning ? "RUNNING" : "PAUSED",
-                                          style: TextStyle(
-                                            fontSize: 14,
-                                            fontWeight: FontWeight.w500,
-                                            color: isRunning 
-                                              ? const Color.fromARGB(255, 223, 27, 27) 
-                                              : Colors.white70,
-                                            letterSpacing: 1.5,
-                                          ),
-                                        ),
+    // Normaler Body in einem Scaffold, umhüllt von einem Stack für den optionalen Blackout-Overlay
+    return AdWrapper(
+      child: Stack(
+        children: [
+          Scaffold(
+            extendBodyBehindAppBar: true,
+            appBar: AppBar(
+              elevation: 0,
+              backgroundColor: Colors.transparent,
+              centerTitle: true,
+              title: Text(
+                loc.flowTimerTitle,
+                style: const TextStyle(
+                  fontWeight: FontWeight.bold,
+                  fontSize: 20,
+                  letterSpacing: 1.2,
+                ),
+              ),
+              leading: IconButton(
+                icon: const Icon(Icons.arrow_back_ios_new, size: 20),
+                onPressed: () => Navigator.pop(context),
+              ),
+              actions: [
+                // Stats-Icon
+                IconButton(
+                  icon: const Icon(Icons.bar_chart, size: 20),
+                  onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(builder: (context) => const FlowStatsPage()),
+                  ),
+                ),
+                // Info-Icon
+                IconButton(
+                  icon: const Icon(Icons.info_outline, size: 20),
+                  onPressed: () => _showInfoDialog(context),
+                ),
+              ],
+            ),
+            body: Container(
+              width: double.infinity,
+              height: double.infinity,
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  colors: isRunning 
+                      ? [const Color(0xFF1A2151), const Color(0xFF3D0D4E)]
+                      : [const Color(0xFF0F0F0F), const Color(0xFF2A2A2A)],
+                  begin: Alignment.topLeft,
+                  end: Alignment.bottomRight,
+                ),
+              ),
+              child: SafeArea(
+                child: FadeTransition(
+                  opacity: _animation,
+                  child: Column(
+                    children: [
+                      // Stats summary card – erscheint von Anfang an, sobald die Seite geladen wird
+                      if (_sessionStart != null)
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 10, 20, 0),
+                          child: _buildSessionCard(sessionTimeString, currentFlowIndex, totalFlows),
+                        ),
+                      
+                      // Flow progress visualization
+                      Padding(
+                        padding: const EdgeInsets.all(16.0),
+                        child: _buildFlowProgress(flowTimer),
+                      ),
+      
+                      // Haupt-Timer-Bereich
+                      Expanded(
+                        child: Center(
+                          child: GestureDetector(
+                            onTap: () async {
+                              // Falls Blackout aktiv, bei Tippen Farben wiederherstellen
+                              if (_isBlackout) {
+                                setState(() {
+                                  _isBlackout = false;
+                                });
+                                _cancelBlackoutTimer();
+                              } else {
+                                _sessionStart ??= DateTime.now();
+                                await _changeTimeDialog(context);
+                              }
+                            },
+                            child: FractionallySizedBox(
+                              widthFactor: 0.85,
+                              child: AspectRatio(
+                                aspectRatio: 1,
+                                child: Container(
+                                  decoration: BoxDecoration(
+                                    shape: BoxShape.circle,
+                                    boxShadow: [
+                                      BoxShadow(
+                                        color: (isRunning 
+                                          ? const Color.fromARGB(255, 223, 27, 27)
+                                          : Colors.blueGrey).withOpacity(0.3),
+                                        blurRadius: 20,
+                                        spreadRadius: 5,
                                       ),
                                     ],
                                   ),
-                                ],
+                                  child: Stack(
+                                    alignment: Alignment.center,
+                                    children: [
+                                      // Timer-Hintergrund
+                                      Container(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          gradient: RadialGradient(
+                                            colors: [
+                                              Colors.black.withOpacity(0.8),
+                                              Colors.black.withOpacity(0.6),
+                                            ],
+                                            stops: const [0.6, 1.0],
+                                          ),
+                                        ),
+                                      ),
+                                      
+                                      // Progress-Indikator
+                                      SizedBox(
+                                        width: double.infinity,
+                                        height: double.infinity,
+                                        child: CircularProgressIndicator(
+                                          value: flowProgress,
+                                          strokeWidth: 15,
+                                          backgroundColor: Colors.grey.shade800.withOpacity(0.3),
+                                          valueColor: AlwaysStoppedAnimation<Color>(
+                                            isRunning 
+                                              ? const Color.fromARGB(255, 223, 27, 27) 
+                                              : Colors.blueGrey,
+                                          ),
+                                        ),
+                                      ),
+                                      
+                                      // Zeit-Anzeige
+                                      Column(
+                                        mainAxisAlignment: MainAxisAlignment.center,
+                                        children: [
+                                          Text(
+                                            timeString,
+                                            style: TextStyle(
+                                              fontSize: size.width * 0.15,
+                                              fontWeight: FontWeight.bold,
+                                              color: isRunning 
+                                                  ? const Color.fromARGB(255, 223, 27, 27)
+                                                  : Colors.white,
+                                              fontFamily: 'Digital',
+                                              letterSpacing: 2,
+                                            ),
+                                          ),
+                                          const SizedBox(height: 8),
+                                          Container(
+                                            padding: const EdgeInsets.symmetric(
+                                              horizontal: 12,
+                                              vertical: 4,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: Colors.black26,
+                                              borderRadius: BorderRadius.circular(20),
+                                            ),
+                                            child: Text(
+                                              isRunning ? "RUNNING" : "PAUSED",
+                                              style: TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w500,
+                                                color: isRunning 
+                                                    ? const Color.fromARGB(255, 223, 27, 27)
+                                                    : Colors.white70,
+                                                letterSpacing: 1.5,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ],
+                                  ),
+                                ),
                               ),
                             ),
                           ),
                         ),
                       ),
-                    ),
-                  ),
-
-                  // Bottom controls
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
-                    child: Column(
-                      children: [
-                        // Flow configuration row
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.center,
+      
+                      // Untere Steuerung
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 20),
+                        child: Column(
                           children: [
-                            _buildConfigButton(
-                              context,
-                              icon: Icons.timer,
-                              label: '${flowTimer.minutes} min',
-                              onTap: () async {
-                                await _changeTimeDialog(context);
-                              },
+                            // Flow-Konfigurationszeile
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                _buildConfigButton(
+                                  context,
+                                  icon: Icons.timer,
+                                  label: '${flowTimer.minutes} min',
+                                  onTap: () async {
+                                    await _changeTimeDialog(context);
+                                  },
+                                ),
+                                const SizedBox(width: 16),
+                                _buildConfigButton(
+                                  context,
+                                  icon: Icons.repeat,
+                                  label: '$totalFlows flows',
+                                  onTap: () async {
+                                    await _changeFlowsDialog(context);
+                                  },
+                                ),
+                              ],
                             ),
-                            const SizedBox(width: 16),
-                            _buildConfigButton(
-                              context,
-                              icon: Icons.repeat,
-                              label: '$totalFlows flows',
-                              onTap: () async {
-                                await _changeFlowsDialog(context);
-                              },
+                            
+                            const SizedBox(height: 20),
+                            
+                            // Steuerungs-Buttons
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                              children: [
+                                _buildControlButton(
+                                  icon: Icons.refresh,
+                                  color: Colors.orange,
+                                  onPressed: () {
+                                    _showResetConfirmation(context, flowTimer);
+                                  },
+                                ),
+                                _buildControlButton(
+                                  icon: isRunning ? Icons.pause : Icons.play_arrow,
+                                  color: isRunning ? Colors.blue : const Color.fromARGB(255, 223, 27, 27),
+                                  size: 70,
+                                  onPressed: () {
+                                    if (isRunning) {
+                                      flowTimer.pauseTimer();
+                                      _cancelBlackoutTimer();
+                                      setState(() {
+                                        _isBlackout = false;
+                                      });
+                                    } else {
+                                      _sessionStart ??= DateTime.now();
+                                      flowTimer.startTimer();
+                                      _startBlackoutTimer();
+                                    }
+                                  },
+                                ),
+                                _buildControlButton(
+                                  icon: Icons.skip_next,
+                                  color: Colors.green,
+                                  onPressed: () {
+                                    if (currentFlowIndex < totalFlows - 1) {
+                                      flowTimer.skipToNextFlow();
+                                    }
+                                  },
+                                ),
+                              ],
                             ),
                           ],
                         ),
-                        
-                        const SizedBox(height: 20),
-                        
-                        // Control buttons
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: [
-                            _buildControlButton(
-                              icon: Icons.refresh,
-                              color: Colors.orange,
-                              onPressed: () {
-                                _showResetConfirmation(context, flowTimer);
-                              },
-                            ),
-                            _buildControlButton(
-                              icon: isRunning ? Icons.pause : Icons.play_arrow,
-                              color: isRunning ? Colors.blue : const Color.fromARGB(255, 223, 27, 27),
-                              size: 70,
-                              onPressed: () {
-                                if (isRunning) {
-                                  flowTimer.pauseTimer();
-                                } else {
-                                  _sessionStart ??= DateTime.now();
-                                  flowTimer.startTimer();
-                                }
-                              },
-                            ),
-                            _buildControlButton(
-                              icon: Icons.skip_next,
-                              color: Colors.green,
-                              onPressed: () {
-                                if (currentFlowIndex < totalFlows - 1) {
-                                  flowTimer.skipToNextFlow();
-                                }
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                      ),
+                    ],
                   ),
-                ],
+                ),
               ),
             ),
           ),
-        ),
+          // Blackout-Overlay: Deckt den ganzen Screen schwarz ab, zeigt nur die Timer-Zahl und hebt sich per Tap auf
+          if (_isBlackout)
+            Positioned.fill(
+              child: GestureDetector(
+                onTap: () {
+                  setState(() {
+                    _isBlackout = false;
+                  });
+                  _cancelBlackoutTimer();
+                },
+                child: Container(
+                  color: Colors.black,
+                  child: Center(
+                    child: Text(
+                      timeString,
+                      style: TextStyle(
+                        fontSize: size.width * 0.2,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
+                        fontFamily: 'Digital',
+                        letterSpacing: 2,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+        ],
       ),
     );
   }
 
-  // Configuration button (time / flows)
-  Widget _buildConfigButton(BuildContext context, {
-    required IconData icon, 
+  // Configuration-Button (Zeit / Flows)
+  Widget _buildConfigButton(
+    BuildContext context, {
+    required IconData icon,
     required String label,
     required VoidCallback onTap,
   }) {
@@ -350,7 +451,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
     );
   }
 
-  // Control button (play/pause/reset/skip)
+  // Steuerungs-Button (Play/Pause/Reset/Skip)
   Widget _buildControlButton({
     required IconData icon,
     required Color color,
@@ -386,7 +487,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
     );
   }
 
-  // Session stats card
+  // Session-Stats-Karte
   Widget _buildSessionCard(String sessionTime, int currentFlow, int totalFlows) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
@@ -418,7 +519,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
     );
   }
 
-  // Individual stat item
+  // Einzelnes Stat-Item
   Widget _buildStatItem({
     required IconData icon,
     required String label,
@@ -452,7 +553,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
     );
   }
 
-  // Flow progress visualization
+  // Flow-Progress Visualisierung
   Widget _buildFlowProgress(FlowTimerService flowTimer) {
     final currentFlowIndex = flowTimer.flowIndex;
     final totalFlows = flowTimer.flows;
@@ -472,11 +573,11 @@ class _FlowTimerPageState extends State<FlowTimerPage>
               double opacity = 1.0;
               
               if (index < currentFlowIndex) {
-                flowColor = Colors.green; // completed
+                flowColor = Colors.green; // abgeschlossen
               } else if (index == currentFlowIndex) {
-                flowColor = const Color.fromARGB(255, 223, 27, 27); // current
+                flowColor = const Color.fromARGB(255, 223, 27, 27); // aktuell
               } else {
-                flowColor = Colors.grey; // upcoming
+                flowColor = Colors.grey; // anstehend
                 opacity = 0.5;
               }
 
@@ -485,7 +586,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                   margin: const EdgeInsets.symmetric(horizontal: 3),
                   child: Column(
                     children: [
-                      // Flow indicator
+                      // Flow-Indikator
                       Container(
                         height: 8,
                         decoration: BoxDecoration(
@@ -494,8 +595,8 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                         ),
                       ),
                       
-                      // Flow label
-                      if (index == currentFlowIndex) 
+                      // Flow-Label
+                      if (index == currentFlowIndex)
                         Padding(
                           padding: const EdgeInsets.only(top: 8),
                           child: Text(
@@ -519,7 +620,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
     );
   }
 
-  // Reset confirmation dialog
+  // Reset-Bestätigungsdialog
   Future<void> _showResetConfirmation(BuildContext context, FlowTimerService flowTimer) async {
     final loc = S.of(context);
     
@@ -531,14 +632,14 @@ class _FlowTimerPageState extends State<FlowTimerPage>
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(20),
           ),
-          title: Text(
+          title: const Text(
             "Reset Timer?",
-            style: const TextStyle(color: Colors.white),
+            style: TextStyle(color: Colors.white),
             textAlign: TextAlign.center,
           ),
-          content: Text(
+          content: const Text(
             "This will reset your current flow session. Are you sure?",
-            style: const TextStyle(color: Colors.white70),
+            style: TextStyle(color: Colors.white70),
             textAlign: TextAlign.center,
           ),
           actions: [
@@ -579,7 +680,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
     );
   }
 
-  // Info dialog
+  // Info-Dialog
   Future<void> _showInfoDialog(BuildContext context) async {
     return showDialog<void>(
       context: context,
@@ -662,7 +763,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
     );
   }
 
-  // Info item
+  // Info-Item
   Widget _buildInfoItem({required IconData icon, required String text}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
@@ -679,14 +780,6 @@ class _FlowTimerPageState extends State<FlowTimerPage>
         ],
       ),
     );
-  }
-
-  // New method: added optional functionality to skip to next flow
-  void _skipToNextFlow(FlowTimerService flowTimer) {
-    if (flowTimer.flowIndex < flowTimer.flows - 1) {
-      // Implementation would be in the service
-      flowTimer.skipToNextFlow(); 
-    }
   }
 
   // ----------------------------------------------------
@@ -754,7 +847,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                 ),
               ),
               const SizedBox(height: 10),
-              // Preset buttons
+              // Preset-Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [15, 25, 30, 45, 60].map((minutes) {
@@ -888,7 +981,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                 ),
               ),
               const SizedBox(height: 10),
-              // Preset buttons
+              // Preset-Buttons
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [2, 3, 4, 5, 8].map((flows) {
@@ -945,7 +1038,6 @@ class _FlowTimerPageState extends State<FlowTimerPage>
                     Navigator.pop(dialogCtx);
                     final newF = int.tryParse(flowController.text);
                     if (newF != null && newF > 0) {
-                      // max. 8
                       flowTimer.updateFlows(newF.clamp(1, 8));
                     }
                   },
@@ -959,7 +1051,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
   }
 
   // ----------------------------------------------------
-  // Time formatting (mm:ss)
+  // Time Formatting (mm:ss)
   // ----------------------------------------------------
   String _formatTime(int sec) {
     final m = sec ~/ 60;
@@ -968,7 +1060,7 @@ class _FlowTimerPageState extends State<FlowTimerPage>
   }
   
   // ----------------------------------------------------
-  // Duration formatting (hh:mm:ss)
+  // Duration Formatting (hh:mm:ss)
   // ----------------------------------------------------
   String _formatDuration(Duration duration) {
     String twoDigits(int n) => n.toString().padLeft(2, '0');
@@ -981,4 +1073,3 @@ class _FlowTimerPageState extends State<FlowTimerPage>
         : '$hours:$minutes:$seconds';
   }
 }
-

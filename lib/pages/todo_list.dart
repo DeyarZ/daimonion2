@@ -1219,8 +1219,205 @@ class _ToDoListPageState extends State<ToDoListPage>
                     mainAxisSize: MainAxisSize.min,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      // Hier sollten ähnliche Formularfelder wie in _showAddTaskSheet
-                      // mit vorausgefüllten Werten stehen
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            "Aufgabe bearbeiten",
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          IconButton(
+                            icon: const Icon(Icons.close, color: Colors.white),
+                            onPressed: () => Navigator.pop(ctx),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: titleController,
+                        style: const TextStyle(color: Colors.white),
+                        autofocus: true,
+                        decoration: InputDecoration(
+                          hintText: "Aufgabentitel",
+                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          filled: true,
+                          fillColor: Colors.grey[850],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Color(0xFFDF1B1B)),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      TextField(
+                        controller: notesController,
+                        style: const TextStyle(color: Colors.white),
+                        maxLines: 3,
+                        decoration: InputDecoration(
+                          hintText: "Notizen",
+                          hintStyle: TextStyle(color: Colors.grey[400]),
+                          filled: true,
+                          fillColor: Colors.grey[850],
+                          border: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: BorderSide.none,
+                          ),
+                          focusedBorder: OutlineInputBorder(
+                            borderRadius: BorderRadius.circular(12),
+                            borderSide: const BorderSide(color: Color(0xFFDF1B1B)),
+                          ),
+                          contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 16),
+                        ),
+                      ),
+                      const SizedBox(height: 16),
+                      Row(
+                        children: [
+                          Icon(Icons.calendar_today, color: Colors.grey[400]),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Deadline: ${_formatDate(editTaskDeadline)}',
+                            style: const TextStyle(color: Colors.white),
+                          ),
+                          const Spacer(),
+                          TextButton(
+                            onPressed: () async {
+                              final picked = await showDatePicker(
+                                context: context,
+                                initialDate: editTaskDeadline,
+                                firstDate: DateTime.now(),
+                                lastDate: DateTime.now().add(const Duration(days: 365)),
+                                builder: (context, child) {
+                                  return Theme(
+                                    data: Theme.of(context).copyWith(
+                                      colorScheme: const ColorScheme.dark(
+                                        primary: Color(0xFFDF1B1B),
+                                        onSurface: Colors.white,
+                                      ),
+                                      dialogBackgroundColor: Colors.grey[900],
+                                    ),
+                                    child: child!,
+                                  );
+                                },
+                              );
+                              if (picked != null) {
+                                setState(() {
+                                  editTaskDeadline = picked;
+                                });
+                              }
+                            },
+                            style: TextButton.styleFrom(
+                              foregroundColor: const Color(0xFFDF1B1B),
+                            ),
+                            child: Text("Datum ändern"),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Priority:',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        children: TaskPriority.values.map((p) {
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                editTaskPriority = p;
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                              decoration: BoxDecoration(
+                                color: editTaskPriority == p
+                                    ? _getPriorityColor(p).withOpacity(0.2)
+                                    : Colors.transparent,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(
+                                  color: editTaskPriority == p
+                                      ? _getPriorityColor(p)
+                                      : Colors.grey[700]!,
+                                ),
+                              ),
+                              child: Row(
+                                children: [
+                                  Icon(
+                                    _getPriorityIcon(p),
+                                    color: editTaskPriority == p
+                                        ? _getPriorityColor(p)
+                                        : Colors.grey[400],
+                                    size: 18,
+                                  ),
+                                  const SizedBox(width: 8),
+                                  Text(
+                                    _getPriorityText(p),
+                                    style: TextStyle(
+                                      color: editTaskPriority == p
+                                          ? _getPriorityColor(p)
+                                          : Colors.grey[400],
+                                    ),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 16),
+                      Text(
+                        'Tags:',
+                        style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                      ),
+                      const SizedBox(height: 8),
+                      Wrap(
+                        spacing: 8,
+                        runSpacing: 8,
+                        children: _defaultTags.map((tag) {
+                          final selected = editTaskTags.contains(tag);
+                          return InkWell(
+                            onTap: () {
+                              setState(() {
+                                if (selected) {
+                                  if (editTaskTags.length > 1) {
+                                    editTaskTags.remove(tag);
+                                  }
+                                } else {
+                                  editTaskTags.add(tag);
+                                }
+                              });
+                            },
+                            borderRadius: BorderRadius.circular(20),
+                            child: Container(
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                              decoration: BoxDecoration(
+                                color: selected ? const Color(0xFFDF1B1B).withOpacity(0.2) : Colors.transparent,
+                                borderRadius: BorderRadius.circular(20),
+                                border: Border.all(
+                                  color: selected ? const Color(0xFFDF1B1B) : Colors.grey[700]!,
+                                ),
+                              ),
+                              child: Text(
+                                tag,
+                                style: TextStyle(
+                                  color: selected ? const Color(0xFFDF1B1B) : Colors.white,
+                                ),
+                              ),
+                            ),
+                          );
+                        }).toList(),
+                      ),
+                      const SizedBox(height: 24),
                       SizedBox(
                         width: double.infinity,
                         height: 50,
@@ -1246,13 +1443,13 @@ class _ToDoListPageState extends State<ToDoListPage>
                             } else {
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
-                                  content: Text(S.of(context).emptyTitleError, style: const TextStyle(color: Colors.white)),
+                                  content: Text("Titel darf nicht leer sein", style: const TextStyle(color: Colors.white)),
                                   backgroundColor: Colors.red,
                                 ),
                               );
                             }
                           },
-                          child: Text(S.of(context).updateTask),
+                          child: Text("Aufgabe aktualisieren"),
                         ),
                       ),
                       const SizedBox(height: 16),

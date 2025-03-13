@@ -259,7 +259,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get editProfile => 'Edit Profile';
 
   @override
-  String get editProfileTitle => 'Edit Your Name';
+  String get editProfileTitle => 'Edit Profile';
 
   @override
   String get editProfileHint => 'Enter your name...';
@@ -271,7 +271,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get settingsTitle => 'Settings';
 
   @override
-  String get hardnessTitle => 'Hardness Level';
+  String get hardnessTitle => 'Feedback Style';
 
   @override
   String get hardnessNormal => 'Normal';
@@ -280,7 +280,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get hardnessHard => 'Hard';
 
   @override
-  String get hardnessBrutal => 'Brutally Honest';
+  String get hardnessBrutal => 'Brutal';
 
   @override
   String get legalAndAppInfoTitle => 'Legal & App Info';
@@ -326,7 +326,7 @@ class AppLocalizationsEn extends AppLocalizations {
   }
 
   @override
-  String get selectHardness => 'Select Hardness Level';
+  String get selectHardness => 'Select Feedback Style';
 
   @override
   String get hardnessQuestion => 'How tough do you want your Daimonion to be?';
@@ -802,7 +802,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get premium_not_available => 'Premium package not available.';
 
   @override
-  String get feedbackButtonLabel => 'Send Feedback';
+  String get feedbackButtonLabel => 'Feedback';
 
   @override
   String get noEmailClientFound => 'No email client found on this device.';
@@ -975,25 +975,25 @@ class AppLocalizationsEn extends AppLocalizations {
   String get error_title => 'Error';
 
   @override
-  String get nameLabel => 'Your Name';
+  String get nameLabel => 'Name';
 
   @override
   String get restoringPurchases => 'Restoring purchases...';
 
   @override
-  String get purchasesRestoredSuccess => 'Your purchases have been restored successfully!';
+  String get purchasesRestoredSuccess => 'Purchases restored successfully!';
 
   @override
-  String get noPurchasesToRestore => 'No previous purchases found to restore.';
+  String get noPurchasesToRestore => 'No purchases to restore';
 
   @override
-  String get purchasesRestoredError => 'Could not restore purchases.';
+  String get purchasesRestoredError => 'Error restoring purchases';
 
   @override
-  String get emailAppNotFound => 'No email client found on this device.';
+  String get emailAppNotFound => 'No email app found';
 
   @override
-  String get couldNotSendFeedback => 'Could not send feedback.';
+  String get couldNotSendFeedback => 'Could not send feedback';
 
   @override
   String get comingSoon => 'Coming Soon';
@@ -1399,4 +1399,104 @@ class AppLocalizationsEn extends AppLocalizations {
 
   @override
   String get doubleTapToFavorite => 'Double tap to favorite';
+
+  @override
+  String get currency_symbol => '\$';
+
+  @override
+  String get view_all_premium_benefits => 'View all premium benefits';
+
+  @override
+  String get premium_benefit_unlimited_chat => 'Unlimited chat requests for your Daimonion';
+
+  @override
+  String get premium_benefit_no_ads => 'No advertisements';
+
+  @override
+  String get premium_benefit_journal_access => 'Access to journal';
+
+  @override
+  String get premium_benefit_habit_tracker_access => 'Access to habit tracker';
+
+  @override
+  String get premium_benefit_todo_advanced => 'Access to advanced features in to-do list';
+
+  @override
+  String get premium_benefit_training_advanced => 'Access to advanced features in training plan';
+
+  @override
+  String get premium_benefit_flow_stats => 'Detailed statistics for flow timer';
+
+  @override
+  String get premium_benefit_tags_stats => 'Detailed statistics for tasks';
+
+  @override
+  String get hardnessSubtitle => 'Choose how direct the feedback should be';
+
+  @override
+  String get hardnessNormalDesc => 'Normal feedback with constructive suggestions';
+
+  @override
+  String get hardnessHardDesc => 'Challenging feedback that pushes your limits';
+
+  @override
+  String get hardnessBrutalDesc => 'No-nonsense, raw and unfiltered truth';
+
+  @override
+  String get stats => 'Stats';
+
+  @override
+  String get feedback => 'Feedback';
+
+  @override
+  String get levelAndXp => 'Level & XP';
+
+  @override
+  String get levelAndXpSubtitle => 'View your progress statistics';
+
+  @override
+  String get helpImproveDaimonion => 'Help us improve Daimonion';
+
+  @override
+  String get privacyAndTermsSubtitle => 'Privacy policy and terms of service';
+
+  @override
+  String get currentAppVersion => 'Current App Version';
+
+  @override
+  String get upgradeToPremiumSubtitle => 'Get access to all premium features';
+
+  @override
+  String get restorePurchasesSubtitle => 'Restore your previous purchases';
+
+  @override
+  String get imageSelectError => 'Could not select image';
+
+  @override
+  String levelNumber(Object level) {
+    return 'Lvl $level';
+  }
+
+  @override
+  String progressToNextLevel(Object progress) {
+    return '$progress% to next level';
+  }
+
+  @override
+  String get feedbackEmailSubject => 'Feedback for Daimonion';
+
+  @override
+  String get feedbackEmailBody => 'I would like to provide the following feedback:';
+
+  @override
+  String get motivationalMessage0 => 'Start your daily habits! Take the first step today.';
+
+  @override
+  String get motivationalMessageLessThan3 => 'You\'ve made a good start! Keep going!';
+
+  @override
+  String get motivationalMessageLessThan5 => 'Almost there! Just a few more to complete today\'s goals.';
+
+  @override
+  String get motivationalMessageAllCompleted => 'Amazing job! You\'ve completed all your daily habits!';
 }

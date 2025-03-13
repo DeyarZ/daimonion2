@@ -19,7 +19,6 @@ class ToolsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     final loc = S.of(context);
     
-    // Modern tool list with categories
     final List<_ToolCategory> categories = [
       _ToolCategory(
         title: loc.productivityCategory,
@@ -74,7 +73,7 @@ class ToolsPage extends StatelessWidget {
     ];
 
     // Check if the user has Premium
-    final isPremium = Hive.box('settings').get('isPremium', defaultValue: false); //WICHTIG !!!
+    final isPremium = Hive.box('settings').get('isPremium', defaultValue: true); //WICHTIG
 
     return AdWrapper(
       child: Scaffold(
@@ -126,14 +125,24 @@ class ToolsPage extends StatelessWidget {
                         children: [
                           Padding(
                             padding: const EdgeInsets.only(left: 8.0, bottom: 12.0, top: 16.0),
-                            child: Text(
-                              category.title,
-                              style: const TextStyle(
-                                color: Colors.white70,
-                                fontSize: 18,
-                                fontWeight: FontWeight.bold,
-                                letterSpacing: 1.2,
-                              ),
+                            child: Row(
+                              children: [
+                                Text(
+                                  category.title,
+                                  style: const TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 18,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 1.2,
+                                  ),
+                                ),
+                                const SizedBox(width: 8),
+                                Container(
+                                  height: 1,
+                                  width: 40,
+                                  color: Colors.white24,
+                                ),
+                              ],
                             ),
                           ),
                           // Grid for tools in this category
@@ -200,6 +209,10 @@ class ToolsPage extends StatelessWidget {
           onPressed: () => _showHelpDialog(context),
           backgroundColor: const Color.fromARGB(255, 223, 27, 27),
           child: const Icon(Icons.help_outline),
+          elevation: 4,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(15),
+          ),
         ),
       ),
     );
@@ -221,10 +234,17 @@ class ToolsPage extends StatelessWidget {
           content: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              const Icon(
-                Icons.workspace_premium,
-                color: Color(0xFFE74C3C),
-                size: 60,
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: const Color(0xFFE74C3C).withOpacity(0.1),
+                ),
+                child: const Icon(
+                  Icons.workspace_premium,
+                  color: Color(0xFFE74C3C),
+                  size: 60,
+                ),
               ),
               const SizedBox(height: 16),
               Text(
@@ -287,33 +307,52 @@ class ToolsPage extends StatelessWidget {
         return AlertDialog(
           backgroundColor: const Color(0xFF212121),
           shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
-          title: Text(
-            loc.helpDialogTitle,
-            style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
-          ),
-          content: Column(
-            mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.start,
+          title: Row(
             children: [
-              _buildHelpItem(Icons.timer_outlined, loc.flowTimerToolTitle, loc.flowTimerHelp),
-              const Divider(color: Colors.white24),
-              _buildHelpItem(Icons.checklist_outlined, loc.tasksToolTitle, loc.tasksHelp),
-              const Divider(color: Colors.white24),
-              _buildHelpItem(Icons.book_outlined, loc.journalToolTitle, loc.journalHelp),
-              const Divider(color: Colors.white24),
-              _buildHelpItem(Icons.track_changes_outlined, loc.habitTrackerToolTitle, loc.habitTrackerHelp),
-              const Divider(color: Colors.white24),
-              _buildHelpItem(Icons.fitness_center_outlined, loc.trainingPlanToolTitle, loc.trainingPlanHelp),
+              const Icon(
+                Icons.tips_and_updates,
+                color: Color.fromARGB(255, 223, 27, 27),
+                size: 24,
+              ),
+              const SizedBox(width: 10),
+              Text(
+                loc.helpDialogTitle,
+                style: const TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+              ),
             ],
+          ),
+          content: SingleChildScrollView(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildHelpItem(Icons.timer_outlined, loc.flowTimerToolTitle, loc.flowTimerHelp),
+                const Divider(color: Colors.white24),
+                _buildHelpItem(Icons.checklist_outlined, loc.tasksToolTitle, loc.tasksHelp),
+                const Divider(color: Colors.white24),
+                _buildHelpItem(Icons.book_outlined, loc.journalToolTitle, loc.journalHelp),
+                const Divider(color: Colors.white24),
+                _buildHelpItem(Icons.track_changes_outlined, loc.habitTrackerToolTitle, loc.habitTrackerHelp),
+                const Divider(color: Colors.white24),
+                _buildHelpItem(Icons.fitness_center_outlined, loc.trainingPlanToolTitle, loc.trainingPlanHelp),
+              ],
+            ),
           ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(ctx),
-              child: Text(
-                loc.gotIt,
-                style: const TextStyle(
-                  color: Color.fromARGB(255, 223, 27, 27),
-                  fontWeight: FontWeight.bold,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.1),
+                  borderRadius: BorderRadius.circular(30),
+                ),
+                child: Text(
+                  loc.gotIt,
+                  style: const TextStyle(
+                    color: Color.fromARGB(255, 223, 27, 27),
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
             ),
@@ -329,7 +368,14 @@ class ToolsPage extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Icon(icon, color: const Color.fromARGB(255, 223, 27, 27), size: 24),
+          Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: const Color.fromARGB(255, 223, 27, 27), size: 20),
+          ),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
@@ -357,9 +403,7 @@ class ToolsPage extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------
-// CATEGORY CLASS (NEW)
-// -----------------------------------------------------------------
+
 class _ToolCategory {
   final String title;
   final List<_ToolItem> tools;
@@ -370,16 +414,14 @@ class _ToolCategory {
   });
 }
 
-// -----------------------------------------------------------------
-// TOOL ITEM CLASS (ENHANCED)
-// -----------------------------------------------------------------
+
 class _ToolItem {
   final String title;
   final IconData iconData;
   final bool isPremium;
   final Widget pageToNavigate;
-  final String description;  // Added description
-  final Color accentColor;   // Added accent color
+  final String description;
+  final Color accentColor;
 
   const _ToolItem({
     required this.title,
@@ -391,9 +433,6 @@ class _ToolItem {
   });
 }
 
-// -----------------------------------------------------------------
-// TOOL CARD ITEM WIDGET (COMPLETELY REDESIGNED)
-// -----------------------------------------------------------------
 class _ToolCardItem extends StatelessWidget {
   final _ToolItem tool;
   final bool isUserPremium;
@@ -478,6 +517,7 @@ class _ToolCardItem extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
                             Container(
                               padding: const EdgeInsets.all(10),
@@ -491,12 +531,11 @@ class _ToolCardItem extends StatelessWidget {
                                 size: 30,
                               ),
                             ),
-                            const Spacer(),
                             if (showLock)
                               Container(
                                 padding: const EdgeInsets.symmetric(
-                                  horizontal: 8, 
-                                  vertical: 4,
+                                  horizontal: 6, 
+                                  vertical: 3,
                                 ),
                                 decoration: BoxDecoration(
                                   color: Colors.black26,
@@ -512,14 +551,14 @@ class _ToolCardItem extends StatelessWidget {
                                     Icon(
                                       Icons.lock,
                                       color: tool.accentColor,
-                                      size: 14,
+                                      size: 12,
                                     ),
-                                    const SizedBox(width: 4),
+                                    const SizedBox(width: 2),
                                     const Text(
                                       'Premium',
                                       style: TextStyle(
                                         color: Colors.white70,
-                                        fontSize: 12,
+                                        fontSize: 10,
                                         fontWeight: FontWeight.bold,
                                       ),
                                     ),
@@ -536,6 +575,8 @@ class _ToolCardItem extends StatelessWidget {
                             fontSize: 18,
                             fontWeight: FontWeight.bold,
                           ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                         const SizedBox(height: 4),
                         Text(
@@ -551,7 +592,7 @@ class _ToolCardItem extends StatelessWidget {
                     ),
                   ),
                   
-                  // Visual indicator for interactivity - subtle line
+                  // Visual indicator for interactivity - glowing bottom line
                   Positioned(
                     bottom: 0,
                     left: 0,
@@ -582,9 +623,7 @@ class _ToolCardItem extends StatelessWidget {
   }
 }
 
-// -----------------------------------------------------------------
-// CUSTOM PATTERN PAINTER FOR BACKGROUND TEXTURE (NEW)
-// -----------------------------------------------------------------
+
 class _PatternPainter extends CustomPainter {
   final Color color;
   

@@ -194,72 +194,75 @@ class WeeklyProgressSection extends StatelessWidget {
                           padding: const EdgeInsets.symmetric(horizontal: 3),
                           child: LayoutBuilder(
                             builder: (context, constraints) {
-                              return Stack(
-                                alignment: Alignment.bottomCenter,
-                                children: [
-                                  // Background
-                                  Container(
-                                    width: constraints.maxWidth,
-                                    height: constraints.maxHeight,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      color: Colors.grey.shade800.withOpacity(0.3),
-                                    ),
-                                  ),
-                                  
-                                  // Progress fill
-                                  AnimatedContainer(
-                                    duration: const Duration(milliseconds: 500),
-                                    curve: Curves.easeOutQuart,
-                                    width: constraints.maxWidth,
-                                    height: constraints.maxHeight * progressPercent,
-                                    decoration: BoxDecoration(
-                                      borderRadius: BorderRadius.circular(12),
-                                      gradient: LinearGradient(
-                                        colors: [
-                                          progressColor.withOpacity(0.7),
-                                          progressColor,
-                                        ],
-                                        begin: Alignment.topCenter,
-                                        end: Alignment.bottomCenter,
-                                      ),
-                                      boxShadow: [
-                                        BoxShadow(
-                                          color: progressColor.withOpacity(0.4),
-                                          offset: const Offset(0, 2),
-                                          blurRadius: 6,
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  
-                                  // Task count
-                                  Positioned(
-                                    bottom: 8,
-                                    child: Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                              return ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Stack(
+                                  alignment: Alignment.bottomCenter,
+                                  children: [
+                                    // Hintergrund
+                                    Container(
+                                      width: constraints.maxWidth,
+                                      height: constraints.maxHeight,
                                       decoration: BoxDecoration(
-                                        borderRadius: BorderRadius.circular(8),
-                                        color: Colors.black54,
+                                        borderRadius: BorderRadius.circular(12),
+                                        color: Colors.grey.shade800.withOpacity(0.3),
                                       ),
-                                      child: Text(
-                                        totalItems > 0 ? '$completedCount/$totalItems' : '0',
-                                        style: const TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
+                                    ),
+                                    
+                                    // Fortschrittsbalken
+                                    AnimatedContainer(
+                                      duration: const Duration(milliseconds: 500),
+                                      curve: Curves.easeOutQuart,
+                                      width: constraints.maxWidth,
+                                      height: constraints.maxHeight * progressPercent,
+                                      decoration: BoxDecoration(
+                                        borderRadius: BorderRadius.circular(12),
+                                        gradient: LinearGradient(
+                                          colors: [
+                                            progressColor.withOpacity(0.7),
+                                            progressColor,
+                                          ],
+                                          begin: Alignment.topCenter,
+                                          end: Alignment.bottomCenter,
+                                        ),
+                                        boxShadow: [
+                                          BoxShadow(
+                                            color: progressColor.withOpacity(0.4),
+                                            offset: const Offset(0, 2),
+                                            blurRadius: 6,
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    
+                                    // Task count
+                                    Positioned(
+                                      bottom: 8,
+                                      child: Container(
+                                        padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                        decoration: BoxDecoration(
+                                          borderRadius: BorderRadius.circular(8),
+                                          color: Colors.black54,
+                                        ),
+                                        child: Text(
+                                          totalItems > 0 ? '$completedCount/$totalItems' : '0',
+                                          style: const TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 10,
+                                            fontWeight: FontWeight.bold,
+                                          ),
                                         ),
                                       ),
                                     ),
-                                  ),
-                                ],
+                                  ],
+                                ),
                               );
                             },
                           ),
                         ),
-                        const SizedBox(height: 6),
                         
-                        // Date number
+                        // Fixed: Added proper spacing and removed negative offset
+                        const SizedBox(height: 8), // Add proper spacing
                         Container(
                           width: 24,
                           height: 24,
@@ -413,8 +416,7 @@ class WeeklyProgressSection extends StatelessWidget {
                           task.title,
                           style: TextStyle(
                             color: Colors.white,
-                            decoration: task.completed 
-                              ? TextDecoration.lineThrough 
+                            decoration: task.completed? TextDecoration.lineThrough 
                               : null,
                             decorationColor: Colors.green,
                           ),
@@ -472,6 +474,7 @@ class WeeklyProgressSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      clipBehavior: Clip.hardEdge, // Verhindert Überlaufen der Inhalte
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(20),
         gradient: const LinearGradient(

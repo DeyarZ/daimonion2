@@ -578,7 +578,7 @@ abstract class AppLocalizations {
   /// No description provided for @editProfileTitle.
   ///
   /// In en, this message translates to:
-  /// **'Edit Your Name'**
+  /// **'Edit Profile'**
   String get editProfileTitle;
 
   /// No description provided for @editProfileHint.
@@ -602,7 +602,7 @@ abstract class AppLocalizations {
   /// No description provided for @hardnessTitle.
   ///
   /// In en, this message translates to:
-  /// **'Hardness Level'**
+  /// **'Feedback Style'**
   String get hardnessTitle;
 
   /// No description provided for @hardnessNormal.
@@ -620,7 +620,7 @@ abstract class AppLocalizations {
   /// No description provided for @hardnessBrutal.
   ///
   /// In en, this message translates to:
-  /// **'Brutally Honest'**
+  /// **'Brutal'**
   String get hardnessBrutal;
 
   /// No description provided for @legalAndAppInfoTitle.
@@ -704,7 +704,7 @@ abstract class AppLocalizations {
   /// No description provided for @selectHardness.
   ///
   /// In en, this message translates to:
-  /// **'Select Hardness Level'**
+  /// **'Select Feedback Style'**
   String get selectHardness;
 
   /// No description provided for @hardnessQuestion.
@@ -1616,7 +1616,7 @@ abstract class AppLocalizations {
   /// No description provided for @feedbackButtonLabel.
   ///
   /// In en, this message translates to:
-  /// **'Send Feedback'**
+  /// **'Feedback'**
   String get feedbackButtonLabel;
 
   /// No description provided for @noEmailClientFound.
@@ -1958,7 +1958,7 @@ abstract class AppLocalizations {
   /// No description provided for @nameLabel.
   ///
   /// In en, this message translates to:
-  /// **'Your Name'**
+  /// **'Name'**
   String get nameLabel;
 
   /// No description provided for @restoringPurchases.
@@ -1970,31 +1970,31 @@ abstract class AppLocalizations {
   /// No description provided for @purchasesRestoredSuccess.
   ///
   /// In en, this message translates to:
-  /// **'Your purchases have been restored successfully!'**
+  /// **'Purchases restored successfully!'**
   String get purchasesRestoredSuccess;
 
   /// No description provided for @noPurchasesToRestore.
   ///
   /// In en, this message translates to:
-  /// **'No previous purchases found to restore.'**
+  /// **'No purchases to restore'**
   String get noPurchasesToRestore;
 
   /// No description provided for @purchasesRestoredError.
   ///
   /// In en, this message translates to:
-  /// **'Could not restore purchases.'**
+  /// **'Error restoring purchases'**
   String get purchasesRestoredError;
 
   /// No description provided for @emailAppNotFound.
   ///
   /// In en, this message translates to:
-  /// **'No email client found on this device.'**
+  /// **'No email app found'**
   String get emailAppNotFound;
 
   /// No description provided for @couldNotSendFeedback.
   ///
   /// In en, this message translates to:
-  /// **'Could not send feedback.'**
+  /// **'Could not send feedback'**
   String get couldNotSendFeedback;
 
   /// No description provided for @comingSoon.
@@ -2782,6 +2782,198 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Double tap to favorite'**
   String get doubleTapToFavorite;
+
+  /// No description provided for @currency_symbol.
+  ///
+  /// In en, this message translates to:
+  /// **'\$'**
+  String get currency_symbol;
+
+  /// No description provided for @view_all_premium_benefits.
+  ///
+  /// In en, this message translates to:
+  /// **'View all premium benefits'**
+  String get view_all_premium_benefits;
+
+  /// No description provided for @premium_benefit_unlimited_chat.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited chat requests for your Daimonion'**
+  String get premium_benefit_unlimited_chat;
+
+  /// No description provided for @premium_benefit_no_ads.
+  ///
+  /// In en, this message translates to:
+  /// **'No advertisements'**
+  String get premium_benefit_no_ads;
+
+  /// No description provided for @premium_benefit_journal_access.
+  ///
+  /// In en, this message translates to:
+  /// **'Access to journal'**
+  String get premium_benefit_journal_access;
+
+  /// No description provided for @premium_benefit_habit_tracker_access.
+  ///
+  /// In en, this message translates to:
+  /// **'Access to habit tracker'**
+  String get premium_benefit_habit_tracker_access;
+
+  /// No description provided for @premium_benefit_todo_advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Access to advanced features in to-do list'**
+  String get premium_benefit_todo_advanced;
+
+  /// No description provided for @premium_benefit_training_advanced.
+  ///
+  /// In en, this message translates to:
+  /// **'Access to advanced features in training plan'**
+  String get premium_benefit_training_advanced;
+
+  /// No description provided for @premium_benefit_flow_stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed statistics for flow timer'**
+  String get premium_benefit_flow_stats;
+
+  /// No description provided for @premium_benefit_tags_stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Detailed statistics for tasks'**
+  String get premium_benefit_tags_stats;
+
+  /// No description provided for @hardnessSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose how direct the feedback should be'**
+  String get hardnessSubtitle;
+
+  /// No description provided for @hardnessNormalDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Normal feedback with constructive suggestions'**
+  String get hardnessNormalDesc;
+
+  /// No description provided for @hardnessHardDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Challenging feedback that pushes your limits'**
+  String get hardnessHardDesc;
+
+  /// No description provided for @hardnessBrutalDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'No-nonsense, raw and unfiltered truth'**
+  String get hardnessBrutalDesc;
+
+  /// No description provided for @stats.
+  ///
+  /// In en, this message translates to:
+  /// **'Stats'**
+  String get stats;
+
+  /// No description provided for @feedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback'**
+  String get feedback;
+
+  /// No description provided for @levelAndXp.
+  ///
+  /// In en, this message translates to:
+  /// **'Level & XP'**
+  String get levelAndXp;
+
+  /// No description provided for @levelAndXpSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'View your progress statistics'**
+  String get levelAndXpSubtitle;
+
+  /// No description provided for @helpImproveDaimonion.
+  ///
+  /// In en, this message translates to:
+  /// **'Help us improve Daimonion'**
+  String get helpImproveDaimonion;
+
+  /// No description provided for @privacyAndTermsSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Privacy policy and terms of service'**
+  String get privacyAndTermsSubtitle;
+
+  /// No description provided for @currentAppVersion.
+  ///
+  /// In en, this message translates to:
+  /// **'Current App Version'**
+  String get currentAppVersion;
+
+  /// No description provided for @upgradeToPremiumSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Get access to all premium features'**
+  String get upgradeToPremiumSubtitle;
+
+  /// No description provided for @restorePurchasesSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restore your previous purchases'**
+  String get restorePurchasesSubtitle;
+
+  /// No description provided for @imageSelectError.
+  ///
+  /// In en, this message translates to:
+  /// **'Could not select image'**
+  String get imageSelectError;
+
+  /// No description provided for @levelNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Lvl {level}'**
+  String levelNumber(Object level);
+
+  /// No description provided for @progressToNextLevel.
+  ///
+  /// In en, this message translates to:
+  /// **'{progress}% to next level'**
+  String progressToNextLevel(Object progress);
+
+  /// No description provided for @feedbackEmailSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Feedback for Daimonion'**
+  String get feedbackEmailSubject;
+
+  /// No description provided for @feedbackEmailBody.
+  ///
+  /// In en, this message translates to:
+  /// **'I would like to provide the following feedback:'**
+  String get feedbackEmailBody;
+
+  /// No description provided for @motivationalMessage0.
+  ///
+  /// In en, this message translates to:
+  /// **'Start your daily habits! Take the first step today.'**
+  String get motivationalMessage0;
+
+  /// No description provided for @motivationalMessageLessThan3.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'ve made a good start! Keep going!'**
+  String get motivationalMessageLessThan3;
+
+  /// No description provided for @motivationalMessageLessThan5.
+  ///
+  /// In en, this message translates to:
+  /// **'Almost there! Just a few more to complete today\'s goals.'**
+  String get motivationalMessageLessThan5;
+
+  /// No description provided for @motivationalMessageAllCompleted.
+  ///
+  /// In en, this message translates to:
+  /// **'Amazing job! You\'ve completed all your daily habits!'**
+  String get motivationalMessageAllCompleted;
 }
 
 class _AppLocalizationsDelegate extends LocalizationsDelegate<AppLocalizations> {

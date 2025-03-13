@@ -1,24 +1,13 @@
-// lib/pages/habit_tracker.dart
-
 import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:uuid/uuid.dart';
 import 'package:flutter_slidable/flutter_slidable.dart';
-
-// Services
 import '../services/db_service.dart';
 import '../services/gamification_service.dart';
-
-// Notification-Funktionen
 import 'package:daimonion_app/main.dart'
     show scheduleHabitNotifications, cancelHabitNotifications;
-
-// Lokalisierung
 import '../l10n/generated/l10n.dart';
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Model-Klasse: Habit
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class Habit {
   String id;
   String name;
@@ -26,9 +15,8 @@ class Habit {
   List<int> selectedWeekdays;
   int? reminderHour;
   int? reminderMinute;
-  String? category; // New: Allow categorization of habits
-  Color? color; // New: Custom color per habit
-  
+  String? category; 
+  Color? color;
   Habit({
     required this.id,
     required this.name,
@@ -41,12 +29,8 @@ class Habit {
   });
 }
 
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Haupt-Klasse: HabitTrackerPage
-// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 class HabitTrackerPage extends StatefulWidget {
   const HabitTrackerPage({Key? key}) : super(key: key);
-
   @override
   _HabitTrackerPageState createState() => _HabitTrackerPageState();
 }
@@ -54,26 +38,21 @@ class HabitTrackerPage extends StatefulWidget {
 class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerProviderStateMixin {
   final DBService _dbService = DBService();
   final _uuid = const Uuid();
-  
   late DateTime today;
-  late List<DateTime> days; // -3 .. +3
+  late List<DateTime> days;
   late TabController _tabController;
-  
-  // Predefined categories and colors
   final List<String> categories = ['Health', 'Productivity', 'Learning', 'Personal'];
   final List<Color> predefinedColors = [
-    const Color(0xFF1E88E5), // Blue
-    const Color(0xFF43A047), // Green
-    const Color(0xFFE53935), // Red
-    const Color(0xFF8E24AA), // Purple
-    const Color(0xFFEF6C00), // Orange
-    const Color(0xFF00ACC1), // Cyan
+    const Color(0xFF1E88E5),
+    const Color(0xFF43A047),
+    const Color(0xFFE53935),
+    const Color(0xFF8E24AA),
+    const Color(0xFFEF6C00),
+    const Color(0xFF00ACC1),
   ];
-  
-  // Animation controllers
-  bool _showCompletedHabits = true;
+  // _showCompletedHabits wurde entfernt, da der dazugehörige Button weg ist.
   final GlobalKey<AnimatedListState> _listKey = GlobalKey<AnimatedListState>();
-  
+
   @override
   void initState() {
     super.initState();
@@ -81,20 +60,16 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
     days = _generate7Days(today);
     _tabController = TabController(length: 2, vsync: this);
   }
-  
+
   @override
   void dispose() {
     _tabController.dispose();
     super.dispose();
   }
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // BUILD
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   @override
   Widget build(BuildContext context) {
     final loc = S.of(context);
-    
     return Scaffold(
       body: Container(
         decoration: BoxDecoration(
@@ -110,7 +85,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
         child: SafeArea(
           child: CustomScrollView(
             slivers: [
-              // App Bar
               SliverAppBar(
                 floating: true,
                 pinned: true,
@@ -118,7 +92,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                 elevation: 0,
                 expandedHeight: 200,
                 flexibleSpace: FlexibleSpaceBar(
-                  titlePadding: const EdgeInsets.only(left: 16, bottom: 100), // Runterziehen des Titels
+                  titlePadding: const EdgeInsets.only(left: 16, bottom: 100),
                   title: Text(
                     loc.habitTrackerTitle,
                     style: const TextStyle(
@@ -130,7 +104,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                     decoration: BoxDecoration(
                       gradient: LinearGradient(
                         colors: [
-                          Colors.grey.shade900.withOpacity(0.7), 
+                          Colors.grey.shade900.withOpacity(0.7),
                           Colors.black.withOpacity(0.9)
                         ],
                         begin: Alignment.topCenter,
@@ -140,17 +114,7 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                   ),
                 ),
                 actions: [
-                  IconButton(
-                    icon: Icon(
-                      _showCompletedHabits ? Icons.visibility : Icons.visibility_off,
-                      color: Colors.white70,
-                    ),
-                    onPressed: () {
-                      setState(() {
-                        _showCompletedHabits = !_showCompletedHabits;
-                      });
-                    },
-                  ),
+                  // Augen-Icon wurde entfernt
                   IconButton(
                     icon: const Icon(
                       Icons.calendar_month,
@@ -185,32 +149,31 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                     },
                   ),
                 ],
-            bottom: PreferredSize(
-  // Höhe erhöhen, damit die Spalte Platz hat.
-  preferredSize: const Size.fromHeight(70),
-  child: Padding(
-    padding: const EdgeInsets.symmetric(horizontal: 16.0),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Text(
-          '${loc.todayLabel}: ${_formatDate(today)}',
-          style: const TextStyle(
-            color: Colors.white,
-            fontWeight: FontWeight.w500,
-          ),
-        ),
-        const SizedBox(height: 8),
-        TabBar(
-          controller: _tabController,
-          isScrollable: true,
-          indicatorColor: const Color.fromARGB(255, 223, 27, 27),
-          indicatorSize: TabBarIndicatorSize.label,
-          labelColor: const Color.fromARGB(255, 223, 27, 27),
-          unselectedLabelColor: Colors.white70,
-          tabs: [
-            Tab(text: loc.allHabits),
-            Tab(text: loc.byCategory),
+                bottom: PreferredSize(
+                  preferredSize: const Size.fromHeight(70),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          '${loc.todayLabel}: ${_formatDate(today)}',
+                          style: const TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        TabBar(
+                          controller: _tabController,
+                          isScrollable: true,
+                          indicatorColor: const Color.fromARGB(255, 223, 27, 27),
+                          indicatorSize: TabBarIndicatorSize.label,
+                          labelColor: const Color.fromARGB(255, 223, 27, 27),
+                          unselectedLabelColor: Colors.white70,
+                          tabs: [
+                            Tab(text: loc.allHabits),
+                            Tab(text: loc.byCategory),
                           ],
                         ),
                       ],
@@ -218,27 +181,22 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                   ),
                 ),
               ),
-              
-              // Content
-              SliverToBoxAdapter(
-                child: SizedBox(
-                  height: MediaQuery.of(context).size.height,
-                  child: TabBarView(
-                    controller: _tabController,
-                    children: [
-                      _buildAllHabitsTab(context),
-                      _buildCategoriesTab(context),
-                    ],
-                  ),
+              // Fix: Verwende SliverFillRemaining statt SliverToBoxAdapter mit SizedBox
+              SliverFillRemaining(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: [
+                    _buildAllHabitsTab(context),
+                    _buildCategoriesTab(context),
+                  ],
                 ),
               ),
             ],
           ),
         ),
       ),
-      
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Theme.of(context).primaryColor,
+        backgroundColor: Colors.red, // FloatingActionButton in Rot
         onPressed: _addHabit,
         elevation: 4,
         child: const Icon(Icons.add, color: Colors.white),
@@ -246,26 +204,14 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
       floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
     );
   }
-  
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // ALL HABITS TAB
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   Widget _buildAllHabitsTab(BuildContext context) {
     final loc = S.of(context);
-    
     return ValueListenableBuilder(
       valueListenable: _dbService.listenableHabits(),
       builder: (context, Box box, _) {
         List<Habit> habits = _boxToHabitList(box);
-        
-        // Filter out completed habits if the toggle is off
-        if (!_showCompletedHabits) {
-          habits = habits.where((habit) {
-            final todayKey = _formatDateKey(today);
-            return habit.dailyStatus[todayKey] != true;
-          }).toList();
-        }
-        
+        // Entfernt, da _showCompletedHabits nicht mehr genutzt wird.
         if (habits.isEmpty) {
           return Center(
             child: Column(
@@ -284,21 +230,11 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                     fontSize: 16,
                   ),
                 ),
-                const SizedBox(height: 8),
-                ElevatedButton.icon(
-                  icon: const Icon(Icons.add),
-                  label: Text(loc.addNewHabit),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Theme.of(context).primaryColor,
-                    foregroundColor: Colors.white,
-                  ),
-                  onPressed: _addHabit,
-                ),
+                // "Neue Gewohnheit hinzufügen"-Button wurde entfernt
               ],
             ),
           );
         }
-        
         return ListView.builder(
           padding: const EdgeInsets.only(bottom: 80),
           itemCount: habits.length,
@@ -310,26 +246,17 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
       },
     );
   }
-  
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // CATEGORIES TAB
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
   Widget _buildCategoriesTab(BuildContext context) {
     return ValueListenableBuilder(
       valueListenable: _dbService.listenableHabits(),
       builder: (context, Box box, _) {
         final habits = _boxToHabitList(box);
         final Map<String, List<Habit>> categorizedHabits = {};
-        
-        // Initialize with default categories
         for (String category in categories) {
           categorizedHabits[category] = [];
         }
-        
-        // Add an "Uncategorized" category
         categorizedHabits['Uncategorized'] = [];
-        
-        // Organize habits by category
         for (var habit in habits) {
           final category = habit.category ?? 'Uncategorized';
           if (categorizedHabits.containsKey(category)) {
@@ -338,12 +265,9 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
             categorizedHabits[category] = [habit];
           }
         }
-        
-        // Filter out empty categories
         final nonEmptyCategories = categorizedHabits.entries
             .where((entry) => entry.value.isNotEmpty)
             .toList();
-        
         if (nonEmptyCategories.isEmpty) {
           return Center(
             child: Text(
@@ -352,14 +276,12 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
             ),
           );
         }
-        
         return ListView.builder(
           padding: const EdgeInsets.only(bottom: 80),
           itemCount: nonEmptyCategories.length,
           itemBuilder: (context, categoryIndex) {
             final category = nonEmptyCategories[categoryIndex].key;
             final categoryHabits = nonEmptyCategories[categoryIndex].value;
-            
             return ExpansionTile(
               initiallyExpanded: true,
               title: Text(
@@ -379,15 +301,11 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
     );
   }
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // 1) HABIT ITEM
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildHabitItem(Habit habit) {
     final habitColor = habit.color ?? Theme.of(context).primaryColor;
     final bool isForToday = habit.selectedWeekdays.contains(today.weekday);
     final String dayKey = _formatDateKey(today);
     final bool? currentStatus = habit.dailyStatus[dayKey];
-    
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
       child: Slidable(
@@ -429,7 +347,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
           ),
           child: Column(
             children: [
-              // Header with name and status
               Container(
                 padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
                 decoration: BoxDecoration(
@@ -441,7 +358,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                 ),
                 child: Row(
                   children: [
-                    // Icon or indicator
                     Container(
                       width: 24,
                       height: 24,
@@ -462,8 +378,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                           : null,
                     ),
                     const SizedBox(width: 12),
-                    
-                    // Name
                     Expanded(
                       child: Text(
                         habit.name,
@@ -474,8 +388,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                         ),
                       ),
                     ),
-                    
-                    // Reminder indicator
                     if (habit.reminderHour != null && habit.reminderMinute != null)
                       Tooltip(
                         message: '${_formatTimeFromHourMinute(habit.reminderHour!, habit.reminderMinute!)}',
@@ -488,15 +400,11 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                   ],
                 ),
               ),
-              
-              // Calendar row
               Container(
                 color: Colors.transparent,
                 padding: const EdgeInsets.symmetric(vertical: 12),
                 child: _buildCalendarRow(habit),
               ),
-              
-              // Action buttons 
               if (isForToday)
                 Container(
                   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
@@ -556,11 +464,11 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
       ),
     );
   }
-  
+
   String _getCategoryText(Habit habit) {
     return habit.category != null ? habit.category! : S.of(context).uncategorized;
   }
-  
+
   Widget _buildStatusButton({
     required Habit habit,
     required String dayKey,
@@ -592,9 +500,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
     );
   }
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // 2) CALENDAR ROW
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   Widget _buildCalendarRow(Habit habit) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
@@ -604,28 +509,21 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
           final isSelectedDay = habit.selectedWeekdays.contains(day.weekday);
           final status = habit.dailyStatus[dayKey];
           final isToday = _isSameDay(day, today);
-          
           Color circleColor;
           IconData? icon;
-          
           if (!isSelectedDay) {
-            // Gray for days where habit is not scheduled
             circleColor = Colors.grey.shade700.withOpacity(0.3);
             icon = null;
           } else if (status == true) {
-            // Completed
             circleColor = Colors.green;
             icon = Icons.check;
           } else if (status == false) {
-            // Skipped
             circleColor = Colors.red;
             icon = Icons.close;
           } else {
-            // Not marked yet
             circleColor = isToday ? Colors.amber.withOpacity(0.3) : Colors.grey.shade600.withOpacity(0.3);
             icon = null;
           }
-          
           return GestureDetector(
             onTap: isSelectedDay ? () => _toggleHabitStatus(habit, dayKey) : null,
             child: Container(
@@ -633,7 +531,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
               margin: const EdgeInsets.symmetric(horizontal: 4),
               child: Column(
                 children: [
-                  // Day of week
                   Text(
                     _dayOfWeekLetter(day.weekday),
                     style: TextStyle(
@@ -643,8 +540,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                     ),
                   ),
                   const SizedBox(height: 4),
-                  
-                  // Circle indicator
                   AnimatedContainer(
                     duration: const Duration(milliseconds: 200),
                     width: 36,
@@ -677,9 +572,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
     );
   }
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // 3) ADD HABIT
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   void _addHabit() {
     final nameController = TextEditingController();
     final selectedDays = <int>{};
@@ -687,7 +579,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
     final selectedColor = ValueNotifier<Color>(predefinedColors.first);
     int? chosenHour;
     int? chosenMinute;
-
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -706,7 +597,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
               ),
               child: Column(
                 children: [
-                  // Handle and title
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -718,7 +608,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                     ),
                     child: Column(
                       children: [
-                        // Handle
                         Container(
                           width: 40,
                           height: 4,
@@ -728,8 +617,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
-                        // Title
                         Text(
                           S.of(ctx).newHabitTitle,
                           style: const TextStyle(
@@ -741,15 +628,12 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                       ],
                     ),
                   ),
-                  
-                  // Form content
                   Expanded(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Name field
                           TextField(
                             controller: nameController,
                             style: const TextStyle(color: Colors.white),
@@ -769,8 +653,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                             ),
                           ),
                           const SizedBox(height: 24),
-                          
-                          // Weekdays selection
                           Text(
                             S.of(ctx).repeatLabel,
                             style: const TextStyle(
@@ -780,7 +662,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                             ),
                           ),
                           const SizedBox(height: 12),
-                          
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
@@ -793,7 +674,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                                 final weekday = i + 1; // Mo=1,...,So=7
                                 final label = _dayOfWeekLetter(weekday);
                                 final isSelected = selectedDays.contains(weekday);
-                                
                                 return GestureDetector(
                                   onTap: () {
                                     setStateModal(() {
@@ -829,8 +709,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                             ),
                           ),
                           const SizedBox(height: 24),
-                          
-                          // Category dropdown
                           Text(
                             S.of(ctx).categoryLabel,
                             style: const TextStyle(
@@ -840,7 +718,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                             ),
                           ),
                           const SizedBox(height: 12),
-                          
                           ValueListenableBuilder<String?>(
                             valueListenable: selectedCategory,
                             builder: (ctx, value, _) {
@@ -879,8 +756,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                             },
                           ),
                           const SizedBox(height: 24),
-                          
-                          // Color selection
                           Text(
                             S.of(ctx).colorLabel,
                             style: const TextStyle(
@@ -890,7 +765,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                             ),
                           ),
                           const SizedBox(height: 12),
-                          
                           ValueListenableBuilder<Color>(
                             valueListenable: selectedColor,
                             builder: (ctx, value, _) {
@@ -903,7 +777,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                                   itemBuilder: (ctx, index) {
                                     final color = predefinedColors[index];
                                     final isSelected = color == value;
-                                    
                                     return GestureDetector(
                                       onTap: () {
                                         selectedColor.value = color;
@@ -935,8 +808,6 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                             },
                           ),
                           const SizedBox(height: 24),
-                          
-                          // Reminder
                           Text(
                             S.of(ctx).reminderLabel,
                             style: const TextStyle(
@@ -946,19 +817,18 @@ class _HabitTrackerPageState extends State<HabitTrackerPage> with SingleTickerPr
                             ),
                           ),
                           const SizedBox(height: 12),
-                          
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
                               color: Colors.grey.shade800,
-borderRadius: BorderRadius.circular(10),
+                              borderRadius: BorderRadius.circular(10),
                             ),
                             child: Row(
                               children: [
                                 Expanded(
                                   child: Text(
-                                    chosenHour != null 
-                                        ? _formatTimeFromHourMinute(chosenHour!, chosenMinute ?? 0) 
+                                    chosenHour != null
+                                        ? _formatTimeFromHourMinute(chosenHour!, chosenMinute ?? 0)
                                         : S.of(ctx).noReminderSet,
                                     style: TextStyle(
                                       color: chosenHour != null ? Colors.white : Colors.white70,
@@ -986,7 +856,6 @@ borderRadius: BorderRadius.circular(10),
                                         );
                                       },
                                     );
-                                    
                                     if (timeOfDay != null) {
                                       setStateModal(() {
                                         chosenHour = timeOfDay.hour;
@@ -1015,8 +884,6 @@ borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  
-                  // Buttons
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -1048,7 +915,6 @@ borderRadius: BorderRadius.circular(10),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              // Validate input
                               if (nameController.text.trim().isEmpty) {
                                 ScaffoldMessenger.of(ctx).showSnackBar(
                                   SnackBar(
@@ -1058,7 +924,6 @@ borderRadius: BorderRadius.circular(10),
                                 );
                                 return;
                               }
-                              
                               if (selectedDays.isEmpty) {
                                 ScaffoldMessenger.of(ctx).showSnackBar(
                                   SnackBar(
@@ -1068,8 +933,6 @@ borderRadius: BorderRadius.circular(10),
                                 );
                                 return;
                               }
-                              
-                              // Create new habit
                               _createHabit(
                                 name: nameController.text.trim(),
                                 weekdays: selectedDays.toList(),
@@ -1078,7 +941,6 @@ borderRadius: BorderRadius.circular(10),
                                 category: selectedCategory.value,
                                 color: selectedColor.value,
                               );
-                              
                               Navigator.of(ctx).pop();
                             },
                             style: ElevatedButton.styleFrom(
@@ -1104,9 +966,6 @@ borderRadius: BorderRadius.circular(10),
     );
   }
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // 4) EDIT HABIT
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
   void _showEditHabitDialog(Habit habit) {
     final nameController = TextEditingController(text: habit.name);
     final selectedDays = habit.selectedWeekdays.toSet();
@@ -1114,7 +973,6 @@ borderRadius: BorderRadius.circular(10),
     final selectedColor = ValueNotifier<Color>(habit.color ?? predefinedColors.first);
     int? chosenHour = habit.reminderHour;
     int? chosenMinute = habit.reminderMinute;
-    
     showModalBottomSheet(
       context: context,
       isScrollControlled: true,
@@ -1133,7 +991,6 @@ borderRadius: BorderRadius.circular(10),
               ),
               child: Column(
                 children: [
-                  // Handle and title
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -1145,7 +1002,6 @@ borderRadius: BorderRadius.circular(10),
                     ),
                     child: Column(
                       children: [
-                        // Handle
                         Container(
                           width: 40,
                           height: 4,
@@ -1155,8 +1011,6 @@ borderRadius: BorderRadius.circular(10),
                           ),
                         ),
                         const SizedBox(height: 16),
-                        
-                        // Title
                         Text(
                           S.of(ctx).editHabitTitle,
                           style: const TextStyle(
@@ -1168,15 +1022,12 @@ borderRadius: BorderRadius.circular(10),
                       ],
                     ),
                   ),
-                  
-                  // Form content - Reuse the same layout as add habit
                   Expanded(
                     child: SingleChildScrollView(
                       padding: const EdgeInsets.all(16),
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          // Name field
                           TextField(
                             controller: nameController,
                             style: const TextStyle(color: Colors.white),
@@ -1196,8 +1047,6 @@ borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           const SizedBox(height: 24),
-                          
-                          // Weekdays selection
                           Text(
                             S.of(ctx).repeatLabel,
                             style: const TextStyle(
@@ -1207,7 +1056,6 @@ borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           const SizedBox(height: 12),
-                          
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
@@ -1220,7 +1068,6 @@ borderRadius: BorderRadius.circular(10),
                                 final weekday = i + 1; // Mo=1,...,So=7
                                 final label = _dayOfWeekLetter(weekday);
                                 final isSelected = selectedDays.contains(weekday);
-                                
                                 return GestureDetector(
                                   onTap: () {
                                     setStateModal(() {
@@ -1256,8 +1103,6 @@ borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           const SizedBox(height: 24),
-                          
-                          // Category dropdown
                           Text(
                             S.of(ctx).categoryLabel,
                             style: const TextStyle(
@@ -1267,7 +1112,6 @@ borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           const SizedBox(height: 12),
-                          
                           ValueListenableBuilder<String?>(
                             valueListenable: selectedCategory,
                             builder: (ctx, value, _) {
@@ -1306,8 +1150,6 @@ borderRadius: BorderRadius.circular(10),
                             },
                           ),
                           const SizedBox(height: 24),
-                          
-                          // Color selection
                           Text(
                             S.of(ctx).colorLabel,
                             style: const TextStyle(
@@ -1317,7 +1159,6 @@ borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           const SizedBox(height: 12),
-                          
                           ValueListenableBuilder<Color>(
                             valueListenable: selectedColor,
                             builder: (ctx, value, _) {
@@ -1330,7 +1171,6 @@ borderRadius: BorderRadius.circular(10),
                                   itemBuilder: (ctx, index) {
                                     final color = predefinedColors[index];
                                     final isSelected = color == value;
-                                    
                                     return GestureDetector(
                                       onTap: () {
                                         selectedColor.value = color;
@@ -1362,8 +1202,6 @@ borderRadius: BorderRadius.circular(10),
                             },
                           ),
                           const SizedBox(height: 24),
-                          
-                          // Reminder
                           Text(
                             S.of(ctx).reminderLabel,
                             style: const TextStyle(
@@ -1373,7 +1211,6 @@ borderRadius: BorderRadius.circular(10),
                             ),
                           ),
                           const SizedBox(height: 12),
-                          
                           Container(
                             padding: const EdgeInsets.all(12),
                             decoration: BoxDecoration(
@@ -1384,8 +1221,8 @@ borderRadius: BorderRadius.circular(10),
                               children: [
                                 Expanded(
                                   child: Text(
-                                    chosenHour != null 
-                                        ? _formatTimeFromHourMinute(chosenHour!, chosenMinute ?? 0) 
+                                    chosenHour != null
+                                        ? _formatTimeFromHourMinute(chosenHour!, chosenMinute ?? 0)
                                         : S.of(ctx).noReminderSet,
                                     style: TextStyle(
                                       color: chosenHour != null ? Colors.white : Colors.white70,
@@ -1398,8 +1235,8 @@ borderRadius: BorderRadius.circular(10),
                                   onPressed: () async {
                                     final TimeOfDay? timeOfDay = await showTimePicker(
                                       context: ctx,
-                                      initialTime: chosenHour != null 
-                                          ? TimeOfDay(hour: chosenHour!, minute: chosenMinute ?? 0) 
+                                      initialTime: chosenHour != null
+                                          ? TimeOfDay(hour: chosenHour!, minute: chosenMinute ?? 0)
                                           : TimeOfDay.now(),
                                       builder: (context, child) {
                                         return Theme(
@@ -1415,7 +1252,6 @@ borderRadius: BorderRadius.circular(10),
                                         );
                                       },
                                     );
-                                    
                                     if (timeOfDay != null) {
                                       setStateModal(() {
                                         chosenHour = timeOfDay.hour;
@@ -1444,8 +1280,6 @@ borderRadius: BorderRadius.circular(10),
                       ),
                     ),
                   ),
-                  
-                  // Buttons
                   Container(
                     padding: const EdgeInsets.all(16),
                     decoration: BoxDecoration(
@@ -1477,7 +1311,6 @@ borderRadius: BorderRadius.circular(10),
                         Expanded(
                           child: ElevatedButton(
                             onPressed: () {
-                              // Validate input
                               if (nameController.text.trim().isEmpty) {
                                 ScaffoldMessenger.of(ctx).showSnackBar(
                                   SnackBar(
@@ -1487,7 +1320,6 @@ borderRadius: BorderRadius.circular(10),
                                 );
                                 return;
                               }
-                              
                               if (selectedDays.isEmpty) {
                                 ScaffoldMessenger.of(ctx).showSnackBar(
                                   SnackBar(
@@ -1497,8 +1329,6 @@ borderRadius: BorderRadius.circular(10),
                                 );
                                 return;
                               }
-                              
-                              // Update habit
                               _updateHabit(
                                 habitId: habit.id,
                                 name: nameController.text.trim(),
@@ -1509,7 +1339,6 @@ borderRadius: BorderRadius.circular(10),
                                 category: selectedCategory.value,
                                 color: selectedColor.value,
                               );
-                              
                               Navigator.of(ctx).pop();
                             },
                             style: ElevatedButton.styleFrom(
@@ -1535,11 +1364,6 @@ borderRadius: BorderRadius.circular(10),
     );
   }
 
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  // HELPER METHODS
-  // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-  
-  // Create a new habit
   void _createHabit({
     required String name,
     required List<int> weekdays,
@@ -1549,11 +1373,7 @@ borderRadius: BorderRadius.circular(10),
     required Color color,
   }) async {
     final String id = _uuid.v4();
-    
-    // Initialize with empty dailyStatus
     final Map<String, bool?> dailyStatus = {};
-    
-    // Save to database
     await _dbService.saveHabit(
       id: id,
       name: name,
@@ -1564,8 +1384,6 @@ borderRadius: BorderRadius.circular(10),
       category: category,
       colorValue: color.value,
     );
-    
-    // Schedule notification if reminder is set
     if (reminderHour != null && reminderMinute != null) {
       scheduleHabitNotifications(
         id: id,
@@ -1575,14 +1393,9 @@ borderRadius: BorderRadius.circular(10),
         minute: reminderMinute,
       );
     }
-    
-    // Update gamification
-    //GamificationService().addPoints(20, 'habit_created');
-    
     setState(() {});
   }
-  
-  // Update an existing habit
+
   void _updateHabit({
     required String habitId,
     required String name,
@@ -1593,7 +1406,6 @@ borderRadius: BorderRadius.circular(10),
     String? category,
     required Color color,
   }) async {
-    // Save to database
     await _dbService.saveHabit(
       id: habitId,
       name: name,
@@ -1604,12 +1416,7 @@ borderRadius: BorderRadius.circular(10),
       category: category,
       colorValue: color.value,
     );
-    
-    // Update notifications
-    // First cancel existing ones
     cancelHabitNotifications(habitId);
-    
-    // Schedule new ones if reminder is set
     if (reminderHour != null && reminderMinute != null) {
       scheduleHabitNotifications(
         id: habitId,
@@ -1619,19 +1426,12 @@ borderRadius: BorderRadius.circular(10),
         minute: reminderMinute,
       );
     }
-    
     setState(() {});
   }
-  
-  // Delete a habit
+
   Future<void> _deleteHabit(Habit habit) async {
-    // Cancel any scheduled notifications
     cancelHabitNotifications(habit.id);
-    
-    // Delete from database
     await _dbService.deleteHabit(habit.id);
-    
-    // Give feedback
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text('${habit.name} ${S.of(context).habitDeleted}'),
@@ -1648,7 +1448,6 @@ borderRadius: BorderRadius.circular(10),
               category: habit.category,
               colorValue: habit.color?.value,
             );
-            // Reschedule notifications if needed
             if (habit.reminderHour != null && habit.reminderMinute != null) {
               scheduleHabitNotifications(
                 id: habit.id, 
@@ -1663,11 +1462,9 @@ borderRadius: BorderRadius.circular(10),
         duration: const Duration(seconds: 5),
       ),
     );
-    
     setState(() {});
   }
-  
-  // Confirm delete dialog
+
   Future<bool> _confirmDeleteHabit(Habit habit) async {
     return await showDialog<bool>(
       context: context,
@@ -1700,17 +1497,13 @@ borderRadius: BorderRadius.circular(10),
       ),
     ) ?? false;
   }
-  
-  // Toggle habit status
+
   void _toggleHabitStatus(Habit habit, String dayKey, {bool? newVal}) {
     final currentStatus = habit.dailyStatus[dayKey];
     bool? newStatus;
-    
     if (newVal != null) {
-      // Directly set to provided value
       newStatus = newVal;
     } else {
-      // Cycle through states: null -> true -> false -> null
       if (currentStatus == null) {
         newStatus = true;
       } else if (currentStatus == true) {
@@ -1719,12 +1512,8 @@ borderRadius: BorderRadius.circular(10),
         newStatus = null;
       }
     }
-    
-    // Update status
     Map<String, bool?> updatedStatus = Map.from(habit.dailyStatus);
     updatedStatus[dayKey] = newStatus;
-    
-    // Save to database
     _updateHabit(
       habitId: habit.id,
       name: habit.name,
@@ -1735,14 +1524,11 @@ borderRadius: BorderRadius.circular(10),
       category: habit.category,
       color: habit.color ?? Theme.of(context).primaryColor,
     );
-    
     // Award points if completed
     // if (newStatus == true && currentStatus != true) {
     //   GamificationService().addPoints(5, 'habit_completed');
     // }
   }
-  
-  // Convert box data to Habit objects
   List<Habit> _boxToHabitList(Box box) {
     return box.values.map((data) {
       return Habit(
@@ -1757,30 +1543,23 @@ borderRadius: BorderRadius.circular(10),
       );
     }).toList();
   }
-  
-  // Date formatting helpers
   DateTime _truncateToDate(DateTime dateTime) {
     return DateTime(dateTime.year, dateTime.month, dateTime.day);
   }
-  
   bool _isSameDay(DateTime a, DateTime b) {
     return a.year == b.year && a.month == b.month && a.day == b.day;
   }
-  
   List<DateTime> _generate7Days(DateTime centralDate) {
     return List.generate(7, (index) => 
       centralDate.subtract(Duration(days: 3 - index))
     );
   }
-  
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
-  
   String _formatDateKey(DateTime date) {
     return '${date.year}-${date.month}-${date.day}';
   }
-  
   String _dayOfWeekLetter(int weekday) {
     switch (weekday) {
       case 1: return S.of(context).mondayShort;
@@ -1793,7 +1572,6 @@ borderRadius: BorderRadius.circular(10),
       default: return '';
     }
   }
-  
   String _formatTimeFromHourMinute(int hour, int minute) {
     final hourStr = hour.toString().padLeft(2, '0');
     final minuteStr = minute.toString().padLeft(2, '0');

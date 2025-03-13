@@ -7,7 +7,7 @@ import 'package:image_picker/image_picker.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 import '../haertegrad_enum.dart';
-import 'gamification_page.dart';
+import 'gamification_info_page.dart';
 import '../services/gamification_service.dart';
 import 'privacy_and_terms_page.dart';
 import '../l10n/generated/l10n.dart';
@@ -50,7 +50,7 @@ class _ProfilePageState extends State<ProfilePage> {
       body: CustomScrollView(
         physics: const BouncingScrollPhysics(),
         slivers: [
-          // Custom app bar with blur effect
+          // Custom App Bar mit Blur-Effekt
           SliverAppBar(
             expandedHeight: MediaQuery.of(context).size.height * 0.45,
             pinned: true,
@@ -62,7 +62,7 @@ class _ProfilePageState extends State<ProfilePage> {
               background: Stack(
                 fit: StackFit.expand,
                 children: [
-                  // Background gradient
+                  // Hintergrundgradient
                   Container(
                     decoration: const BoxDecoration(
                       gradient: LinearGradient(
@@ -75,7 +75,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       ),
                     ),
                   ),
-                  // Background pattern
+                  // Hintergrundmuster
                   ShaderMask(
                     shaderCallback: (rect) {
                       return const LinearGradient(
@@ -91,7 +91,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       opacity: const AlwaysStoppedAnimation(0.05),
                     ),
                   ),
-                  // Profile content
+                  // Profil-Inhalt
                   Positioned(
                     bottom: 0,
                     left: 0,
@@ -101,13 +101,13 @@ class _ProfilePageState extends State<ProfilePage> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
-                          // Profile image with glow effect
+                          // Profilbild mit Glow-Effekt
                           GestureDetector(
                             onTap: _pickNewProfileImage,
                             child: Stack(
                               alignment: Alignment.center,
                               children: [
-                                // Shadow/glow effect
+                                // Schatten-/Glow-Effekt
                                 Container(
                                   width: 120,
                                   height: 120,
@@ -115,22 +115,31 @@ class _ProfilePageState extends State<ProfilePage> {
                                     shape: BoxShape.circle,
                                     boxShadow: [
                                       BoxShadow(
-                                        color: (isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.white).withOpacity(0.2),
+                                        color: (isPremium
+                                                ? const Color.fromARGB(255, 223, 27, 27)
+                                                : Colors.white)
+                                            .withOpacity(0.2),
                                         blurRadius: 20,
                                         spreadRadius: 5,
                                       ),
                                     ],
                                   ),
                                 ),
-                                // Border
+                                // Rahmen
                                 Container(
                                   padding: const EdgeInsets.all(4),
                                   decoration: BoxDecoration(
                                     shape: BoxShape.circle,
                                     gradient: LinearGradient(
-                                      colors: isPremium 
-                                          ? [const Color.fromARGB(255, 223, 27, 27), const Color(0xFF7D0000)]
-                                          : [const Color(0xFF444444), const Color(0xFF1A1A1A)],
+                                      colors: isPremium
+                                          ? [
+                                              const Color.fromARGB(255, 223, 27, 27),
+                                              const Color(0xFF7D0000)
+                                            ]
+                                          : [
+                                              const Color(0xFF444444),
+                                              const Color(0xFF1A1A1A)
+                                            ],
                                       begin: Alignment.topLeft,
                                       end: Alignment.bottomRight,
                                     ),
@@ -146,14 +155,16 @@ class _ProfilePageState extends State<ProfilePage> {
                                     radius: 55,
                                     backgroundColor: Colors.grey[900],
                                     backgroundImage: _loadProfileImage(),
-                                    child: profileImagePath == null ? Icon(
-                                      Icons.person,
-                                      size: 50,
-                                      color: Colors.grey[700],
-                                    ) : null,
+                                    child: profileImagePath == null
+                                        ? Icon(
+                                            Icons.person,
+                                            size: 50,
+                                            color: Colors.grey[700],
+                                          )
+                                        : null,
                                   ),
                                 ),
-                                // Camera edit indicator
+                                // Kamera-Edit-Indikator
                                 Positioned(
                                   bottom: 0,
                                   right: 0,
@@ -181,7 +192,7 @@ class _ProfilePageState extends State<ProfilePage> {
                             ),
                           ),
                           const SizedBox(height: 16),
-                          // Username
+                          // Benutzername
                           Row(
                             mainAxisAlignment: MainAxisAlignment.center,
                             children: [
@@ -205,13 +216,17 @@ class _ProfilePageState extends State<ProfilePage> {
                             ],
                           ),
                           const SizedBox(height: 6),
-                          // Rank badge
+                          // Rang-Abzeichen
                           Container(
                             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
                             decoration: BoxDecoration(
-                              color: isPremium ? const Color(0xFF3D0000) : Colors.black38,
+                              color: isPremium
+                                  ? const Color(0xFF3D0000)
+                                  : Colors.black38,
                               border: Border.all(
-                                color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.grey[700]!,
+                                color: isPremium
+                                    ? const Color.fromARGB(255, 223, 27, 27)
+                                    : Colors.grey[700]!,
                                 width: 1.5,
                               ),
                               borderRadius: BorderRadius.circular(20),
@@ -221,7 +236,9 @@ class _ProfilePageState extends State<ProfilePage> {
                               children: [
                                 Icon(
                                   isPremium ? Icons.military_tech : Icons.shield,
-                                  color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.grey[400],
+                                  color: isPremium
+                                      ? const Color.fromARGB(255, 223, 27, 27)
+                                      : Colors.grey[400],
                                   size: 18,
                                 ),
                                 const SizedBox(width: 6),
@@ -230,16 +247,17 @@ class _ProfilePageState extends State<ProfilePage> {
                                   style: TextStyle(
                                     fontSize: 15,
                                     fontWeight: FontWeight.w600,
-                                    color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.grey[400],
+                                    color: isPremium
+                                        ? const Color.fromARGB(255, 223, 27, 27)
+                                        : Colors.grey[400],
                                   ),
                                 ),
                               ],
                             ),
                           ),
                           const SizedBox(height: 8),
-                          // Progress indicators (new feature)
-                          if (isPremium)
-                            _buildProgressIndicator(context),
+                          // Fortschrittsanzeige (immer sichtbar, egal ob Premium oder nicht)
+                          _buildProgressIndicator(context),
                         ],
                       ),
                     ),
@@ -248,17 +266,15 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
             ),
           ),
-          
-          // Page content
+          // Seiteninhalt
           SliverToBoxAdapter(
             child: Container(
               color: Colors.black,
               child: Column(
                 children: [
-                  // Main action buttons (new feature)
+                  // Quick-Action-Buttons
                   _buildQuickActions(context),
-                  
-                  // Setting cards
+                  // Einstellungs-Cards
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 10),
                     child: Column(
@@ -282,12 +298,13 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // New feature: Progress indicator for gamification
+  // Fortschrittsanzeige für Gamification (immer sichtbar)
   Widget _buildProgressIndicator(BuildContext context) {
+    final loc = S.of(context);
     final currentLevel = gamification.currentLevel;
     final nextLevel = currentLevel + 1;
     final progress = gamification.levelProgress;
-    
+
     return Padding(
       padding: const EdgeInsets.only(top: 16),
       child: Column(
@@ -296,7 +313,7 @@ class _ProfilePageState extends State<ProfilePage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                "Lvl $currentLevel",
+                loc.levelNumber(currentLevel),
                 style: const TextStyle(
                   fontSize: 12,
                   color: Colors.white70,
@@ -306,7 +323,7 @@ class _ProfilePageState extends State<ProfilePage> {
               Expanded(
                 child: Stack(
                   children: [
-                    // Background track
+                    // Hintergrund-Leiste
                     Container(
                       height: 6,
                       decoration: BoxDecoration(
@@ -314,19 +331,23 @@ class _ProfilePageState extends State<ProfilePage> {
                         borderRadius: BorderRadius.circular(3),
                       ),
                     ),
-                    // Progress fill
+                    // Fortschrittsanzeige
                     FractionallySizedBox(
                       widthFactor: progress,
                       child: Container(
                         height: 6,
                         decoration: BoxDecoration(
                           gradient: const LinearGradient(
-                            colors: [Color.fromARGB(255, 223, 27, 27), Colors.red],
+                            colors: [
+                              Color.fromARGB(255, 223, 27, 27),
+                              Colors.red,
+                            ],
                           ),
                           borderRadius: BorderRadius.circular(3),
                           boxShadow: [
                             BoxShadow(
-                              color: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.5),
+                              color: const Color.fromARGB(255, 223, 27, 27)
+                                  .withOpacity(0.5),
                               blurRadius: 4,
                               offset: const Offset(0, 0),
                             ),
@@ -339,7 +360,7 @@ class _ProfilePageState extends State<ProfilePage> {
               ),
               const SizedBox(width: 8),
               Text(
-                "Lvl $nextLevel",
+                loc.levelNumber(nextLevel),
                 style: const TextStyle(
                   fontSize: 12,
                   color: Colors.white70,
@@ -349,7 +370,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
           const SizedBox(height: 5),
           Text(
-            "${(progress * 100).toInt()}% to next level",
+            loc.progressToNextLevel((progress * 100).toInt()),
             style: const TextStyle(
               fontSize: 12,
               color: Colors.white54,
@@ -360,11 +381,44 @@ class _ProfilePageState extends State<ProfilePage> {
     );
   }
 
-  // New feature: Quick action buttons
+  // Quick-Action-Buttons – Upgrade-Button wird nur angezeigt, wenn der User kein Premium hat
   Widget _buildQuickActions(BuildContext context) {
     final loc = S.of(context);
     final isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
-    
+
+    List<Widget> quickActionButtons = [
+      _buildQuickActionButton(
+        icon: Icons.trending_up,
+        label: loc.stats,
+        onTap: _goToGamificationPage,
+      ),
+      _buildQuickActionButton(
+        icon: Icons.tune,
+        label: _haertegradToString(context, currentHaertegrad),
+        onTap: _changeHaertegrad,
+        isActive: true,
+      ),
+    ];
+
+    if (!isPremium) {
+      quickActionButtons.add(
+        _buildQuickActionButton(
+          icon: Icons.star_border,
+          label: loc.upgrade,
+          onTap: _upgradeToPremium,
+          isPremium: true,
+        ),
+      );
+    }
+
+    quickActionButtons.add(
+      _buildQuickActionButton(
+        icon: Icons.feedback,
+        label: loc.feedback,
+        onTap: _sendFeedback,
+      ),
+    );
+
     return Container(
       margin: const EdgeInsets.fromLTRB(20, 0, 20, 24),
       padding: const EdgeInsets.all(15),
@@ -387,31 +441,9 @@ class _ProfilePageState extends State<ProfilePage> {
         ],
       ),
       child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceAround,
-        children: [
-          _buildQuickActionButton(
-            icon: Icons.trending_up,
-            label: "Stats",
-            onTap: _goToGamificationPage,
-          ),
-          _buildQuickActionButton(
-            icon: Icons.tune,
-            label: _haertegradToString(context, currentHaertegrad),
-            onTap: _changeHaertegrad,
-            isActive: true,
-          ),
-          _buildQuickActionButton(
-            icon: isPremium ? Icons.star : Icons.star_border,
-            label: isPremium ? "Premium" : "Upgrade",
-            onTap: _upgradeToPremium,
-            isPremium: !isPremium,
-          ),
-          _buildQuickActionButton(
-            icon: Icons.feedback,
-            label: "Feedback",
-            onTap: _sendFeedback,
-          ),
-        ],
+        children: quickActionButtons
+            .map((button) => Expanded(child: button))
+            .toList(),
       ),
     );
   }
@@ -432,18 +464,30 @@ class _ProfilePageState extends State<ProfilePage> {
             padding: const EdgeInsets.all(12),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: isPremium 
-                    ? [const Color.fromARGB(255, 223, 27, 27), const Color(0xFF7D0000)]
-                    : isActive 
-                        ? [const Color(0xFF444444), const Color(0xFF222222)]
-                        : [const Color(0xFF333333), const Color(0xFF222222)],
+                colors: isPremium
+                    ? [
+                        const Color.fromARGB(255, 223, 27, 27),
+                        const Color(0xFF7D0000)
+                      ]
+                    : isActive
+                        ? [
+                            const Color(0xFF444444),
+                            const Color(0xFF222222)
+                          ]
+                        : [
+                            const Color(0xFF333333),
+                            const Color(0xFF222222)
+                          ],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),
               borderRadius: BorderRadius.circular(12),
               boxShadow: [
                 BoxShadow(
-                  color: (isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.black).withOpacity(0.3),
+                  color: (isPremium
+                          ? const Color.fromARGB(255, 223, 27, 27)
+                          : Colors.black)
+                      .withOpacity(0.3),
                   offset: const Offset(0, 2),
                   blurRadius: 5,
                 ),
@@ -461,7 +505,9 @@ class _ProfilePageState extends State<ProfilePage> {
             style: TextStyle(
               fontSize: 12,
               fontWeight: isPremium ? FontWeight.bold : FontWeight.normal,
-              color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.white70,
+              color: isPremium
+                  ? const Color.fromARGB(255, 223, 27, 27)
+                  : Colors.white70,
             ),
           ),
         ],
@@ -478,13 +524,15 @@ class _ProfilePageState extends State<ProfilePage> {
         _buildActionTile(
           icon: Icons.tune,
           title: loc.hardnessTitle,
-          subtitle: "Choose how direct feedback should be",
+          subtitle: loc.hardnessSubtitle,
           trailing: Container(
             padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 4),
             decoration: BoxDecoration(
               color: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.1),
               borderRadius: BorderRadius.circular(8),
-              border: Border.all(color: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.3)),
+              border: Border.all(
+                color: const Color.fromARGB(255, 223, 27, 27).withOpacity(0.3),
+              ),
             ),
             child: Text(
               _haertegradToString(context, currentHaertegrad),
@@ -498,14 +546,14 @@ class _ProfilePageState extends State<ProfilePage> {
         ),
         _buildActionTile(
           icon: Icons.trending_up,
-          title: "Level & XP",
-          subtitle: "View your progress statistics",
+          title: loc.levelAndXp,
+          subtitle: loc.levelAndXpSubtitle,
           onTap: _goToGamificationPage,
         ),
         _buildActionTile(
           icon: Icons.feedback,
           title: loc.feedbackButtonLabel,
-          subtitle: "Help us improve Daimonion",
+          subtitle: loc.helpImproveDaimonion,
           onTap: _sendFeedback,
         ),
       ],
@@ -521,13 +569,13 @@ class _ProfilePageState extends State<ProfilePage> {
         _buildActionTile(
           icon: Icons.privacy_tip,
           title: loc.privacyAndTerms,
-          subtitle: "Privacy policy and terms of service",
+          subtitle: loc.privacyAndTermsSubtitle,
           onTap: _showPrivacy,
         ),
         _buildActionTile(
           icon: Icons.new_releases,
           title: loc.version,
-          subtitle: "Current app version",
+          subtitle: loc.currentAppVersion,
           trailing: Text(
             appVersion,
             style: const TextStyle(
@@ -535,7 +583,7 @@ class _ProfilePageState extends State<ProfilePage> {
               fontSize: 14,
             ),
           ),
-          onTap: () {}, // No action needed
+          onTap: () {}, // Keine Aktion notwendig
         ),
       ],
     );
@@ -551,7 +599,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _buildActionTile(
           icon: Icons.star,
           title: loc.upgradeToPremium,
-          subtitle: "Get access to all premium features",
+          subtitle: loc.upgradeToPremiumSubtitle,
           isPremium: true,
           onTap: _upgradeToPremium,
         ),
@@ -562,7 +610,7 @@ class _ProfilePageState extends State<ProfilePage> {
       _buildActionTile(
         icon: Icons.restart_alt,
         title: loc.restorePurchases,
-        subtitle: "Restore your previous purchases",
+        subtitle: loc.restorePurchasesSubtitle,
         onTap: _restorePurchases,
       ),
     );
@@ -595,7 +643,7 @@ class _ProfilePageState extends State<ProfilePage> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Section header
+          // Abschnitts-Kopfzeile
           Padding(
             padding: const EdgeInsets.fromLTRB(20, 16, 20, 10),
             child: Row(
@@ -623,7 +671,7 @@ class _ProfilePageState extends State<ProfilePage> {
             margin: const EdgeInsets.symmetric(horizontal: 20),
             color: Colors.grey[850],
           ),
-          // Section items
+          // Abschnitts-Items
           ...children,
         ],
       ),
@@ -648,22 +696,26 @@ class _ProfilePageState extends State<ProfilePage> {
           padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 16),
           child: Row(
             children: [
-              // Icon with container
+              // Icon-Container
               Container(
                 width: 36,
                 height: 36,
                 decoration: BoxDecoration(
-                  color: isPremium ? const Color.fromARGB(255, 223, 27, 27).withOpacity(0.1) : Colors.grey[850],
+                  color: isPremium
+                      ? const Color.fromARGB(255, 223, 27, 27).withOpacity(0.1)
+                      : Colors.grey[850],
                   borderRadius: BorderRadius.circular(10),
                 ),
                 child: Icon(
                   icon,
-                  color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.white70,
+                  color: isPremium
+                      ? const Color.fromARGB(255, 223, 27, 27)
+                      : Colors.white70,
                   size: 20,
                 ),
               ),
               const SizedBox(width: 16),
-              // Title and subtitle
+              // Titel und Subtitel
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -671,7 +723,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     Text(
                       title,
                       style: TextStyle(
-                        color: isPremium ? const Color.fromARGB(255, 223, 27, 27) : Colors.white,
+                        color: isPremium
+                            ? const Color.fromARGB(255, 223, 27, 27)
+                            : Colors.white,
                         fontSize: 16,
                         fontWeight: isPremium ? FontWeight.bold : FontWeight.w500,
                       ),
@@ -690,7 +744,7 @@ class _ProfilePageState extends State<ProfilePage> {
                   ],
                 ),
               ),
-              // Trailing widget
+              // Trailing Widget
               if (trailing != null)
                 trailing
               else
@@ -717,7 +771,7 @@ class _ProfilePageState extends State<ProfilePage> {
     final picker = ImagePicker();
     try {
       final picked = await picker.pickImage(
-        source: ImageSource.gallery, 
+        source: ImageSource.gallery,
         imageQuality: 80,
       );
       if (picked != null) {
@@ -729,7 +783,7 @@ class _ProfilePageState extends State<ProfilePage> {
       }
     } catch (e) {
       debugPrint("Image picking error: $e");
-      _showErrorToast("Could not select image");
+      _showErrorToast(S.of(context).imageSelectError);
     }
   }
 
@@ -749,7 +803,7 @@ class _ProfilePageState extends State<ProfilePage> {
   void _goToGamificationPage() {
     Navigator.push(
       context,
-      MaterialPageRoute(builder: (_) => const GamificationPage()),
+      MaterialPageRoute(builder: (_) => const GamificationInfoPage()),
     );
   }
 
@@ -771,7 +825,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // Handle indicator
+                  // Handle-Indikator
                   Container(
                     width: 40,
                     height: 4,
@@ -812,7 +866,9 @@ class _ProfilePageState extends State<ProfilePage> {
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color.fromARGB(255, 223, 27, 27),
                       minimumSize: const Size(double.infinity, 50),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(12),
+                      ),
                       elevation: 5,
                     ),
                     onPressed: () {
@@ -856,17 +912,17 @@ class _ProfilePageState extends State<ProfilePage> {
     switch (haertegrad) {
       case Haertegrad.normal:
         title = loc.hardnessNormal;
-        description = "Gentle feedback with constructive suggestions";
+        description = loc.hardnessNormalDesc;
         icon = const Icon(Icons.sentiment_satisfied, color: Colors.white, size: 24);
         break;
       case Haertegrad.hart:
         title = loc.hardnessHard;
-        description = "Challenging feedback that pushes your limits";
+        description = loc.hardnessHardDesc;
         icon = const Icon(Icons.whatshot, color: Colors.orange, size: 24);
         break;
       case Haertegrad.brutalEhrlich:
         title = loc.hardnessBrutal;
-        description = "No-nonsense, raw and unfiltered truth";
+        description = loc.hardnessBrutalDesc;
         icon = Image.asset(
           'assets/icon/chat.png',
           width: 24,
@@ -883,8 +939,11 @@ class _ProfilePageState extends State<ProfilePage> {
         padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           gradient: LinearGradient(
-            colors: isSelected 
-                ? [const Color.fromARGB(255, 223, 27, 27).withOpacity(0.2), const Color.fromARGB(255, 223, 27, 27).withOpacity(0.05)]
+            colors: isSelected
+                ? [
+                    const Color.fromARGB(255, 223, 27, 27).withOpacity(0.2),
+                    const Color.fromARGB(255, 223, 27, 27).withOpacity(0.05)
+                  ]
                 : [Colors.grey[850]!, Colors.grey[900]!],
             begin: Alignment.topLeft,
             end: Alignment.bottomRight,
@@ -1048,12 +1107,12 @@ class _ProfilePageState extends State<ProfilePage> {
 
       final restoredInfo = await Purchases.restorePurchases();
       final entitlements = restoredInfo.entitlements.all;
-      
-      if (entitlements.containsKey('premium') && 
+
+      if (entitlements.containsKey('premium') &&
           entitlements['premium']?.isActive == true) {
         await Hive.box('settings').put('isPremium', true);
         setState(() {});
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(S.of(context).purchasesRestoredSuccess),
@@ -1092,12 +1151,14 @@ class _ProfilePageState extends State<ProfilePage> {
   }
 
   Future<void> _sendFeedback() async {
+    final loc = S.of(context);
     final Uri emailUri = Uri(
       scheme: 'mailto',
       path: 'manuel@worlitzer.com',
-      query: 'subject=Feedback for Daimonion&body=I would like to provide the following feedback:',
+      query:
+          'subject=${Uri.encodeComponent(loc.feedbackEmailSubject)}&body=${Uri.encodeComponent(loc.feedbackEmailBody)}',
     );
-    
+
     try {
       if (await canLaunchUrl(emailUri)) {
         await launchUrl(emailUri);
@@ -1112,7 +1173,7 @@ class _ProfilePageState extends State<ProfilePage> {
 
   void _showPrivacy() {
     Navigator.push(
-      context, 
+      context,
       MaterialPageRoute(builder: (context) => const PrivacyAndTermsPage()),
     );
   }

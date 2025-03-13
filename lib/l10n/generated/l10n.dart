@@ -850,10 +850,10 @@ class S {
     );
   }
 
-  /// `Edit Your Name`
+  /// `Edit Profile`
   String get editProfileTitle {
     return Intl.message(
-      'Edit Your Name',
+      'Edit Profile',
       name: 'editProfileTitle',
       desc: '',
       args: [],
@@ -890,10 +890,10 @@ class S {
     );
   }
 
-  /// `Hardness Level`
+  /// `Feedback Style`
   String get hardnessTitle {
     return Intl.message(
-      'Hardness Level',
+      'Feedback Style',
       name: 'hardnessTitle',
       desc: '',
       args: [],
@@ -920,10 +920,10 @@ class S {
     );
   }
 
-  /// `Brutally Honest`
+  /// `Brutal`
   String get hardnessBrutal {
     return Intl.message(
-      'Brutally Honest',
+      'Brutal',
       name: 'hardnessBrutal',
       desc: '',
       args: [],
@@ -1060,10 +1060,10 @@ class S {
     );
   }
 
-  /// `Select Hardness Level`
+  /// `Select Feedback Style`
   String get selectHardness {
     return Intl.message(
-      'Select Hardness Level',
+      'Select Feedback Style',
       name: 'selectHardness',
       desc: '',
       args: [],
@@ -2580,10 +2580,10 @@ class S {
     );
   }
 
-  /// `Send Feedback`
+  /// `Feedback`
   String get feedbackButtonLabel {
     return Intl.message(
-      'Send Feedback',
+      'Feedback',
       name: 'feedbackButtonLabel',
       desc: '',
       args: [],
@@ -3150,10 +3150,10 @@ class S {
     );
   }
 
-  /// `Your Name`
+  /// `Name`
   String get nameLabel {
     return Intl.message(
-      'Your Name',
+      'Name',
       name: 'nameLabel',
       desc: '',
       args: [],
@@ -3170,50 +3170,50 @@ class S {
     );
   }
 
-  /// `Your purchases have been restored successfully!`
+  /// `Purchases restored successfully!`
   String get purchasesRestoredSuccess {
     return Intl.message(
-      'Your purchases have been restored successfully!',
+      'Purchases restored successfully!',
       name: 'purchasesRestoredSuccess',
       desc: '',
       args: [],
     );
   }
 
-  /// `No previous purchases found to restore.`
+  /// `No purchases to restore`
   String get noPurchasesToRestore {
     return Intl.message(
-      'No previous purchases found to restore.',
+      'No purchases to restore',
       name: 'noPurchasesToRestore',
       desc: '',
       args: [],
     );
   }
 
-  /// `Could not restore purchases.`
+  /// `Error restoring purchases`
   String get purchasesRestoredError {
     return Intl.message(
-      'Could not restore purchases.',
+      'Error restoring purchases',
       name: 'purchasesRestoredError',
       desc: '',
       args: [],
     );
   }
 
-  /// `No email client found on this device.`
+  /// `No email app found`
   String get emailAppNotFound {
     return Intl.message(
-      'No email client found on this device.',
+      'No email app found',
       name: 'emailAppNotFound',
       desc: '',
       args: [],
     );
   }
 
-  /// `Could not send feedback.`
+  /// `Could not send feedback`
   String get couldNotSendFeedback {
     return Intl.message(
-      'Could not send feedback.',
+      'Could not send feedback',
       name: 'couldNotSendFeedback',
       desc: '',
       args: [],
@@ -4527,6 +4527,326 @@ class S {
     return Intl.message(
       'Double tap to favorite',
       name: 'doubleTapToFavorite',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `$`
+  String get currency_symbol {
+    return Intl.message(
+      '\$',
+      name: 'currency_symbol',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View all premium benefits`
+  String get view_all_premium_benefits {
+    return Intl.message(
+      'View all premium benefits',
+      name: 'view_all_premium_benefits',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unlimited chat requests for your Daimonion`
+  String get premium_benefit_unlimited_chat {
+    return Intl.message(
+      'Unlimited chat requests for your Daimonion',
+      name: 'premium_benefit_unlimited_chat',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No advertisements`
+  String get premium_benefit_no_ads {
+    return Intl.message(
+      'No advertisements',
+      name: 'premium_benefit_no_ads',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Access to journal`
+  String get premium_benefit_journal_access {
+    return Intl.message(
+      'Access to journal',
+      name: 'premium_benefit_journal_access',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Access to habit tracker`
+  String get premium_benefit_habit_tracker_access {
+    return Intl.message(
+      'Access to habit tracker',
+      name: 'premium_benefit_habit_tracker_access',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Access to advanced features in to-do list`
+  String get premium_benefit_todo_advanced {
+    return Intl.message(
+      'Access to advanced features in to-do list',
+      name: 'premium_benefit_todo_advanced',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Access to advanced features in training plan`
+  String get premium_benefit_training_advanced {
+    return Intl.message(
+      'Access to advanced features in training plan',
+      name: 'premium_benefit_training_advanced',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Detailed statistics for flow timer`
+  String get premium_benefit_flow_stats {
+    return Intl.message(
+      'Detailed statistics for flow timer',
+      name: 'premium_benefit_flow_stats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Detailed statistics for tasks`
+  String get premium_benefit_tags_stats {
+    return Intl.message(
+      'Detailed statistics for tasks',
+      name: 'premium_benefit_tags_stats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose how direct the feedback should be`
+  String get hardnessSubtitle {
+    return Intl.message(
+      'Choose how direct the feedback should be',
+      name: 'hardnessSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Normal feedback with constructive suggestions`
+  String get hardnessNormalDesc {
+    return Intl.message(
+      'Normal feedback with constructive suggestions',
+      name: 'hardnessNormalDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Challenging feedback that pushes your limits`
+  String get hardnessHardDesc {
+    return Intl.message(
+      'Challenging feedback that pushes your limits',
+      name: 'hardnessHardDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No-nonsense, raw and unfiltered truth`
+  String get hardnessBrutalDesc {
+    return Intl.message(
+      'No-nonsense, raw and unfiltered truth',
+      name: 'hardnessBrutalDesc',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Stats`
+  String get stats {
+    return Intl.message(
+      'Stats',
+      name: 'stats',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Feedback`
+  String get feedback {
+    return Intl.message(
+      'Feedback',
+      name: 'feedback',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Level & XP`
+  String get levelAndXp {
+    return Intl.message(
+      'Level & XP',
+      name: 'levelAndXp',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `View your progress statistics`
+  String get levelAndXpSubtitle {
+    return Intl.message(
+      'View your progress statistics',
+      name: 'levelAndXpSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Help us improve Daimonion`
+  String get helpImproveDaimonion {
+    return Intl.message(
+      'Help us improve Daimonion',
+      name: 'helpImproveDaimonion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Privacy policy and terms of service`
+  String get privacyAndTermsSubtitle {
+    return Intl.message(
+      'Privacy policy and terms of service',
+      name: 'privacyAndTermsSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Current App Version`
+  String get currentAppVersion {
+    return Intl.message(
+      'Current App Version',
+      name: 'currentAppVersion',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Get access to all premium features`
+  String get upgradeToPremiumSubtitle {
+    return Intl.message(
+      'Get access to all premium features',
+      name: 'upgradeToPremiumSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Restore your previous purchases`
+  String get restorePurchasesSubtitle {
+    return Intl.message(
+      'Restore your previous purchases',
+      name: 'restorePurchasesSubtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Could not select image`
+  String get imageSelectError {
+    return Intl.message(
+      'Could not select image',
+      name: 'imageSelectError',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Lvl {level}`
+  String levelNumber(Object level) {
+    return Intl.message(
+      'Lvl $level',
+      name: 'levelNumber',
+      desc: '',
+      args: [level],
+    );
+  }
+
+  /// `{progress}% to next level`
+  String progressToNextLevel(Object progress) {
+    return Intl.message(
+      '$progress% to next level',
+      name: 'progressToNextLevel',
+      desc: '',
+      args: [progress],
+    );
+  }
+
+  /// `Feedback for Daimonion`
+  String get feedbackEmailSubject {
+    return Intl.message(
+      'Feedback for Daimonion',
+      name: 'feedbackEmailSubject',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `I would like to provide the following feedback:`
+  String get feedbackEmailBody {
+    return Intl.message(
+      'I would like to provide the following feedback:',
+      name: 'feedbackEmailBody',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Start your daily habits! Take the first step today.`
+  String get motivationalMessage0 {
+    return Intl.message(
+      'Start your daily habits! Take the first step today.',
+      name: 'motivationalMessage0',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You've made a good start! Keep going!`
+  String get motivationalMessageLessThan3 {
+    return Intl.message(
+      'You\'ve made a good start! Keep going!',
+      name: 'motivationalMessageLessThan3',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Almost there! Just a few more to complete today's goals.`
+  String get motivationalMessageLessThan5 {
+    return Intl.message(
+      'Almost there! Just a few more to complete today\'s goals.',
+      name: 'motivationalMessageLessThan5',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Amazing job! You've completed all your daily habits!`
+  String get motivationalMessageAllCompleted {
+    return Intl.message(
+      'Amazing job! You\'ve completed all your daily habits!',
+      name: 'motivationalMessageAllCompleted',
       desc: '',
       args: [],
     );

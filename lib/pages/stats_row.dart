@@ -56,7 +56,6 @@ class StatsRow extends StatelessWidget {
             shadowColor: shadowColor,
             primaryColor: primaryColor,
             tooltip: '${S.of(context).streak}: $streak ${streak == 1 ? "day" : "days"}',
-            // Add streak animation if streak > 3
             showAnimation: streak > 3,
           ),
         ),

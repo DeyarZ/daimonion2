@@ -1,4 +1,3 @@
-// lib/pages/dashboard.dart
 import 'dart:math';
 import 'dart:ui' show ImageFilter;
 import 'package:flutter/material.dart';
@@ -69,7 +68,12 @@ class DashboardPageState extends State<DashboardPage>
     _loadStreakFromHive();
     _loadWeeklyFlowSeconds();
     _loadTodayChecks().then((_) => _handleNewDayAndScheduleInsult());
-    _loadNativeAd();
+
+    // Nur laden, wenn der User kein Premium hat
+    final isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
+    if (!isPremium) {
+      _loadNativeAd();
+    }
   }
 
   @override
@@ -315,6 +319,8 @@ class DashboardPageState extends State<DashboardPage>
   @override
   Widget build(BuildContext context) {
     final flowTimer = context.watch<FlowTimerService>();
+    // Hole Premium-Status
+    final isPremium = Hive.box('settings').get('isPremium', defaultValue: false);
     final isRunning = flowTimer.isRunning;
     final secondsLeft = flowTimer.secondsLeft;
     final m = (secondsLeft ~/ 60).toString().padLeft(2, '0');
@@ -411,19 +417,22 @@ class DashboardPageState extends State<DashboardPage>
                                       toggleTask: _toggleTask,
                                     ),
                                     const SizedBox(height: 24),
-                                    NativeAdSection(
-                                      nativeAd: _nativeAd,
-                                      isNativeAdLoaded: _isNativeAdLoaded,
-                                      onGoPremium: () {
-                                        Navigator.push(
-                                          context,
-                                          MaterialPageRoute(
-                                            builder: (_) => const SubscriptionPage(),
-                                          ),
-                                        );
-                                      },
-                                    ),
-                                    const SizedBox(height: 24),
+                                    // Nur anzeigen, wenn der User kein Premium hat
+                                    if (!isPremium) ...[
+                                      NativeAdSection(
+                                        nativeAd: _nativeAd,
+                                        isNativeAdLoaded: _isNativeAdLoaded,
+                                        onGoPremium: () {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                              builder: (_) => const SubscriptionPage(),
+                                            ),
+                                          );
+                                        },
+                                      ),
+                                      const SizedBox(height: 24),
+                                    ],
                                     WeeklyProgressSection(
                                       weekDates: _weekDates,
                                       dbService: _dbService,
@@ -463,30 +472,24 @@ class DashboardPageState extends State<DashboardPage>
       ),
       child: Row(
         children: [
+          // Neues Icon statt des ursprünglichen Emojis
           const Icon(
-            Icons.self_improvement,
+            Icons.trending_up,
             color: Color.fromARGB(255, 223, 27, 27),
             size: 24,
           ),
           const SizedBox(width: 12),
-          Text(
-            S.of(context).dashboardTitle,
-            style: const TextStyle(
-              color: Colors.white,
-              fontSize: 20,
-              fontWeight: FontWeight.bold,
-              letterSpacing: 0.5,
+          Expanded(
+            child: Text(
+              S.of(context).dashboardTitle,
+              textAlign: TextAlign.center,
+              style: const TextStyle(
+                color: Colors.white,
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                letterSpacing: 0.5,
+              ),
             ),
-          ),
-          const Spacer(),
-          IconButton(
-            icon: const Icon(
-              Icons.settings_outlined,
-              color: Colors.white70,
-            ),
-            onPressed: () {
-              // Navigate to settings page ...
-            },
           ),
         ],
       ),

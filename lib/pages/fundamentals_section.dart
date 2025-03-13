@@ -23,12 +23,24 @@ class FundamentalsSection extends StatelessWidget {
         todayCheck.helpOthers,
       ].where((completed) => completed).length;
 
+  String _getMotivationalMessage(BuildContext context, int completed) {
+    if (completed == 0) {
+      return S.of(context).motivationalMessage0;
+    } else if (completed < 3) {
+      return S.of(context).motivationalMessageLessThan3;
+    } else if (completed < 5) {
+      return S.of(context).motivationalMessageLessThan5;
+    } else {
+      return S.of(context).motivationalMessageAllCompleted;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final progressPercentage = completedCount / 5;
     final screenWidth = MediaQuery.of(context).size.width;
     // Adjust for smaller screens by calculating better grid spacing
-    final isSmallScreen = screenWidth < 375; // iPhone SE or kleiner
+    final isSmallScreen = screenWidth < 375; // iPhone SE oder kleiner
     
     return Container(
       decoration: BoxDecoration(
@@ -106,30 +118,31 @@ class FundamentalsSection extends StatelessWidget {
                             borderRadius: BorderRadius.circular(4),
                           ),
                         ),
-                        AnimatedContainer(
-                          duration: const Duration(milliseconds: 400),
-                          curve: Curves.easeOutCubic,
-                          height: 8,
-                          width: constraints.maxWidth * progressPercentage,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: progressPercentage < 1.0
-                                  ? [Colors.green.shade600, Colors.green.shade400]
-                                  : [Colors.amber.shade600, Colors.amber.shade400],
-                              begin: Alignment.centerLeft,
-                              end: Alignment.centerRight,
-                            ),
-                            borderRadius: BorderRadius.circular(4),
-                            boxShadow: [
-                              BoxShadow(
-                                color: (progressPercentage < 1.0 ? Colors.green : Colors.amber)
-                                    .withOpacity(0.4),
-                                blurRadius: 6,
-                                offset: const Offset(0, 2),
+                        if (progressPercentage > 0)
+                          AnimatedContainer(
+                            duration: const Duration(milliseconds: 400),
+                            curve: Curves.easeOutCubic,
+                            height: 8,
+                            width: constraints.maxWidth * progressPercentage,
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                colors: progressPercentage < 1.0
+                                    ? [Colors.green.shade600, Colors.green.shade400]
+                                    : [Colors.amber.shade600, Colors.amber.shade400],
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
                               ),
-                            ],
+                              borderRadius: BorderRadius.circular(4),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: (progressPercentage < 1.0 ? Colors.green : Colors.amber)
+                                      .withOpacity(0.4),
+                                  blurRadius: 6,
+                                  offset: const Offset(0, 2),
+                                ),
+                              ],
+                            ),
                           ),
-                        ),
                       ],
                     );
                   },
@@ -151,7 +164,6 @@ class FundamentalsSection extends StatelessWidget {
                 children: [
                   // Responsives Layout für Fundamentals
                   isSmallScreen
-                      // Bei kleineren Screens: ListView statt GridView
                       ? ListView.builder(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
@@ -167,14 +179,12 @@ class FundamentalsSection extends StatelessWidget {
                             );
                           },
                         )
-                      // Für normale Screens: Verbesserte GridView
                       : GridView.count(
                           shrinkWrap: true,
                           physics: const NeverScrollableScrollPhysics(),
                           crossAxisCount: 5,
                           crossAxisSpacing: 8,
                           mainAxisSpacing: 12,
-                          // Besseres Seitenverhältnis für Text
                           childAspectRatio: 0.7,
                           children: _buildFundamentalItems(context),
                         ),
@@ -184,7 +194,7 @@ class FundamentalsSection extends StatelessWidget {
                     Padding(
                       padding: const EdgeInsets.only(bottom: 16),
                       child: Text(
-                        _getMotivationalMessage(completedCount),
+                        _getMotivationalMessage(context, completedCount),
                         textAlign: TextAlign.center,
                         style: TextStyle(
                           fontSize: 13,
@@ -248,7 +258,7 @@ class FundamentalsSection extends StatelessWidget {
       _buildFundamentalItem(
         context: context,
         icon: Icons.fitness_center,
-        label: S.of(context).shortCheckGym, // "Körper"
+        label: S.of(context).shortCheckGym,
         explanation: S.of(context).fullCheckGym,
         isDone: todayCheck.gym,
         keyName: 'gym',
@@ -257,7 +267,7 @@ class FundamentalsSection extends StatelessWidget {
       _buildFundamentalItem(
         context: context,
         icon: Icons.self_improvement,
-        label: S.of(context).shortCheckMental, // "Mental"
+        label: S.of(context).shortCheckMental,
         explanation: S.of(context).fullCheckMental,
         isDone: todayCheck.mental,
         keyName: 'mental',
@@ -266,7 +276,7 @@ class FundamentalsSection extends StatelessWidget {
       _buildFundamentalItem(
         context: context,
         icon: Icons.block,
-        label: S.of(context).shortCheckNoPorn, // "Kein Porn"
+        label: S.of(context).shortCheckNoPorn,
         explanation: S.of(context).fullCheckNoPorn,
         isDone: todayCheck.noPorn,
         keyName: 'noPorn',
@@ -275,7 +285,7 @@ class FundamentalsSection extends StatelessWidget {
       _buildFundamentalItem(
         context: context,
         icon: Icons.restaurant,
-        label: S.of(context).shortCheckHealthyEating, // "Gesund"
+        label: S.of(context).shortCheckHealthyEating,
         explanation: S.of(context).fullCheckHealthyEating,
         isDone: todayCheck.healthyEating,
         keyName: 'healthyEating',
@@ -284,7 +294,7 @@ class FundamentalsSection extends StatelessWidget {
       _buildFundamentalItem(
         context: context,
         icon: Icons.volunteer_activism,
-        label: S.of(context).shortCheckHelpOthers, // "Helfen"
+        label: S.of(context).shortCheckHelpOthers,
         explanation: S.of(context).fullCheckHelpOthers,
         isDone: todayCheck.helpOthers,
         keyName: 'helpOthers',
@@ -442,17 +452,5 @@ class FundamentalsSection extends StatelessWidget {
         ),
       ],
     );
-  }
-
-  String _getMotivationalMessage(int completed) {
-    if (completed == 0) {
-      return "Start your daily habits! Take the first step today.";
-    } else if (completed < 3) {
-      return "You've made a good start! Keep going!";
-    } else if (completed < 5) {
-      return "Almost there! Just a few more to complete today's goals.";
-    } else {
-      return "Amazing job! You've completed all your daily habits!";
-    }
   }
 }

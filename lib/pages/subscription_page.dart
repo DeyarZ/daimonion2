@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:purchases_flutter/purchases_flutter.dart';
 import 'package:daimonion_app/l10n/generated/l10n.dart';
+import 'premium_benefits_page.dart'; // Neuer Import für die separate Premium-Vorteile-Seite
 
 enum SubscriptionType {
   weekly,
@@ -98,7 +99,6 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                 ),
               ),
             ),
-
             // Main content
             SafeArea(
               child: SingleChildScrollView(
@@ -111,25 +111,10 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Header mit Logo links, Close-Button rechts
+                        // Header mit Close-Button
                         Row(
                           mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            // Weißes PNG-Logo
-                            Container(
-                              padding: const EdgeInsets.all(8),
-                              decoration: BoxDecoration(
-                                color: Colors.white.withOpacity(0.1),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Image.asset(
-                                'assets/icon/chat.png',
-                                width: 24,
-                                height: 24,
-                                color: Colors.white,
-                              ),
-                            ),
-                            // Close button
+                          children: [                            
                             GestureDetector(
                               onTap: () => Navigator.pop(context),
                               child: Container(
@@ -147,9 +132,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                             ),
                           ],
                         ),
-
                         SizedBox(height: screenHeight * 0.03),
-
                         // Premium Badge
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -168,7 +151,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                               ),
                               const SizedBox(width: 8),
                               Text(
-                                loc.premium_label, // "PREMIUM" i18n
+                                loc.premium_label,
                                 style: const TextStyle(
                                   color: Colors.white,
                                   fontWeight: FontWeight.bold,
@@ -178,9 +161,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                             ],
                           ),
                         ),
-
                         SizedBox(height: screenHeight * 0.025),
-
                         // Titel
                         Text(
                           loc.unlock_premium,
@@ -191,10 +172,8 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                             letterSpacing: 0.5,
                           ),
                         ),
-
                         SizedBox(height: screenHeight * 0.015),
-
-                        // Beschreibung
+                        // Kurze Beschreibung (eventuell nur ein Teaser)
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 24),
                           child: Text(
@@ -207,10 +186,8 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                             textAlign: TextAlign.center,
                           ),
                         ),
-
                         SizedBox(height: screenHeight * 0.04),
-
-                        // Feature-Liste
+                        // Feature-Liste inkl. Button: Alle Premium-Vorteile ansehen
                         Container(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 20, vertical: 24),
@@ -226,7 +203,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                loc.features_label, // "What's included:"
+                                loc.features_label,
                                 style: TextStyle(
                                   color: Colors.white.withOpacity(0.9),
                                   fontSize: 18,
@@ -236,30 +213,49 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                               const SizedBox(height: 16),
                               _buildFeatureItem(Icons.book, loc.access_journal),
                               const SizedBox(height: 12),
-                              _buildFeatureItem(Icons.trending_up,
-                                  loc.access_habit_tracker),
+                              _buildFeatureItem(Icons.trending_up, loc.access_habit_tracker),
                               const SizedBox(height: 12),
-                              _buildFeatureItem(Icons.chat_bubble_outline,
-                                  loc.unlimited_chat_prompts),
+                              _buildFeatureItem(Icons.chat_bubble_outline, loc.unlimited_chat_prompts),
                               const SizedBox(height: 12),
-                              _buildFeatureItem(
-                                  Icons.add_circle_outline, loc.more_to_come),
+                              _buildFeatureItem(Icons.add_circle_outline, loc.more_to_come),
+                              const SizedBox(height: 12),
+                              // Neuer Button: Navigiert zur separaten PremiumBenefitsPage
+                              Center(
+                                child: ElevatedButton(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (_) => const PremiumBenefitsPage(),
+                                      ),
+                                    );
+                                  },
+                                  style: ElevatedButton.styleFrom(
+                                    backgroundColor: accentColor,
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                  child: Text(
+                                    loc.view_all_premium_benefits,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 14,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           ),
                         ),
-
                         SizedBox(height: screenHeight * 0.04),
-
                         // Auswahl der Subscriptions
                         _buildPlanOptions(context, loc),
-
                         SizedBox(height: screenHeight * 0.04),
-
                         // Call-to-Action
                         _buildCtaButton(context, loc),
-
                         SizedBox(height: screenHeight * 0.025),
-
                         // Disclaimer
                         Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -273,7 +269,6 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                             textAlign: TextAlign.center,
                           ),
                         ),
-
                         SizedBox(height: screenHeight * 0.02),
                       ],
                     ),
@@ -323,10 +318,10 @@ class _SubscriptionPageState extends State<SubscriptionPage>
           context,
           loc: loc,
           plan: SubscriptionType.weekly,
-          title: loc.weekly_label,         // "Wöchentlich"
-          price: "0,99 €",
-          period: "/Woche",
-          description: loc.weekly_description, // "Probier's günstig aus"
+          title: loc.weekly,
+          price: "0,99 ${loc.currency_symbol}",
+          period: "/${loc.weekly}",
+          description: loc.weekly_description,
           icon: Icons.rocket_launch,
           isPopular: false,
         ),
@@ -335,11 +330,11 @@ class _SubscriptionPageState extends State<SubscriptionPage>
           context,
           loc: loc,
           plan: SubscriptionType.monthly,
-          title: loc.monthly_label,         // "Monatlich"
-          price: "2,99 €",
-          period: "/Monat",
-          description: loc.monthly_description, // "Am beliebtesten"
-          icon: Icons.military_tech,        // statt Herzen
+          title: loc.monthly_label,
+          price: "2,99 ${loc.currency_symbol}",
+          period: "/${loc.monthly}",
+          description: loc.monthly_description,
+          icon: Icons.military_tech,
           isPopular: true,
         ),
         const SizedBox(height: 16),
@@ -347,10 +342,10 @@ class _SubscriptionPageState extends State<SubscriptionPage>
           context,
           loc: loc,
           plan: SubscriptionType.yearly,
-          title: loc.yearly_label,         // "Jährlich"
-          price: "29,99 €",
-          period: "/Jahr",
-          description: loc.yearly_description, // "Spare über 80%"
+          title: loc.yearly_label,
+          price: "29,99 ${loc.currency_symbol}",
+          period: "/${loc.yearly}",
+          description: loc.yearly_description,
           icon: Icons.diamond,
           isPopular: false,
         ),
@@ -376,55 +371,54 @@ class _SubscriptionPageState extends State<SubscriptionPage>
           _selectedPlan = plan;
         });
       },
-      child: AnimatedContainer(
-        duration: const Duration(milliseconds: 300),
-        padding: const EdgeInsets.all(20),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? accentColor.withOpacity(0.15)
-              : Colors.white.withOpacity(0.05),
-          borderRadius: BorderRadius.circular(20),
-          border: Border.all(
-            color:
-                isSelected ? accentColor : Colors.white.withOpacity(0.1),
-            width: 2,
-          ),
-          boxShadow: isSelected
-              ? [
-                  BoxShadow(
-                    color: accentColor.withOpacity(0.2),
-                    blurRadius: 20,
-                    spreadRadius: 2,
-                  )
-                ]
-              : [],
-        ),
-        child: Row(
-          children: [
-            // Icon links
-            Container(
-              padding: const EdgeInsets.all(12),
-              decoration: BoxDecoration(
-                color: isSelected
-                    ? accentColor
-                    : Colors.white.withOpacity(0.1),
-                borderRadius: BorderRadius.circular(16),
+      child: Stack(
+        children: [
+          AnimatedContainer(
+            duration: const Duration(milliseconds: 300),
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: isSelected
+                  ? accentColor.withOpacity(0.15)
+                  : Colors.white.withOpacity(0.05),
+              borderRadius: BorderRadius.circular(20),
+              border: Border.all(
+                color: isSelected ? accentColor : Colors.white.withOpacity(0.1),
+                width: 2,
               ),
-              child: Icon(
-                icon,
-                color: isSelected
-                    ? Colors.white
-                    : Colors.white.withOpacity(0.7),
-                size: 24,
-              ),
+              boxShadow: isSelected
+                  ? [
+                      BoxShadow(
+                        color: accentColor.withOpacity(0.2),
+                        blurRadius: 20,
+                        spreadRadius: 2,
+                      )
+                    ]
+                  : [],
             ),
-            const SizedBox(width: 20),
-            // Title + Beschreibung
-            Expanded(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Row(
+            child: Row(
+              children: [
+                // Icon links
+                Container(
+                  padding: const EdgeInsets.all(12),
+                  decoration: BoxDecoration(
+                    color: isSelected
+                        ? accentColor
+                        : Colors.white.withOpacity(0.1),
+                    borderRadius: BorderRadius.circular(16),
+                  ),
+                  child: Icon(
+                    icon,
+                    color: isSelected
+                        ? Colors.white
+                        : Colors.white.withOpacity(0.7),
+                    size: 24,
+                  ),
+                ),
+                const SizedBox(width: 20),
+                // Titel + Beschreibung
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         title,
@@ -434,84 +428,85 @@ class _SubscriptionPageState extends State<SubscriptionPage>
                           fontWeight: FontWeight.bold,
                         ),
                       ),
-                      if (isPopular) ...[
-                        const SizedBox(width: 8),
-                        Container(
-                          padding: const EdgeInsets.symmetric(
-                              horizontal: 8, vertical: 3),
-                          decoration: BoxDecoration(
-                            color: accentColor,
-                            borderRadius: BorderRadius.circular(12),
-                          ),
-                          child: Text(
-                            loc.most_popular_label, // "Beliebt"
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 10,
-                              fontWeight: FontWeight.bold,
-                            ),
-                          ),
+                      const SizedBox(height: 4),
+                      Text(
+                        description,
+                        style: TextStyle(
+                          color: Colors.white.withOpacity(0.7),
+                          fontSize: 14,
                         ),
-                      ],
+                      ),
                     ],
                   ),
-                  const SizedBox(height: 4),
-                  Text(
-                    description,
-                    style: TextStyle(
-                      color: Colors.white.withOpacity(0.7),
-                      fontSize: 14,
+                ),
+                // Preis (rechts)
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.end,
+                  children: [
+                    Text(
+                      price,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontSize: 20,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      period,
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.7),
+                        fontSize: 14,
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: 12),
+                // Auswahl-Indikator (Check)
+                Container(
+                  width: 24,
+                  height: 24,
+                  decoration: BoxDecoration(
+                    shape: BoxShape.circle,
+                    color: isSelected ? accentColor : Colors.transparent,
+                    border: Border.all(
+                      color: isSelected
+                          ? accentColor
+                          : Colors.white.withOpacity(0.3),
+                      width: 2,
                     ),
                   ),
-                ],
-              ),
-            ),
-            // Preis (rechts)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.end,
-              children: [
-                Text(
-                  price,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 20,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  period,
-                  style: TextStyle(
-                    color: Colors.white.withOpacity(0.7),
-                    fontSize: 14,
-                  ),
+                  child: isSelected
+                      ? const Icon(
+                          Icons.check,
+                          size: 16,
+                          color: Colors.white,
+                        )
+                      : null,
                 ),
               ],
             ),
-            const SizedBox(width: 12),
-            // Auswahl-Indikator (Check)
-            Container(
-              width: 24,
-              height: 24,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                color: isSelected ? accentColor : Colors.transparent,
-                border: Border.all(
-                  color: isSelected
-                      ? accentColor
-                      : Colors.white.withOpacity(0.3),
-                  width: 2,
+          ),
+          if (isPopular)
+            Positioned(
+              top: 8,
+              right: 8,
+              child: Container(
+                padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                decoration: BoxDecoration(
+                  color: accentColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  loc.most_popular_label,
+                  style: const TextStyle(
+                    color: Colors.white,
+                    fontSize: 10,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ),
-              child: isSelected
-                  ? const Icon(
-                      Icons.check,
-                      size: 16,
-                      color: Colors.white,
-                    )
-                  : null,
             ),
-          ],
-        ),
+        ],
       ),
     );
   }
@@ -544,7 +539,7 @@ class _SubscriptionPageState extends State<SubscriptionPage>
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             Text(
-              loc.start_free_week_label, // "Kostenlose Woche starten"
+              loc.start_free_week_label,
               style: const TextStyle(
                 color: Colors.white,
                 fontSize: 18,
